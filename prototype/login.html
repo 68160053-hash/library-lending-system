@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เข้าสู่ระบบ | Arcanum Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Crimson+Pro:wght@400;600&amp;family=Trirong:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<!-- header start -->
+<a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+<header class="site-header">
+  <div class="container nav-bar">
+    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span>Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <nav aria-label="เมนูหลัก">
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>หนังสือทั้งหมด</a></li>
+        <li><a href="my-loans.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>การยืมของฉัน</a></li>
+        <li><a href="overdue.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>จัดการ</a></li>
+        <li><span class="user-name"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
+        <li><a href="login.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 16 5-4-5-4M21 12H9"/></svg>ออกจากระบบ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<!-- header end -->
+
+<main id="main">
+  <div class="container">
+    <div class="center-page">
+      <section class="form-card" aria-labelledby="login-title">
+        <h1 id="login-title">เข้าสู่ระบบ</h1>
+        <div class="alert" role="alert">อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง</div>
+        <form action="login.html" method="post">
+          <input type="hidden" name="csrf_token" value="CSRF_TOKEN_HERE">
+          <div class="field">
+            <label for="email">อีเมล</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="password">รหัสผ่าน</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-magic btn-block"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>เข้าสู่ระบบ</button>
+        </form>
+        <p class="form-foot">ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a></p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- footer start -->
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+  </div>
+</footer>
+<!-- footer end -->
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>หนังสือทั้งหมด | Arcanum Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Crimson+Pro:wght@400;600&amp;family=Trirong:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<!-- header start -->
+<a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+<header class="site-header">
+  <div class="container nav-bar">
+    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span>Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <nav aria-label="เมนูหลัก">
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>หนังสือทั้งหมด</a></li>
+        <li><a href="my-loans.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>การยืมของฉัน</a></li>
+        <li><a href="overdue.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>จัดการ</a></li>
+        <li><span class="user-name"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
+        <li><a href="login.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 16 5-4-5-4M21 12H9"/></svg>ออกจากระบบ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<!-- header end -->
+
+<main id="main">
+  <div class="container">
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow">Arcanum Library</p>
+      <h1 id="hero-title">ห้องสมุดมนตรา</h1>
+      <p>ค้นหาตำราและเรื่องราวที่รอคุณอยู่บนชั้นหนังสือ แล้วยืมกลับบ้านได้ในไม่กี่คลิก</p>
+      <form class="search-form" action="index.html" method="get">
+        <div class="field">
+          <label for="q">ค้นหาหนังสือ</label>
+          <input type="text" id="q" name="q" placeholder="ชื่อหนังสือ หรือผู้แต่ง">
+        </div>
+        <div class="field">
+          <label for="category">หมวดหมู่</label>
+          <select id="category" name="category">
+          <option value="">ทุกหมวด</option>
+          <option>นิยายแฟนตาซี</option>
+          <option>วิทยาศาสตร์</option>
+          <option>ประวัติศาสตร์</option>
+          <option>วรรณกรรมคลาสสิก</option>
+          <option>คอมพิวเตอร์</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-magic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>ค้นหา</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="catalogue-title">
+      <h2 class="section-title" id="catalogue-title">หนังสือในห้องสมุด</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="cover cover--1" aria-hidden="true">ตำนานแห่งหอคอยดารา</div>
+          <h3>ตำนานแห่งหอคอยดารา</h3>
+          <p class="card-meta">วิชัย ภูมิรักษ์<br>หมวด: นิยายแฟนตาซี</p>
+          <div class="card-row"><span class="badge badge--ok">ว่าง</span><span>ว่าง 2/3</span></div>
+          <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+        </article>
+        <article class="card">
+          <div class="cover cover--2" aria-hidden="true">ศาสตร์แห่งแสงและเงา</div>
+          <h3>ศาสตร์แห่งแสงและเงา</h3>
+          <p class="card-meta">ปรีชา ทองดี<br>หมวด: วิทยาศาสตร์</p>
+          <div class="card-row"><span class="badge badge--ok">ว่าง</span><span>ว่าง 1/2</span></div>
+          <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+        </article>
+        <article class="card">
+          <div class="cover cover--3" aria-hidden="true">บันทึกนักเล่นแร่แปรธาตุ</div>
+          <h3>บันทึกนักเล่นแร่แปรธาตุ</h3>
+          <p class="card-meta">สุรีย์ แก้วมณี<br>หมวด: ประวัติศาสตร์</p>
+          <div class="card-row"><span class="badge badge--ok">ว่าง</span><span>ว่าง 3/4</span></div>
+          <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+        </article>
+        <article class="card">
+          <div class="cover cover--4" aria-hidden="true">Alice's Adventures in Wonderland</div>
+          <h3>Alice's Adventures in Wonderland</h3>
+          <p class="card-meta">Lewis Carroll<br>หมวด: วรรณกรรมคลาสสิก</p>
+          <div class="card-row"><span class="badge badge--ok">ว่าง</span><span>ว่าง 1/4</span></div>
+          <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+        </article>
+        <article class="card">
+          <div class="cover cover--1" aria-hidden="true">ตำราสมุนไพรแห่งป่าลึก</div>
+          <h3>ตำราสมุนไพรแห่งป่าลึก</h3>
+          <p class="card-meta">นภา ชัยวัฒน์<br>หมวด: วิทยาศาสตร์</p>
+          <div class="card-row"><span class="badge badge--out">ถูกยืมหมด</span><span>ว่าง 0/2</span></div>
+          <button type="button" class="btn btn-primary" disabled>ยืมหนังสือ</button>
+        </article>
+        <article class="card">
+          <div class="cover cover--2" aria-hidden="true">ฐานข้อมูลเบื้องต้น</div>
+          <h3>ฐานข้อมูลเบื้องต้น</h3>
+          <p class="card-meta">อรทัย สายชล<br>หมวด: คอมพิวเตอร์</p>
+          <div class="card-row"><span class="badge badge--ok">ว่าง</span><span>ว่าง 2/5</span></div>
+          <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+        </article>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- footer start -->
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+  </div>
+</footer>
+<!-- footer end -->
+<script src="../assets/js/app.js"></script>
+</body>
+</html>
