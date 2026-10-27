@@ -26,7 +26,6 @@
   --f-ui: "Kanit", sans-serif;
   --f-head: "Chonburi", serif;
   --f-latin: "Cinzel", serif;
-  --f-display: "IM Fell English", "Chonburi", serif;
   --f-sc: "IM Fell English SC", "Taviraj", serif;
   --f-paper: "Taviraj", serif;
   --f-hand: "Charm", "Taviraj", cursive;
@@ -88,8 +87,8 @@ a:hover { color: #fff; }
 .nav-toggle { display: none; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; color: var(--moon); background: transparent; border: 1px solid var(--violet); border-radius: 30px; cursor: pointer; }
 
 /* ----- 5) ปุ่ม: เม็ดยาสีม่วง (หลัก) และเส้นขอบม่วง (รอง) ----- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .5rem 1.5rem; font: 500 .9rem var(--f-ui); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; text-decoration: none; border-radius: 30px; border: 1.5px solid transparent; cursor: pointer; transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast), background var(--t-fast); transform: translate(var(--tx, 0px), var(--ty, 0px)); } /* --tx/--ty: JS ดึงปุ่มเข้าหาเมาส์เล็กน้อย */
-.btn:hover { transform: translate(var(--tx, 0px), calc(var(--ty, 0px) - 1px)); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .5rem 1.5rem; font: 500 .9rem var(--f-ui); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; text-decoration: none; border-radius: 30px; border: 1.5px solid transparent; cursor: pointer; transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast), background var(--t-fast); }
+.btn:hover { transform: translateY(-1px); }
 .btn-primary { color: #fff; background: var(--violet); border-color: var(--violet); }
 .btn-primary:hover { color: #fff; box-shadow: 0 0 0 3px rgba(87, 88, 255, .25), 0 0 22px var(--violet-glow); }
 .btn-outline { color: var(--moon); background: transparent; border-color: var(--violet); }
@@ -321,7 +320,7 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
 .book-dialog[open] { animation: open-book .35s ease-out; }
 .book-dialog::backdrop { background: rgba(6, 8, 16, .8); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 .open-book { display: grid; grid-template-columns: .8fr 1.2fr; }
-.bd-cover { position: relative; display: grid; place-items: center; padding: 1.6rem 1.8rem 1.6rem 2.2rem; text-align: center; font: 400 1.4rem/1.4 var(--f-display); color: #f3e2a8;
+.bd-cover { position: relative; display: grid; place-items: center; padding: 1.6rem 1.8rem 1.6rem 2.2rem; text-align: center; font: 400 1.4rem/1.4 var(--f-latin); color: #f3e2a8;
   background: linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .4)), var(--noise), var(--c); box-shadow: inset -14px 0 14px -8px rgba(0, 0, 0, .6); }
 .bd-cover::before { content: ""; position: absolute; inset: 14px 22px 14px 14px; border: 1px solid #d9ae4e; outline: 1px solid rgba(217, 174, 78, .55); outline-offset: 3px; }
 .bd-page { padding: 2rem 1.8rem; background: linear-gradient(90deg, var(--paper-deep), var(--sheet) 12%); }

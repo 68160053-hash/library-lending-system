@@ -6,7 +6,7 @@
   <title>เข้าสู่ระบบ | Book Lending Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -55,7 +55,8 @@
         <p class="greeting">ถึง ผู้มาเยือน,</p>
         <h1 id="login-title">เข้าสู่ระบบ</h1>
         <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span>อีเมลหรือรหัสผ่านไม่ถูกต้อง กรุณาลองอีกครั้ง</span></div>
-        <form action="login.html" method="post">
+        <!-- ต้นแบบ: JS ดัก submit แล้วไปหน้า data-demo-next (ไม่ส่งข้อมูลไปไหน) / เวอร์ชัน PHP: ลบ data-demo-next แล้วให้ action ชี้ไฟล์ .php -->
+        <form action="login.html" method="post" data-demo-next="my-loans.html">
           <input type="hidden" name="csrf_token" value="CSRF_TOKEN_HERE">
           <div class="field">
             <label for="email">อีเมล</label>

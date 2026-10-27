@@ -16,6 +16,14 @@ if (toggle && menu) {
   });
 }
 
+// ----- 1.5) ฟอร์มต้นแบบ: GitHub Pages รับ POST ไม่ได้ จึงดัก submit แล้วไปหน้าถัดไปเฉยๆ (ไม่ส่งข้อมูลไปไหน) -----
+document.querySelectorAll('form[data-demo-next]').forEach(function (f) {
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    location.href = f.dataset.demoNext;
+  });
+});
+
 // ----- 2) ประกายเวทมนตร์ (ทอง/ม่วงสลับกัน) -----
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('.btn-magic');
@@ -50,7 +58,9 @@ var dlg = document.querySelector('.book-dialog');
 var lastBook = null;
 
 function showBook(book) {
+  book.classList.remove('is-open');
   if (dlg.open) return;
+  lastBook = book; // จำเล่มล่าสุดไว้คืน focus
   var d = book.dataset;
   var left = Number(d.available);
   $('bd-title').textContent = d.title;
@@ -64,14 +74,12 @@ function showBook(book) {
   $('bd-price').textContent = d.sale ? 'ซื้อได้ ฿' + d.sale : '';
   dlg.style.setProperty('--c', book.style.getPropertyValue('--c')); // ปกใช้สีเดียวกับเล่ม
   dlg.showModal(); // กด Esc ปิดได้เองอยู่แล้ว
-  book.classList.remove('is-open');
 }
 
 if (dlg) {
   document.addEventListener('click', function (e) {
     var book = e.target.closest('.book');
     if (!book) return;
-    lastBook = book;
     if (reduceMotion) { showBook(book); return; } // ลดการเคลื่อนไหว: เปิดทันที ไม่รอปกเปิด
     book.classList.add('is-open');
     setTimeout(function () { showBook(book); }, 450);
@@ -81,7 +89,7 @@ if (dlg) {
   dlg.addEventListener('close', function () { if (lastBook) lastBook.focus(); }); // คืน focus ให้เล่มที่กด
 }
 
-// ----- 4) เอียงปกตามเมาส์ (3D) และดึงปุ่มเข้าหาเมาส์เล็กน้อย: เฉพาะเมาส์จริง -----
+// ----- 4) เอียงปกตามเมาส์ (3D): เฉพาะเมาส์จริง -----
 if (canHover && !reduceMotion) {
   var tiltEvt = null;
   document.addEventListener('pointermove', function (e) {
@@ -97,16 +105,10 @@ if (canHover && !reduceMotion) {
       b.style.setProperty('--ry', ((e.clientX - r.left) / r.width - 0.5) * 16 + 'deg');
       b.style.setProperty('--rx', (0.5 - (e.clientY - r.top) / r.height) * 16 + 'deg');
     }
-    var m = e.target.closest('.btn'); // ปุ่มขยับตามเมาส์ไม่เกิน ~6px
-    if (m) {
-      var q = m.getBoundingClientRect();
-      m.style.setProperty('--tx', ((e.clientX - q.left) / q.width - 0.5) * 8 + 'px');
-      m.style.setProperty('--ty', ((e.clientY - q.top) / q.height - 0.5) * 8 + 'px');
-    }
   }
-  document.addEventListener('pointerout', function (e) { // เมาส์ออกจากปก/ปุ่ม = คืนค่าเดิม
-    var el = e.target.closest('.book, .btn');
-    if (el && !el.contains(e.relatedTarget)) ['--rx', '--ry', '--tx', '--ty'].forEach(function (v) { el.style.removeProperty(v); });
+  document.addEventListener('pointerout', function (e) { // เมาส์ออกจากปก = คืนค่าเดิม
+    var el = e.target.closest('.book');
+    if (el && !el.contains(e.relatedTarget)) ['--rx', '--ry'].forEach(function (v) { el.style.removeProperty(v); });
   });
 }
 
@@ -209,7 +211,7 @@ function showPick(step) {
 if (picks.length && $('ft-prev')) {
   $('ft-prev').addEventListener('click', function () { showPick(-1); });
   $('ft-next').addEventListener('click', function () { showPick(1); });
-  $('ft-borrow').addEventListener('click', function () { lastBook = picks[pi]; showBook(picks[pi]); });
+  $('ft-borrow').addEventListener('click', function () { showBook(picks[pi]); });
 }
 
 // ----- 8) ลอยขึ้นตอนเลื่อนมาถึง: IntersectionObserver ใส่ class is-in (ใช้ transform อย่างเดียว) -----

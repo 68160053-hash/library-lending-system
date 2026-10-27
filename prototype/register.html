@@ -6,7 +6,7 @@
   <title>สมัครสมาชิก | Book Lending Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -54,7 +54,8 @@
       <section class="letter paper frame" aria-labelledby="reg-title">
         <p class="greeting">ถึง ผู้มาเยือนคนใหม่,</p>
         <h1 id="reg-title">ลงทะเบียนเป็นสมาชิก</h1>
-        <form action="register.html" method="post">
+        <!-- ต้นแบบ: JS ดัก submit แล้วไปหน้า data-demo-next (ไม่ส่งข้อมูลไปไหน) / เวอร์ชัน PHP: ลบ data-demo-next แล้วให้ action ชี้ไฟล์ .php -->
+        <form action="register.html" method="post" data-demo-next="login.html">
           <input type="hidden" name="csrf_token" value="CSRF_TOKEN_HERE">
           <div class="field">
             <label for="full_name">ชื่อ-นามสกุล</label>

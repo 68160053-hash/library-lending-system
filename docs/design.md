@@ -67,7 +67,7 @@
 | UI/เนื้อหา | Kanit 300/400/500 | เมนู ปุ่ม ช่องกรอก ข้อความบนฉากมืด (ไทย+ละติน) |
 | หัวข้อไทย | Chonburi | h1 h2 บนฉากมืด และบนกระดาษ |
 | ละติน/eyebrow | Cinzel 500/700 ตัวพิมพ์ใหญ่ letter-spacing .12-.14em | โลโก้ ชื่อ "Book Lending Shop" ป้าย `.tag` `.eyebrow` |
-| วัตถุกระดาษ | Taviraj, Charm, Special Elite, IM Fell English (+SC) | เหมือนเดิมทุกอย่างใน `.paper` |
+| วัตถุกระดาษ | Taviraj, Charm, Special Elite, IM Fell English SC | เหมือนเดิมทุกอย่างใน `.paper` |
 
 ## 4. ชั้นบรรยากาศ (ใส่ใน `<!-- header start/end -->` ทุกหน้า)
 `div.atmos` (fixed, `pointer-events:none`, `aria-hidden`) ประกอบด้วย
@@ -120,7 +120,7 @@
 | กรองเล่ม (เข้า) / ปกขยับเอง | `pop`, `wiggle`; ออกใช้ transition `.is-leaving` |
 | ปกเปิด | transition `transform` ของ `.face` 450ms |
 | ลอยขึ้นตอนเลื่อนถึง | IntersectionObserver เติม `.is-in`; `.js .reveal:not(.is-in)` = `translateY(24px)` เฉพาะ transform ไม่มี opacity:0 และไม่มี class `js` ถ้าไม่มี JS |
-| พารัลแลกซ์ / Lumos / เอียงปก / ปุ่มถูกดึงเข้าหาเมาส์ | JS ตั้งตัวแปร CSS (`--sy`, `--mx/--my`, `--rx/--ry`, `--tx/--ty`) แล้ว CSS ขยับ |
+| พารัลแลกซ์ / Lumos / เอียงปก | JS ตั้งตัวแปร CSS (`--sy`, `--mx/--my`, `--rx/--ry`) แล้ว CSS ขยับ |
 | จดหมายลอย/คลี่ ตราประทับกระแทก dialog | `bob`, `unfold`, `thunk`, `open-book` |
 
 ฉากหลังมีเกรนฟิล์ม (`--grain` opacity .06) และวิกเนตต์บางๆ ที่ `.atmos`
