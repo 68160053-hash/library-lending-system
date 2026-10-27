@@ -327,7 +327,7 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
 .tome-board::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(217, 174, 78, .6); border-radius: 7px; }
 .tome-page { position: relative; z-index: 1; min-height: 26rem; padding: 2rem 2rem 1.6rem; background: var(--sheet); }
 /* หน้าซ้าย: ขอบในมืดเข้าหาสัน ขอบนอกเป็นเส้นแผ่นกระดาษซ้อนกัน มุมนอกโค้งมากกว่า */
-.tome-left { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; border-radius: 22px 0 0 14px;
+.tome-left, .cover-back { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; border-radius: 22px 0 0 14px;
   background: linear-gradient(270deg, rgba(60, 40, 20, .38), transparent 16%), linear-gradient(180deg, rgba(255, 255, 255, .6), transparent 8%), repeating-linear-gradient(90deg, #cdbb8e 0 1px, transparent 1px 3px) left / 9px 100% no-repeat, var(--paper-deep); }
 .tome-right { max-height: 90vh; overflow: auto; border-radius: 0 22px 14px 0;
   background: linear-gradient(90deg, rgba(60, 40, 20, .38), transparent 8%), linear-gradient(180deg, rgba(255, 255, 255, .6), transparent 6%), repeating-linear-gradient(90deg, #cdbb8e 0 1px, transparent 1px 3px) right / 9px 100% no-repeat, var(--sheet); }
@@ -341,29 +341,25 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
 .tome-art .emb { width: 2.6rem; height: 2.6rem; }
 .tome-hand { margin: 0; font: 400 1.5rem/1.2 var(--f-hand); color: var(--ink-soft); }
 .tome-flourish { margin: 0; font-size: 1.6rem; line-height: 1; color: var(--gold); }
-/* ปกหน้า: ปิดครึ่งขวา บานพับที่ขอบซ้าย (สัน) ปกติซ่อนไว้ แสดงเฉพาะตอนแอนิเมชัน */
-.tome-cover { position: absolute; z-index: 3; top: 0; bottom: 0; left: 50%; width: 50%; transform-origin: left center; transform-style: preserve-3d; visibility: hidden; pointer-events: none; }
+/* ปกหน้า: บานพับที่ขอบซ้าย (สัน) สถานะปกติ = เปิดแล้ว (หมุน -180°) ด้านในปกจึงเป็นหน้าซ้าย
+   แอนิเมชันแค่หมุนจาก "ปิด" มาที่สถานะนี้ ถ้าแอนิเมชันไม่เล่นหรือสะดุด หนังสือก็ยังเปิดถูกต้อง */
+.tome-cover { position: absolute; z-index: 3; top: 0; bottom: 0; left: 50%; width: 50%; transform-origin: left center; transform-style: preserve-3d; transform: rotateY(-180deg); pointer-events: none; }
 .cover-front, .cover-back { position: absolute; inset: -8px -8px -8px 0; backface-visibility: hidden; border-radius: 3px 12px 12px 3px; }
 .cover-front { display: grid; place-items: center; padding: 2rem; text-align: center; font: 400 1.9rem/1.4 var(--f-display); color: #f3e2a8; text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
   background: linear-gradient(90deg, rgba(0, 0, 0, .5), rgba(255, 255, 255, .12) 4%, transparent 14%), linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .4)), var(--noise), var(--c); }
 .cover-front::before { content: ""; position: absolute; inset: 22px 22px 22px 30px; border: 1px solid #d9ae4e; outline: 1px solid rgba(217, 174, 78, .55); outline-offset: 3px; }
-.cover-back { transform: rotateY(180deg); background: repeating-linear-gradient(45deg, rgba(120, 60, 40, .25) 0 6px, transparent 6px 12px), repeating-linear-gradient(-45deg, rgba(120, 60, 40, .25) 0 6px, transparent 6px 12px), var(--paper-deep); }
+.cover-back { inset: 0; padding: 2rem; transform: rotateY(180deg); border-radius: 22px 0 0 14px; } /* พื้นหลัง/จัดวางใช้ร่วมกับ .tome-left ด้านบน */
+.tome-left { visibility: hidden; } /* แค่จองความกว้างฝั่งซ้าย ไม่ให้โผล่ข้างหนังสือตอนยังปิด */
 .tome-ribbon { position: absolute; z-index: 2; left: calc(50% - 5px); top: 100%; width: 10px; height: 2.6rem; margin-top: -4px; background: linear-gradient(90deg, #7a1424, #b3243a 50%, #7a1424); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
 
 @media (prefers-reduced-motion: no-preference) {
   .book-dialog[open] .tome { animation: tome-glide .9s var(--ease-out) backwards; }
-  .book-dialog[open] .tome-cover { animation: cover-open .9s var(--ease-out) both; }
-  .book-dialog[open] .cover-back { animation: endpaper-fade .9s var(--ease-out) both; }
+  .book-dialog[open] .tome-cover { animation: cover-open .9s var(--ease-out) backwards; }
   .book-dialog[open] .tome-board { animation: board-in .9s var(--ease-out) backwards; }
-  .book-dialog[open] .tome-page { animation: page-settle .9s var(--ease-out) backwards; }
-  /* หน้าซ้ายต้องมาหลัง .tome-page ไม่งั้นถูกทับ: ซ่อนไว้ใต้ปกตอนหนังสือยังปิด */
-  .book-dialog[open] .tome-left { animation: left-in .9s var(--ease-out) backwards, page-settle .9s var(--ease-out) backwards; }
+  .book-dialog[open] .tome-right { animation: page-settle .9s var(--ease-out) backwards; }
 }
-/* ด้านในปก (ลายกระดาษรองปก) ค่อยๆ จางให้เห็นหน้าซ้าย แทนที่จะหายวับ */
-@keyframes endpaper-fade { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes tome-glide { from { transform: translateX(var(--tx0)); } }
-@keyframes cover-open { from { transform: rotateY(0); visibility: visible; } 95% { visibility: visible; } to { transform: rotateY(-180deg); visibility: hidden; } }
-@keyframes left-in { 0%, 30% { opacity: 0; } 55% { opacity: 1; } }
+@keyframes cover-open { from { transform: rotateY(0); } }
 @keyframes board-in { from { clip-path: inset(-10px -10px -10px 50%); } to { clip-path: inset(-10px); } }
 @keyframes page-settle { from { transform: scale(.98); } }
 
@@ -372,8 +368,10 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
   .tome { --tx0: 0; grid-template-columns: 1fr; }
   .tome-left, .tome-ribbon { display: none; }
   .tome-right { padding: 1.4rem 1.2rem; border-radius: 6px 18px 14px 6px; }
-  .tome-cover { left: 0; width: 100%; }
+  .tome-cover { left: 0; width: 100%; visibility: hidden; } /* จอแคบไม่มีที่ให้หน้าซ้าย: ปกหมุนพ้นไปแล้วหายไป */
+  .book-dialog[open] .tome-cover { animation-name: cover-open-m; }
 }
+@keyframes cover-open-m { from { transform: rotateY(0); visibility: visible; } 99% { visibility: visible; } }
 
 /* เลื่อนเจอแล้วค่อยลอยขึ้น: เฉพาะ transform (JS ใส่ class js ให้ html ก่อน ถ้าไม่มี JS เนื้อหาอยู่ที่เดิมเลย) */
 .reveal { transition: transform var(--t-slow) var(--ease-out); }
