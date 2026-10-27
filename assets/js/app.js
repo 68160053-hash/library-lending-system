@@ -83,7 +83,14 @@ if (dlg) {
 
 // ----- 4) เอียงปกตามเมาส์ (3D) และดึงปุ่มเข้าหาเมาส์เล็กน้อย: เฉพาะเมาส์จริง -----
 if (canHover && !reduceMotion) {
+  var tiltEvt = null;
   document.addEventListener('pointermove', function (e) {
+    if (!tiltEvt) requestAnimationFrame(applyTilt); // ทำงานไม่เกิน 1 ครั้งต่อเฟรม ไม่ให้หน่วง
+    tiltEvt = e;
+  });
+  function applyTilt() {
+    var e = tiltEvt;
+    tiltEvt = null;
     var b = e.target.closest('.book');
     if (b) {
       var r = b.getBoundingClientRect();
@@ -96,7 +103,7 @@ if (canHover && !reduceMotion) {
       m.style.setProperty('--tx', ((e.clientX - q.left) / q.width - 0.5) * 8 + 'px');
       m.style.setProperty('--ty', ((e.clientY - q.top) / q.height - 0.5) * 8 + 'px');
     }
-  });
+  }
   document.addEventListener('pointerout', function (e) { // เมาส์ออกจากปก/ปุ่ม = คืนค่าเดิม
     var el = e.target.closest('.book, .btn');
     if (el && !el.contains(e.relatedTarget)) ['--rx', '--ry', '--tx', '--ty'].forEach(function (v) { el.style.removeProperty(v); });
@@ -116,8 +123,15 @@ if (hero && !reduceMotion) {
     });
     hero.addEventListener('pointerleave', function () { shop.classList.remove('is-lit'); });
   }
+  var lastSy = -1, syQueued = false;
   window.addEventListener('scroll', function () { // ตัวเลขเดียว: ยิ่งเลื่อนมาก ชั้นไกลยิ่งขยับน้อยกว่าชั้นใกล้ (ตั้งใน CSS)
-    hero.style.setProperty('--sy', Math.min(window.scrollY, 600));
+    if (syQueued) return;
+    syQueued = true;
+    requestAnimationFrame(function () {
+      syQueued = false;
+      var sy = Math.min(window.scrollY, 600);
+      if (sy !== lastSy) { lastSy = sy; hero.style.setProperty('--sy', sy); } // เลื่อนพ้นหน้าร้านแล้วไม่ต้องอัปเดต
+    });
   }, { passive: true });
 }
 
