@@ -1,4 +1,4 @@
-// app.js — มีแค่ 2 อย่าง: เมนูมือถือ และประกายตอนกดปุ่ม .btn-magic
+// app.js : มีแค่ 2 อย่าง เมนูมือถือ และประกายทอง-แดงตอนกดปุ่ม .btn-magic
 
 // ----- 1) เมนูมือถือ: กดปุ่มแฮมเบอร์เกอร์ = สลับ class และ aria-expanded -----
 var toggle = document.querySelector('.nav-toggle');
@@ -27,7 +27,7 @@ document.addEventListener('click', function (e) {
 
   for (var i = 0; i < 12; i++) {
     var s = document.createElement('span');
-    s.className = 'spark';
+    s.className = i % 2 ? 'spark spark--red' : 'spark'; // สลับสีทอง/แดงเข้ม
     s.setAttribute('aria-hidden', 'true');
     var angle = (i / 12) * 2 * Math.PI;
     var dist = 30 + Math.random() * 30;

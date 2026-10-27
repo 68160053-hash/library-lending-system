@@ -6,7 +6,7 @@
   <title>รายการเกินกำหนด | Arcanum Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Crimson+Pro:wght@400;600&amp;family=Trirong:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -14,15 +14,15 @@
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span>Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span class="foil-light">Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>หนังสือทั้งหมด</a></li>
-        <li><a href="my-loans.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>การยืมของฉัน</a></li>
-        <li><a href="overdue.html" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>จัดการ</a></li>
-        <li><span class="user-name"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
-        <li><a href="login.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 16 5-4-5-4M21 12H9"/></svg>ออกจากระบบ</a></li>
+        <li><a href="index.html">หนังสือทั้งหมด</a></li>
+        <li><a href="my-loans.html">การยืมของฉัน</a></li>
+        <li><a href="overdue.html" aria-current="page">จัดการ</a></li>
+        <li><span class="user-name">สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
+        <li><a href="login.html">ออกจากระบบ</a></li>
       </ul>
     </nav>
   </div>
@@ -32,17 +32,33 @@
 <main id="main">
   <div class="container">
     <h1 class="page-title">รายการเกินกำหนดคืน</h1>
-    <p class="note">สำหรับเจ้าหน้าที่ &middot; ค่าปรับ 5 บาท/วัน คำนวณจากจำนวนวันที่เกินกำหนด</p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="ตารางรายการเกินกำหนด">
-      <table>
-        <caption>เกินกำหนด 3 รายการ</caption>
-        <thead><tr><th scope="col">สมาชิก</th><th scope="col">หนังสือ</th><th scope="col">กำหนดคืน</th><th scope="col" class="num">เกิน</th><th scope="col" class="num">ค่าปรับ</th><th scope="col">จัดการ</th></tr></thead>
-        <tbody>
-          <tr><td>สมชาย ใจดี</td><td>ฐานข้อมูลเบื้องต้น</td><td>20 ต.ค. 2569</td><td class="num"><span class="badge badge--late">7 วัน</span></td><td class="num">฿35</td><td><button type="button" class="btn btn-primary btn-magic">รับคืน</button></td></tr>
-          <tr><td>มาลี สุขสันต์</td><td>บันทึกนักเล่นแร่แปรธาตุ</td><td>22 ต.ค. 2569</td><td class="num"><span class="badge badge--late">5 วัน</span></td><td class="num">฿25</td><td><button type="button" class="btn btn-primary btn-magic">รับคืน</button></td></tr>
-          <tr><td>ประเสริฐ มั่นคง</td><td>Alice's Adventures in Wonderland</td><td>25 ต.ค. 2569</td><td class="num"><span class="badge badge--late">2 วัน</span></td><td class="num">฿10</td><td><button type="button" class="btn btn-primary btn-magic">รับคืน</button></td></tr>
-        </tbody>
-      </table>
+    <p class="margin-note">สำหรับเจ้าหน้าที่ &middot; ค่าปรับ 5 บาท/วัน คำนวณจากจำนวนวันที่เกินกำหนด</p>
+    <p class="count-line">เกินกำหนด 3 รายการ</p>
+    <div class="letters">
+      <article class="red-letter">
+        <span class="seal seal--sm" aria-hidden="true">A</span>
+        <h2 class="member">สมชาย ใจดี</h2>
+        <p class="book-name">ฐานข้อมูลเบื้องต้น</p>
+        <p class="late-info">กำหนดคืน <span class="typed">20/10/69</span> &middot; <span class="stamp stamp--late">เกิน 7 วัน</span></p>
+        <p class="fine"><span class="fine-label">ค่าปรับ</span> 35 บาท</p>
+        <button type="button" class="btn btn-primary btn-magic">รับคืน</button>
+      </article>
+      <article class="red-letter">
+        <span class="seal seal--sm" aria-hidden="true">A</span>
+        <h2 class="member">มาลี สุขสันต์</h2>
+        <p class="book-name">บันทึกนักเล่นแร่แปรธาตุ</p>
+        <p class="late-info">กำหนดคืน <span class="typed">22/10/69</span> &middot; <span class="stamp stamp--late">เกิน 5 วัน</span></p>
+        <p class="fine"><span class="fine-label">ค่าปรับ</span> 25 บาท</p>
+        <button type="button" class="btn btn-primary btn-magic">รับคืน</button>
+      </article>
+      <article class="red-letter">
+        <span class="seal seal--sm" aria-hidden="true">A</span>
+        <h2 class="member">ประเสริฐ มั่นคง</h2>
+        <p class="book-name">Alice's Adventures in Wonderland</p>
+        <p class="late-info">กำหนดคืน <span class="typed">25/10/69</span> &middot; <span class="stamp stamp--late">เกิน 2 วัน</span></p>
+        <p class="fine"><span class="fine-label">ค่าปรับ</span> 10 บาท</p>
+        <button type="button" class="btn btn-primary btn-magic">รับคืน</button>
+      </article>
     </div>
   </div>
 </main>
@@ -50,6 +66,7 @@
 <!-- footer start -->
 <footer class="site-footer">
   <div class="container">
+    <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
     <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
   </div>
 </footer>

@@ -6,7 +6,7 @@
   <title>การยืมของฉัน | Arcanum Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Crimson+Pro:wght@400;600&amp;family=Trirong:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -14,15 +14,15 @@
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span>Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span class="foil-light">Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>หนังสือทั้งหมด</a></li>
-        <li><a href="my-loans.html" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>การยืมของฉัน</a></li>
-        <li><a href="overdue.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>จัดการ</a></li>
-        <li><span class="user-name"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
-        <li><a href="login.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 16 5-4-5-4M21 12H9"/></svg>ออกจากระบบ</a></li>
+        <li><a href="index.html">หนังสือทั้งหมด</a></li>
+        <li><a href="my-loans.html" aria-current="page">การยืมของฉัน</a></li>
+        <li><a href="overdue.html">จัดการ</a></li>
+        <li><span class="user-name">สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
+        <li><a href="login.html">ออกจากระบบ</a></li>
       </ul>
     </nav>
   </div>
@@ -32,24 +32,28 @@
 <main id="main">
   <div class="container">
     <h1 class="page-title">การยืมของฉัน</h1>
-    <p class="note">ยืมได้ 7 วัน ต่ออายุได้ 1 ครั้ง ค่าปรับ 5 บาท/วัน</p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="ตารางการยืม">
-      <table>
-        <caption>รายการที่กำลังยืม 3 เล่ม</caption>
-        <thead><tr><th scope="col">ชื่อหนังสือ</th><th scope="col">วันที่ยืม</th><th scope="col">กำหนดคืน</th><th scope="col">สถานะ</th><th scope="col" class="num">ค่าปรับ</th><th scope="col">จัดการ</th></tr></thead>
-        <tbody>
-          <tr><td>ตำนานแห่งหอคอยดารา</td><td>20 ต.ค. 2569</td><td>27 ต.ค. 2569</td><td><span class="badge badge--soon">ใกล้ครบกำหนด</span></td><td class="num">฿0</td><td><button type="button" class="btn btn-outline btn-magic">ต่ออายุ</button></td></tr>
-          <tr><td>ศาสตร์แห่งแสงและเงา</td><td>25 ต.ค. 2569</td><td>1 พ.ย. 2569</td><td><span class="badge badge--ok">ปกติ</span></td><td class="num">฿0</td><td><button type="button" class="btn btn-outline" disabled title="ต่ออายุครบ 1 ครั้งแล้ว">ต่ออายุ</button></td></tr>
-          <tr><td>ฐานข้อมูลเบื้องต้น</td><td>13 ต.ค. 2569</td><td>20 ต.ค. 2569</td><td><span class="badge badge--late">เกินกำหนด</span></td><td class="num">฿35</td><td><button type="button" class="btn btn-outline" disabled title="เกินกำหนดแล้ว ต่ออายุไม่ได้">ต่ออายุ</button></td></tr>
-        </tbody>
-      </table>
-    </div>
+    <section class="checkout-card frame" aria-label="บัตรยืมหนังสือ">
+      <p class="card-head"><span>บัตรยืมหนังสือ</span> &middot; <span>Arcanum Library</span></p>
+      <p class="margin-note">ยืมได้ 7 วัน ต่ออายุได้ 1 ครั้ง ค่าปรับ 5 บาท/วัน</p>
+      <div class="table-wrap">
+        <table>
+          <caption>รายการที่กำลังยืม 3 เล่ม</caption>
+          <thead><tr><th scope="col">ชื่อหนังสือ</th><th scope="col">วันยืม</th><th scope="col">กำหนดคืน</th><th scope="col">สถานะ</th><th scope="col" class="num">ค่าปรับ</th><th scope="col">ต่ออายุ</th></tr></thead>
+          <tbody>
+            <tr style="--i:0"><td data-label="ชื่อหนังสือ" class="book-title">ตำนานแห่งหอคอยดารา</td><td data-label="วันยืม"><span class="typed">20/10/69</span></td><td data-label="กำหนดคืน"><span class="stamp-date stamp-date--navy">27/10/69</span></td><td data-label="สถานะ"><span class="stamp stamp--soon">ใกล้ครบกำหนด</span></td><td data-label="ค่าปรับ" class="num typed">0 บาท</td><td data-label="ต่ออายุ"><button type="button" class="btn btn-outline btn-magic">ต่ออายุ</button></td></tr>
+            <tr style="--i:1"><td data-label="ชื่อหนังสือ" class="book-title">ศาสตร์แห่งแสงและเงา</td><td data-label="วันยืม"><span class="typed">25/10/69</span></td><td data-label="กำหนดคืน"><span class="stamp-date stamp-date--navy">01/11/69</span></td><td data-label="สถานะ"><span class="stamp stamp--ok">ปกติ</span></td><td data-label="ค่าปรับ" class="num typed">0 บาท</td><td data-label="ต่ออายุ"><button type="button" class="btn btn-outline" disabled title="ต่ออายุครบ 1 ครั้งแล้ว">ต่ออายุ</button></td></tr>
+            <tr style="--i:2"><td data-label="ชื่อหนังสือ" class="book-title">ฐานข้อมูลเบื้องต้น</td><td data-label="วันยืม"><span class="typed">13/10/69</span></td><td data-label="กำหนดคืน"><span class="stamp-date stamp-date--late">20/10/69</span></td><td data-label="สถานะ"><span class="stamp stamp--late">เกินกำหนด</span></td><td data-label="ค่าปรับ" class="num typed">35 บาท</td><td data-label="ต่ออายุ"><button type="button" class="btn btn-outline" disabled title="เกินกำหนดแล้ว ต่ออายุไม่ได้">ต่ออายุ</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </div>
 </main>
 
 <!-- footer start -->
 <footer class="site-footer">
   <div class="container">
+    <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
     <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
   </div>
 </footer>

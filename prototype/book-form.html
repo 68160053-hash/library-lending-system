@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>เพิ่ม/แก้ไขหนังสือ | Arcanum Library</title>
+  <title>เพิ่มหนังสือใหม่ | Arcanum Library</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Crimson+Pro:wght@400;600&amp;family=Trirong:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
@@ -14,15 +14,15 @@
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span>Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span class="foil-light">Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>หนังสือทั้งหมด</a></li>
-        <li><a href="my-loans.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>การยืมของฉัน</a></li>
-        <li><a href="overdue.html" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>จัดการ</a></li>
-        <li><span class="user-name"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
-        <li><a href="login.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 16 5-4-5-4M21 12H9"/></svg>ออกจากระบบ</a></li>
+        <li><a href="index.html">หนังสือทั้งหมด</a></li>
+        <li><a href="my-loans.html">การยืมของฉัน</a></li>
+        <li><a href="overdue.html" aria-current="page">จัดการ</a></li>
+        <li><span class="user-name">สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
+        <li><a href="login.html">ออกจากระบบ</a></li>
       </ul>
     </nav>
   </div>
@@ -31,11 +31,12 @@
 
 <main id="main">
   <div class="container">
-    <div class="center-page">
-      <section class="form-card form-card--wide" aria-labelledby="bf-title">
-        <h1 id="bf-title">เพิ่มหนังสือใหม่</h1>
-        <form action="book-form.html" method="post">
-          <input type="hidden" name="csrf_token" value="CSRF_TOKEN_HERE">
+    <section class="ledger frame" aria-labelledby="bf-title">
+      <p class="card-head"><span>สมุดบัญชีหนังสือ</span> &middot; <span>Arcanum Library</span></p>
+      <h1 id="bf-title">เพิ่มหนังสือใหม่</h1>
+      <form action="book-form.html" method="post">
+        <input type="hidden" name="csrf_token" value="CSRF_TOKEN_HERE">
+        <div class="cols">
           <div class="field">
             <label for="title">ชื่อหนังสือ</label>
             <input type="text" id="title" name="title" required>
@@ -47,18 +48,11 @@
           <div class="field has-error">
             <label for="isbn">ISBN</label>
             <input type="text" id="isbn" name="isbn" value="123" aria-invalid="true" aria-describedby="isbn-error" required>
-            <p class="field-error" id="isbn-error">ISBN ต้องเป็นตัวเลข 13 หลัก</p>
+            <p class="field-error" id="isbn-error"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>ISBN ต้องเป็นตัวเลข 13 หลัก</p>
           </div>
           <div class="field">
             <label for="category_id">หมวดหมู่</label>
-            <select id="category_id" name="category_id" required>
-          <option value="">เลือกหมวดหมู่</option>
-          <option>นิยายแฟนตาซี</option>
-          <option>วิทยาศาสตร์</option>
-          <option>ประวัติศาสตร์</option>
-          <option>วรรณกรรมคลาสสิก</option>
-          <option>คอมพิวเตอร์</option>
-            </select>
+            <select id="category_id" name="category_id" required><option value="">เลือกหมวดหมู่</option><option>นิยายแฟนตาซี</option><option>วิทยาศาสตร์</option><option>ประวัติศาสตร์</option><option>วรรณกรรมคลาสสิก</option><option>คอมพิวเตอร์</option></select>
           </div>
           <div class="field">
             <label for="copies_total">จำนวนเล่มทั้งหมด</label>
@@ -68,17 +62,20 @@
             <label for="sale_price">ราคาขาย (บาท) ไม่บังคับ</label>
             <input type="number" id="sale_price" name="sale_price" min="0" step="0.01">
           </div>
-          <button type="submit" class="btn btn-primary btn-magic"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="m5 19 3-3"/></svg>บันทึกหนังสือ</button>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary btn-magic">บันทึกหนังสือ</button>
           <a class="btn btn-outline" href="index.html">ยกเลิก</a>
-        </form>
-      </section>
-    </div>
+        </div>
+      </form>
+    </section>
   </div>
 </main>
 
 <!-- footer start -->
 <footer class="site-footer">
   <div class="container">
+    <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
     <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
   </div>
 </footer>
