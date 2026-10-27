@@ -1,4 +1,6 @@
-# Milestone 1 — ระบบห้องสมุดยืม-คืน + ร้านขายหนังสือ
+# Milestone 1 — Book Lending Shop · ร้านยืมหนังสือ
+
+ระบบยืม-คืนและร้านขายหนังสือ | GitHub: https://github.com/68160053-hash/library-lending-system | ต้นแบบหน้าเว็บ: https://68160053-hash.github.io/library-lending-system/prototype/index.html
 
 สถานะ: ร่าง (ข้อที่ไม่แน่ใจมีป้าย **[ยังไม่ยืนยัน]**)
 
@@ -17,22 +19,21 @@
 
 **ทางแก้:** เว็บ PHP + MySQL ที่ยืม/คืน/ต่ออายุผ่านระบบ แสดงรายการเกินกำหนดและค่าปรับทันที สมาชิกเห็นประวัติของตัวเอง
 
-**กฎธุรกิจที่ตกลงแล้ว:** ยืมฟรี 7 วัน ต่ออายุได้ 1 ครั้ง (+7 วัน และต่อไม่ได้ถ้าเกินกำหนดแล้ว) คืนช้าปรับ 5 บาท/วัน (คำนวณตอนแสดงผล ไม่เก็บ ไม่มีการจ่ายออนไลน์) **[อัตรา 5 บาท และข้อห้ามต่ออายุเมื่อเกินกำหนดเป็นข้อสมมติของผม ยังไม่ได้ยืนยัน]** การยืมให้สมาชิกกดเอง ส่วนการรับคืนให้ staff เป็นคนกด **[ข้อสมมติ]**
+**กฎธุรกิจที่ตัดสินใจแล้ว:** ยืมฟรี 7 วัน ต่ออายุได้ 1 ครั้ง (+7 วัน และต่อไม่ได้ถ้าเกินกำหนดแล้ว) คืนช้าปรับ 5 บาท/วัน (คำนวณตอนแสดงผล ไม่เก็บในตาราง ไม่มีการจ่ายออนไลน์) สมาชิกกดยืมเอง ส่วนการรับคืน staff เป็นคนบันทึก
 
 ## 2. ขอบเขตฟีเจอร์
 
-| ฟีเจอร์ | ระดับ | ทำได้จริงใน 14 วัน? |
+| ฟีเจอร์ | ระดับ | ทำได้จริงภายใน 10 พ.ย.? |
 |---|---|---|
-| Login / Logout / สมัครสมาชิก | Must | ✅ |
+| Login / Logout / สมัครสมาชิก | Must | ✅ (หน้าหลักเขียนแล้ว 27 ต.ค.) |
 | CRUD หนังสือ + หมวด (staff) | Must | ✅ |
-| ยืม / รับคืน / ต่ออายุ | Must | ✅ |
-| รายการเกินกำหนด + ค่าปรับ | Must | ✅ |
-| สมาชิกดูประวัติของตัวเอง | Must | ✅ |
-| ซื้อหนังสือ + ประวัติคำสั่งซื้อ | Nice | ⚠️ เริ่มหลัง 4 พ.ย. ถ้าแกนหลักเสร็จ |
+| ยืม / รับคืน / ต่ออายุ | Must | ✅ (ต่ออายุ/ประวัติเขียนแล้ว) |
+| รายการเกินกำหนด + ค่าปรับ | Must | ✅ (หน้าเขียนแล้ว) |
+| สมาชิกดูประวัติของตัวเอง | Must | ✅ (หน้าเขียนแล้ว) |
+| ซื้อหนังสือ + ประวัติคำสั่งซื้อ | Nice | ⚠️ เริ่มเมื่อแกนหลักเสร็จ (ตัดสินใจ 4 พ.ย.) |
 | ค้นหาหนังสือ | Nice | ✅ (แค่ `LIKE`) |
 | จัดการบทบาทผู้ใช้ (admin) | Nice | ⚠️ |
-| จำกัดจำนวนเล่มที่ยืม | Nice | ⚠️ |
-| ชำระเงินออนไลน์, ส่งอีเมลเตือน, แยกเลขเล่มรายเล่ม, ใบเสร็จ PDF | Out of scope | ❌ |
+| จำกัดจำนวนเล่มที่ยืม, ชำระเงินออนไลน์, ส่งอีเมลเตือน, แยกเลขเล่มรายเล่ม, ใบเสร็จ PDF | Out of scope | ❌ |
 
 ## 3. Use case
 
@@ -68,40 +69,52 @@ erDiagram
   lib_books ||--o{ lib_order_items : "ถูกขาย"
   lib_categories ||--o{ lib_books : "จัดกลุ่ม"
 
-  lib_users { int user_id PK
-    varchar email UK
-    varchar password_hash
-    varchar full_name
-    enum role
-    datetime created_at }
-  lib_categories { int category_id PK
-    varchar name UK }
-  lib_books { int book_id PK
-    int category_id FK
-    varchar title
-    varchar author
-    varchar isbn UK
-    int copies_total
-    int copies_available
-    decimal sale_price
-    int sale_stock }
-  lib_loans { int loan_id PK
-    int user_id FK
-    int book_id FK
-    date borrowed_at
-    date due_date
-    date returned_at
-    int renew_count }
-  lib_orders { int order_id PK
-    int user_id FK
-    datetime ordered_at
-    decimal total
-    enum status }
-  lib_order_items { int item_id PK
-    int order_id FK
-    int book_id FK
-    int qty
-    decimal unit_price }
+  lib_users {
+    INT_UNSIGNED user_id PK
+    VARCHAR_120 email UK
+    VARCHAR_255 password_hash
+    VARCHAR_100 full_name
+    ENUM role "member/staff/admin"
+    DATETIME created_at
+  }
+  lib_categories {
+    INT_UNSIGNED category_id PK
+    VARCHAR_80 name UK
+  }
+  lib_books {
+    INT_UNSIGNED book_id PK
+    INT_UNSIGNED category_id FK
+    VARCHAR_200 title
+    VARCHAR_120 author
+    VARCHAR_20 isbn UK
+    SMALLINT_UNSIGNED copies_total
+    SMALLINT_UNSIGNED copies_available
+    DECIMAL_8_2 sale_price "NULL = ไม่ขาย"
+    SMALLINT_UNSIGNED sale_stock
+  }
+  lib_loans {
+    INT_UNSIGNED loan_id PK
+    INT_UNSIGNED user_id FK
+    INT_UNSIGNED book_id FK
+    DATE borrowed_at
+    DATE due_date
+    DATE returned_at "NULL = ยังไม่คืน"
+    TINYINT_UNSIGNED renew_count
+  }
+  lib_orders {
+    INT_UNSIGNED order_id PK
+    INT_UNSIGNED user_id FK
+    DATETIME ordered_at
+    DECIMAL_10_2 total
+    ENUM status "pending/completed/cancelled"
+  }
+  lib_order_items {
+    INT_UNSIGNED item_id PK
+    INT_UNSIGNED order_id FK
+    INT_UNSIGNED book_id FK
+    SMALLINT_UNSIGNED qty
+    DECIMAL_8_2 unit_price
+  }
 ```
 
 | ตาราง | ทำไมต้องมี |
@@ -109,7 +122,7 @@ erDiagram
 | lib_users | เก็บบัญชีและบทบาท ใช้ทั้ง login และ authorization |
 | lib_categories | จัดหมวดหนังสือ ไม่ต้องพิมพ์ชื่อหมวดซ้ำ |
 | lib_books | รายการหนังสือ + จำนวนเล่มให้ยืม + ราคา/สต็อกขาย |
-| lib_loans | หนึ่งแถวต่อการยืมหนึ่งครั้ง ใช้ตามเกินกำหนดและประวัติ |
+| lib_loans | หนึ่งแถวต่อการยืมหนึ่งครั้ง ใช้ติดตามเกินกำหนดและประวัติ |
 | lib_orders | หัวคำสั่งซื้อ (ใคร เมื่อไร ยอดรวม สถานะ) |
 | lib_order_items | รายการในคำสั่งซื้อ เก็บราคาตอนซื้อไว้ |
 
@@ -139,10 +152,10 @@ erDiagram
 | title | VARCHAR(200) | | No | ชื่อเรื่อง |
 | author | VARCHAR(120) | | No | ผู้แต่ง |
 | isbn | VARCHAR(20) | UNIQUE | No | ISBN |
-| copies_total | SMALLINT UNSIGNED | | No | จำนวนเล่มทั้งหมด |
-| copies_available | SMALLINT UNSIGNED | | No | เล่มที่ว่างให้ยืม (ต้อง ≤ total) |
+| copies_total | SMALLINT UNSIGNED | | No | จำนวนเล่มทั้งหมด (ค่าเริ่ม 1) |
+| copies_available | SMALLINT UNSIGNED | | No | เล่มที่ว่างให้ยืม (ค่าเริ่ม 1; CHECK ต้อง ≤ copies_total) |
 | sale_price | DECIMAL(8,2) | | Yes | ราคาขาย (NULL = ไม่ขาย) |
-| sale_stock | SMALLINT UNSIGNED | | No | จำนวนที่ขายได้ |
+| sale_stock | SMALLINT UNSIGNED | | No | จำนวนที่ขายได้ (ค่าเริ่ม 0) |
 
 **lib_loans**
 | คอลัมน์ | ชนิด | Key | Null | คำอธิบาย |
@@ -153,7 +166,7 @@ erDiagram
 | borrowed_at | DATE | | No | วันยืม |
 | due_date | DATE | | No | วันครบกำหนด (ยืม+7, ต่อ +7) |
 | returned_at | DATE | | Yes | วันคืน (NULL = ยังไม่คืน) |
-| renew_count | TINYINT UNSIGNED | | No | จำนวนครั้งที่ต่อ (สูงสุด 1) |
+| renew_count | TINYINT UNSIGNED | | No | จำนวนครั้งที่ต่อ (ค่าเริ่ม 0, สูงสุด 1 ตามกฎ — บังคับในโค้ด PHP) |
 
 ค่าปรับ = `GREATEST(0, DATEDIFF(IFNULL(returned_at, CURDATE()), due_date)) * 5` ไม่เก็บในตาราง
 
@@ -163,8 +176,8 @@ erDiagram
 | order_id | INT UNSIGNED | PK | No | รหัสคำสั่งซื้อ |
 | user_id | INT UNSIGNED | FK→lib_users | No | ผู้ซื้อ (owner id) |
 | ordered_at | DATETIME | | No | เวลาสั่ง |
-| total | DECIMAL(10,2) | | No | ยอดรวม |
-| status | ENUM | | No | pending / completed / cancelled |
+| total | DECIMAL(10,2) | | No | ยอดรวม (ค่าเริ่ม 0) |
+| status | ENUM | | No | pending / completed / cancelled (ค่าเริ่ม pending) |
 
 **lib_order_items**
 | คอลัมน์ | ชนิด | Key | Null | คำอธิบาย |
@@ -172,37 +185,40 @@ erDiagram
 | item_id | INT UNSIGNED | PK | No | รหัสรายการ |
 | order_id | INT UNSIGNED | FK→lib_orders | No | คำสั่งซื้อ |
 | book_id | INT UNSIGNED | FK→lib_books | No | หนังสือ |
-| qty | SMALLINT UNSIGNED | | No | จำนวน |
+| qty | SMALLINT UNSIGNED | | No | จำนวน (ค่าเริ่ม 1) |
 | unit_price | DECIMAL(8,2) | | No | ราคา ณ ตอนซื้อ |
 
-SQL สร้างตาราง: `sql/schema.sql`
+กฎ FK: ทุก FK เป็น `ON DELETE RESTRICT` (ลบหมวด/ผู้ใช้/หนังสือที่ยังมีข้อมูลอ้างอิงไม่ได้) ยกเว้น `lib_order_items.order_id` เป็น `CASCADE` (ลบคำสั่งซื้อแล้วลบรายการตาม)
+
+SQL สร้างตาราง: `sql/schema.sql` (หมวดตัวอย่าง: นิยายแฟนตาซี, วิทยาศาสตร์, ประวัติศาสตร์, วรรณกรรมคลาสสิก, คอมพิวเตอร์) **[ยังไม่ยืนยัน]** เวอร์ชัน MySQL บน Angsila — `CHECK` บังคับใช้ตั้งแต่ MySQL 8.0.16
 
 ## 6. แผนงานรายวัน (27 ต.ค. – 10 พ.ย.)
 
 **การแบ่งงาน (ข้อสมมติ 3 คน — ยังไม่ยืนยันจำนวนคนจริง):**
 | คน | หน้าที่ |
 |---|---|
-| P1 | หน้าเว็บ + UI/VFX (`includes/header.php`, `footer.php`, `assets/` CSS/JS, เลย์เอาต์ทุกหน้า) + ความปลอดภัย (`includes/auth.php`, CSRF, ตรวจสิทธิ์) + repo/deploy |
-| A | ฐานข้อมูล (ER, schema, `config/db.php`) + ตรรกะ CRUD หนังสือ |
+| P1 (ผู้ทำเอกสารนี้) | หน้าเว็บ + UI/VFX (`includes/header.php`, `footer.php`, `assets/` CSS/JS, เลย์เอาต์ทุกหน้า) + ความปลอดภัย (`includes/auth.php`, CSRF, ตรวจสิทธิ์) + repo/deploy + ประสานงาน |
+| A | ฐานข้อมูล (ER, schema, `config/db.php`) + CRUD หนังสือ |
 | B | ตรรกะยืม/คืน/ต่ออายุ/ค่าปรับ + ร้านขาย |
 
 | วัน | งาน | ผู้รับผิดชอบ (ข้อสมมติ 3 คน) |
 |---|---|---|
-| 27 ต.ค. | สร้าง repo + `.gitignore`, ล็อกขอบเขต | P1 |
-| 28 | problem statement, use case; ร่าง ER | P1 / A |
-| 29 | **schema สุดท้ายต้องเสร็จ**; use case diagram + แผน | A / B |
-| 30 | รวม proposal; เขียน `includes/auth.php` (login guard, role guard, CSRF) | P1 |
+| 27 ต.ค. | **เสร็จแล้ว:** repo + `.gitignore`, เอกสาร, `sql/schema.sql`, ต้นแบบ UI (3 รอบ), หน้า register/login/logout/my-loans/renew/overdue (ความปลอดภัยทำก่อนกำหนด) | P1 |
+| 28 | ตรวจ ER + data dictionary ให้ตรง schema; วาด use case diagram ใน draw.io | P1 / A |
+| 29 | **schema สุดท้ายต้องนิ่ง** (A ทดสอบ import บน MySQL จริง); ตกลงชื่อไฟล์/ฟังก์ชันที่ B ใช้ | A / B |
+| 30 | รวม proposal + เช็กลิสต์ Milestone 1; README ให้ครบ | P1 |
 | 31 | **ส่ง Milestone 1** | P1 |
-| 1 พ.ย. | register/login/logout; หน้า CRUD หนังสือ; โครงหน้ายืม | P1 / A / B |
-| 2 | ต่อ: ปิดช่อง CSRF ทุก form; CRUD หมวด; ยืมหนังสือ | P1 / A / B |
-| 3 | รับคืน + ต่ออายุ; ตรวจสิทธิ์ทุกหน้า | B / P1 |
-| 4 | รายการเกินกำหนด + ค่าปรับ; ประวัติสมาชิก; ค้นหา | B / A |
-| 5 | **ตัดสินใจเรื่องร้านขาย** (แกนหลักต้องเสร็จก่อน); ถ้าไม่ทัน ตัดออก | ทุกคน |
-| 6 | คำสั่งซื้อ (ถ้าทำ); security review ทุก query | B / P1 |
+| 1 พ.ย. | CRUD หนังสือ + หมวด (staff); หน้ายืมหนังสือ | A / B |
+| 2 | หน้ารับคืน (staff) เชื่อมกับ my-loans/renew/overdue ที่มีแล้ว; ตรวจสิทธิ์ทุกหน้า | B / P1 |
+| 3 | ค้นหา; ทดสอบกรณีขอบ (ต่ออายุตอนเกินกำหนด, ยืมเล่มที่หมด, แก้ id ของคนอื่นใน URL) | B / A |
+| 4 | **ตัดสินใจเรื่องร้านขาย** (แกนหลักต้องเสร็จก่อน); ถ้าไม่ทัน ตัดออก | ทุกคน |
+| 5-6 | ร้านขาย + คำสั่งซื้อ (ถ้าทำ); security review ทุก query | B / P1 |
 | 7 | deploy ขึ้น Angsila; ทดสอบบนเครื่องจริง | P1 |
 | 8 | แก้บั๊ก; ถ่าย screenshot; ร่างรายงาน | ทุกคน |
 | 9 | รายงานฉบับเต็ม + README + ตารางผลทดสอบ | ทุกคน |
-| 10 พ.ย. | เช็กขั้นสุดท้าย (ลิงก์ Angsila ใช้ได้, repo ไม่มีความลับ) แล้วส่ง | P1 |
+| 10 พ.ย. | เช็กขั้นสุดท้าย (ลิงก์ Angsila ใช้ได้, repo ไม่มีความลับ) แล้วส่ง Milestone 2 | P1 |
+
+**ความปลอดภัยที่เขียนแล้วใน PHP:** bcrypt (`password_hash`), prepared statement, `session_regenerate_id(true)` หลัง login, CSRF token ทุกฟอร์ม POST รวม logout (logout ใช้ POST เท่านั้น), `htmlspecialchars` ตอนแสดงผล, ตรวจบทบาท member/staff/admin ฝั่ง server, ทุก UPDATE/DELETE ใส่ owner id (เช่น ต่ออายุ: `WHERE loan_id = ? AND user_id = ?`), ความลับอยู่ใน `secret/config.php` ที่ git ไม่เก็บ
 
 ## 7. โครง repo
 
@@ -214,6 +230,7 @@ LibraryProject/
 ├─ config/db.php, config.example.php   (ค่าจริงอยู่ secret/config.php)
 ├─ includes/auth.php, header.php, footer.php
 ├─ assets/css/style.css, assets/js/app.js   (UI/VFX)
+├─ prototype/          (ต้นแบบ HTML เปิดผ่าน GitHub Pages)
 ├─ index.php, login.php, register.php, logout.php
 ├─ books/   (list, add, edit, delete)
 ├─ loans/   (borrow, return, renew, my, overdue)
