@@ -3,18 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>รายการเกินกำหนด | Arcanum Library</title>
+  <title>รายการเกินกำหนด | Book Lending Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 <!-- header start -->
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+<div class="atmos" aria-hidden="true">
+  <div class="stars"></div><div class="stars stars--far"></div><div class="moonbeam"></div>
+  <span class="mote" style="--x:8%;--s:3px;--t:38s;--d:-4s;--dx:30px"></span>
+  <span class="mote" style="--x:18%;--s:2px;--t:46s;--d:-20s;--dx:-20px"></span>
+  <span class="mote" style="--x:30%;--s:3px;--t:52s;--d:-33s;--dx:40px"></span>
+  <span class="mote" style="--x:42%;--s:2px;--t:41s;--d:-9s;--dx:-30px"></span>
+  <span class="mote" style="--x:55%;--s:4px;--t:58s;--d:-45s;--dx:20px"></span>
+  <span class="mote" style="--x:66%;--s:2px;--t:44s;--d:-15s;--dx:50px"></span>
+  <span class="mote" style="--x:76%;--s:3px;--t:49s;--d:-27s;--dx:-40px"></span>
+  <span class="mote" style="--x:86%;--s:2px;--t:55s;--d:-38s;--dx:25px"></span>
+  <span class="mote" style="--x:93%;--s:3px;--t:40s;--d:-6s;--dx:-15px"></span>
+  <span class="mote" style="--x:24%;--s:2px;--t:60s;--d:-50s;--dx:35px"></span>
+  <svg class="rune" style="--x:6%;--y:30%;--s:70px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26"/><path d="M32 8 53 44H11z"/><circle cx="32" cy="35" r="3"/></svg>
+  <svg class="rune" style="--x:84%;--y:18%;--s:56px;animation-delay:-20s" viewBox="0 0 64 64"><path d="M32 6 54 19v26L32 58 10 45V19z"/><path d="M32 6v52M10 19l44 26M54 19 10 45"/></svg>
+  <svg class="rune" style="--x:72%;--y:68%;--s:64px;animation-delay:-40s" viewBox="0 0 64 64"><path d="M40 8a24 24 0 1 0 0 48 18 18 0 1 1 0-48z"/><path d="M18 32h14M25 25v14"/></svg>
+  <svg class="rune" style="--x:20%;--y:76%;--s:60px;animation-delay:-55s" viewBox="0 0 64 64"><path d="M32 6 58 32 32 58 6 32z"/><path d="M32 18 46 32 32 46 18 32z"/><path d="M32 6v12M32 46v12"/></svg>
+</div>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span class="foil-light">Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 8C12 5.5 7 5.5 3 7v17c4-1.5 9-1.5 13 1 4-2.5 9-2.5 13-1V7c-4-1.5-9-1.5-13 1z"/><path d="M16 8v17M16 2.5v2.5M11.5 3.5l1 1.8M20.5 3.5l-1 1.8"/></svg><span class="logo-text">Book Lending Shop<small>ร้านยืมหนังสือ</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
@@ -22,7 +39,7 @@
         <li><a href="my-loans.html">การยืมของฉัน</a></li>
         <li><a href="overdue.html" aria-current="page">จัดการ</a></li>
         <li><span class="user-name">สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
-        <li><a href="login.html">ออกจากระบบ</a></li>
+        <li><a class="btn btn-outline" href="login.html">ออกจากระบบ</a></li>
       </ul>
     </nav>
   </div>
@@ -31,28 +48,29 @@
 
 <main id="main">
   <div class="container">
+    <p class="eyebrow">OVERDUE NOTICES</p>
     <h1 class="page-title">รายการเกินกำหนดคืน</h1>
     <p class="margin-note">สำหรับเจ้าหน้าที่ &middot; ค่าปรับ 5 บาท/วัน คำนวณจากจำนวนวันที่เกินกำหนด</p>
     <p class="count-line">เกินกำหนด 3 รายการ</p>
     <div class="letters">
-      <article class="red-letter">
-        <span class="seal seal--sm" aria-hidden="true">A</span>
+      <article class="red-letter paper">
+        <span class="seal seal--sm" aria-hidden="true">B</span>
         <h2 class="member">สมชาย ใจดี</h2>
         <p class="book-name">ฐานข้อมูลเบื้องต้น</p>
         <p class="late-info">กำหนดคืน <span class="typed">20/10/69</span> &middot; <span class="stamp stamp--late">เกิน 7 วัน</span></p>
         <p class="fine"><span class="fine-label">ค่าปรับ</span> 35 บาท</p>
         <button type="button" class="btn btn-primary btn-magic">รับคืน</button>
       </article>
-      <article class="red-letter">
-        <span class="seal seal--sm" aria-hidden="true">A</span>
+      <article class="red-letter paper">
+        <span class="seal seal--sm" aria-hidden="true">B</span>
         <h2 class="member">มาลี สุขสันต์</h2>
         <p class="book-name">บันทึกนักเล่นแร่แปรธาตุ</p>
         <p class="late-info">กำหนดคืน <span class="typed">22/10/69</span> &middot; <span class="stamp stamp--late">เกิน 5 วัน</span></p>
         <p class="fine"><span class="fine-label">ค่าปรับ</span> 25 บาท</p>
         <button type="button" class="btn btn-primary btn-magic">รับคืน</button>
       </article>
-      <article class="red-letter">
-        <span class="seal seal--sm" aria-hidden="true">A</span>
+      <article class="red-letter paper">
+        <span class="seal seal--sm" aria-hidden="true">B</span>
         <h2 class="member">ประเสริฐ มั่นคง</h2>
         <p class="book-name">Alice's Adventures in Wonderland</p>
         <p class="late-info">กำหนดคืน <span class="typed">25/10/69</span> &middot; <span class="stamp stamp--late">เกิน 2 วัน</span></p>
@@ -65,9 +83,18 @@
 
 <!-- footer start -->
 <footer class="site-footer">
-  <div class="container">
-    <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
-    <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+  <svg class="skyline" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d="M0 160V110H40V90L50 60 60 90V110H110V80H130V70L145 20 160 70V80H180V120H260V95L290 50 320 95V120H380V100H400L410 70 420 100H440V60L470 5 500 60V130H560V105L600 40 640 105V130H700V90H730L745 55 760 90H790V115H860V80L890 25 920 80V120H980V100H1000L1010 65 1020 100H1060V85H1090L1110 40 1130 85V110H1200V160Z"/>
+    <path class="win" d="M70 110v-14a5 5 0 0 1 10 0v14zM205 150v-16a5 5 0 0 1 10 0v16zM335 120v-14a5 5 0 0 1 10 0v14zM520 130v-16a5 5 0 0 1 10 0v16zM660 130v-14a5 5 0 0 1 10 0v14zM1030 118v-14a5 5 0 0 1 10 0v14z"/>
+    <path class="lit" style="--d:0s" d="M465 75v-16a5 5 0 0 1 10 0v16zM595 100v-16a5 5 0 0 1 10 0v16z"/>
+    <path class="lit" style="--d:-2s" d="M140 70v-14a5 5 0 0 1 10 0v14zM885 85v-16a5 5 0 0 1 10 0v16zM1105 85v-14a5 5 0 0 1 10 0v14z"/>
+    <path class="lit" style="--d:-3.5s" d="M285 100v-14a5 5 0 0 1 10 0v14zM740 90v-14a5 5 0 0 1 10 0v14zM225 150v-16a5 5 0 0 1 10 0v16z"/>
+  </svg>
+  <div class="foot-strip">
+    <div class="container">
+      <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
+      <p>&copy; 2569 Book Lending Shop &middot; ร้านยืมหนังสือ &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+    </div>
   </div>
 </footer>
 <!-- footer end -->

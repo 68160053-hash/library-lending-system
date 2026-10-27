@@ -3,18 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>หนังสือทั้งหมด | Arcanum Library</title>
+  <title>หนังสือทั้งหมด | Book Lending Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&amp;family=Chonburi&amp;family=Cinzel:wght@500;700&amp;family=IM+Fell+English:ital@0;1&amp;family=IM+Fell+English+SC&amp;family=Kanit:wght@300;400;500&amp;family=Special+Elite&amp;family=Taviraj:wght@400;500&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 <!-- header start -->
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
+<div class="atmos" aria-hidden="true">
+  <div class="stars"></div><div class="stars stars--far"></div><div class="moonbeam"></div>
+  <span class="mote" style="--x:8%;--s:3px;--t:38s;--d:-4s;--dx:30px"></span>
+  <span class="mote" style="--x:18%;--s:2px;--t:46s;--d:-20s;--dx:-20px"></span>
+  <span class="mote" style="--x:30%;--s:3px;--t:52s;--d:-33s;--dx:40px"></span>
+  <span class="mote" style="--x:42%;--s:2px;--t:41s;--d:-9s;--dx:-30px"></span>
+  <span class="mote" style="--x:55%;--s:4px;--t:58s;--d:-45s;--dx:20px"></span>
+  <span class="mote" style="--x:66%;--s:2px;--t:44s;--d:-15s;--dx:50px"></span>
+  <span class="mote" style="--x:76%;--s:3px;--t:49s;--d:-27s;--dx:-40px"></span>
+  <span class="mote" style="--x:86%;--s:2px;--t:55s;--d:-38s;--dx:25px"></span>
+  <span class="mote" style="--x:93%;--s:3px;--t:40s;--d:-6s;--dx:-15px"></span>
+  <span class="mote" style="--x:24%;--s:2px;--t:60s;--d:-50s;--dx:35px"></span>
+  <svg class="rune" style="--x:6%;--y:30%;--s:70px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26"/><path d="M32 8 53 44H11z"/><circle cx="32" cy="35" r="3"/></svg>
+  <svg class="rune" style="--x:84%;--y:18%;--s:56px;animation-delay:-20s" viewBox="0 0 64 64"><path d="M32 6 54 19v26L32 58 10 45V19z"/><path d="M32 6v52M10 19l44 26M54 19 10 45"/></svg>
+  <svg class="rune" style="--x:72%;--y:68%;--s:64px;animation-delay:-40s" viewBox="0 0 64 64"><path d="M40 8a24 24 0 1 0 0 48 18 18 0 1 1 0-48z"/><path d="M18 32h14M25 25v14"/></svg>
+  <svg class="rune" style="--x:20%;--y:76%;--s:60px;animation-delay:-55s" viewBox="0 0 64 64"><path d="M32 6 58 32 32 58 6 32z"/><path d="M32 18 46 32 32 46 18 32z"/><path d="M32 6v12M32 46v12"/></svg>
+</div>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg><span class="foil-light">Arcanum Library<small>ห้องสมุดมนตรา</small></span></a>
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 8C12 5.5 7 5.5 3 7v17c4-1.5 9-1.5 13 1 4-2.5 9-2.5 13-1V7c-4-1.5-9-1.5-13 1z"/><path d="M16 8v17M16 2.5v2.5M11.5 3.5l1 1.8M20.5 3.5l-1 1.8"/></svg><span class="logo-text">Book Lending Shop<small>ร้านยืมหนังสือ</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
@@ -22,7 +39,7 @@
         <li><a href="my-loans.html">การยืมของฉัน</a></li>
         <li><a href="overdue.html">จัดการ</a></li>
         <li><span class="user-name">สมหญิง รักเรียน <span class="role-badge">เจ้าหน้าที่</span></span></li>
-        <li><a href="login.html">ออกจากระบบ</a></li>
+        <li><a class="btn btn-outline" href="login.html">ออกจากระบบ</a></li>
       </ul>
     </nav>
   </div>
@@ -31,52 +48,42 @@
 
 <main id="main">
   <div class="container">
-    <section class="hero frame" aria-labelledby="hero-title">
-      <span class="candle" style="--x:6%;--d:0s" aria-hidden="true"><i></i></span>
-      <span class="candle" style="--x:38%;--d:-3s" aria-hidden="true"><i></i></span>
-      <span class="candle" style="--x:64%;--d:-6s" aria-hidden="true"><i></i></span>
-      <span class="candle" style="--x:92%;--d:-9s" aria-hidden="true"><i></i></span>
+    <section class="hero" aria-labelledby="hero-title">
       <div class="hero-text">
-        <p class="eyebrow">Arcanum Library</p>
-        <h1 id="hero-title" class="foil">ห้องสมุดมนตรา</h1>
+        <p class="eyebrow">OPEN AFTER MIDNIGHT</p>
+        <h1 id="hero-title"><span class="h1-latin">Book Lending Shop</span><span class="h1-th">ร้านยืมหนังสือ</span></h1>
         <p class="tagline">ค้นหาตำราและเรื่องราวที่รอคุณอยู่บนชั้นหนังสือ แล้วยืมกลับบ้านได้ในไม่กี่คลิก</p>
       </div>
-      <div class="hero-map">
-        <svg class="map" viewBox="0 0 520 320" role="img" aria-label="แผนผังห้องสมุดวาดด้วยหมึก มีรอยเท้าเดินผ่านห้องต่างๆ">
-          <defs><symbol id="foot" viewBox="-6 -12 12 24"><ellipse cx="0" cy="-3" rx="3.6" ry="7"/><ellipse cx="0" cy="8" rx="3" ry="3.5"/></symbol></defs>
-          <g class="map-lines" fill="none">
-            <rect x="12" y="12" width="496" height="296"/>
-            <rect x="26" y="26" width="300" height="190"/>
-            <rect x="38" y="40" width="40" height="70"/><rect x="38" y="124" width="40" height="70"/>
-            <rect x="100" y="40" width="40" height="70"/><rect x="100" y="124" width="40" height="70"/>
-            <rect x="162" y="40" width="40" height="70"/><rect x="162" y="124" width="40" height="70"/>
-            <rect x="230" y="150" width="84" height="54"/>
-            <rect x="344" y="26" width="150" height="110"/><rect x="358" y="40" width="122" height="12"/><rect x="358" y="108" width="122" height="12"/>
-            <rect x="344" y="156" width="150" height="138"/>
-            <path class="dash" d="M344 180v28M326 90h18"/>
-            <rect x="26" y="236" width="300" height="58"/>
+      <div class="hero-window">
+        <svg class="window" viewBox="0 0 300 440" role="img" aria-label="หน้าต่างโค้งแหลมมองเห็นพระจันทร์และดวงดาว">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a6e"/><stop offset=".6" stop-color="#3b2a73"/><stop offset="1" stop-color="#1a1840"/></linearGradient>
+            <radialGradient id="moon" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fffdf2"/><stop offset=".7" stop-color="#e8ecff"/><stop offset="1" stop-color="#b9c1ef"/></radialGradient>
+            <radialGradient id="halo"><stop offset="0" stop-color="#b9c1ff" stop-opacity=".55"/><stop offset="1" stop-color="#b9c1ff" stop-opacity="0"/></radialGradient>
+            <clipPath id="glass"><path d="M52 420V192Q52 78 150 36Q248 78 248 192V420Z"/></clipPath>
+          </defs>
+          <path d="M30 430V190Q30 60 150 10Q270 60 270 190V430Z" fill="#232846" stroke="#c9cde0" stroke-width="1.5"/>
+          <path d="M52 420V192Q52 78 150 36Q248 78 248 192V420Z" fill="url(#sky)"/>
+          <g clip-path="url(#glass)">
+            <circle cx="190" cy="140" r="70" fill="url(#halo)"/>
+            <circle cx="190" cy="140" r="30" fill="url(#moon)"/>
+            <circle cx="180" cy="132" r="5" fill="#b9c1ef" opacity=".5"/><circle cx="198" cy="150" r="7" fill="#b9c1ef" opacity=".4"/>
+            <g fill="#fff"><circle cx="90" cy="120" r="1.6"/><circle cx="120" cy="80" r="1.2"/><circle cx="76" cy="190" r="1.4"/><circle cx="130" cy="170" r="1"/><circle cx="225" cy="75" r="1.4"/><circle cx="105" cy="250" r="1.2"/><circle cx="220" cy="230" r="1.5"/><circle cx="160" cy="60" r="1"/></g>
+            <path d="M40 420V350h22v-30l8-26 8 26v30h24v-20h14v-40l10-30 10 30v40h20v20h26v-30l8-24 8 24v30h22v50z" fill="#0c0e1a"/>
+            <path d="M120 322v-8a3 3 0 0 1 6 0v8zM214 372v-8a3 3 0 0 1 6 0v8z" fill="#d9b45a"/>
           </g>
-          <g class="map-labels">
-            <text x="215" y="90">โถงตำรา</text><text x="238" y="182">โต๊ะอ่าน</text>
-            <text x="364" y="84">ห้องต้องห้าม</text><text x="372" y="230">หอดูดาว</text>
-            <text x="120" y="270">ทางเข้า</text>
-          </g>
-          <g class="trail">
-            <g class="step" style="--i:0" transform="translate(150 284) rotate(0)"><use href="#foot" x="-9" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:1" transform="translate(166 262) rotate(8)"><use href="#foot" x="-3" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:2" transform="translate(180 238) rotate(10)"><use href="#foot" x="-9" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:3" transform="translate(196 214) rotate(12)"><use href="#foot" x="-3" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:4" transform="translate(214 214) rotate(85)"><use href="#foot" x="-9" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:5" transform="translate(246 218) rotate(88)"><use href="#foot" x="-3" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:6" transform="translate(290 220) rotate(85)"><use href="#foot" x="-9" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:7" transform="translate(334 150) rotate(-10)"><use href="#foot" x="-3" y="-12" width="12" height="24"/></g>
-            <g class="step" style="--i:8" transform="translate(420 150) rotate(85)"><use href="#foot" x="-9" y="-12" width="12" height="24"/></g>
-          </g>
+          <g fill="none" stroke="#c9cde0" stroke-width="2.5" opacity=".85"><path d="M150 36V420M52 250H248M52 340H248"/></g>
+          <path d="M30 430h240v6H30z" fill="#3a3f66"/>
         </svg>
+        <span class="candle" style="--x:4%;--b:6%;--h:34px;--d:0s" aria-hidden="true"><i></i></span>
+        <span class="candle" style="--x:24%;--b:14%;--h:48px;--d:-2s" aria-hidden="true"><i></i></span>
+        <span class="candle" style="--x:74%;--b:10%;--h:40px;--d:-4s" aria-hidden="true"><i></i></span>
+        <span class="candle" style="--x:92%;--b:4%;--h:30px;--d:-1s" aria-hidden="true"><i></i></span>
       </div>
     </section>
 
-    <form class="search-card" action="index.html" method="get" aria-label="ค้นหาหนังสือ">
+    <form class="ask frame-silver" action="index.html" method="get" aria-label="ค้นหาหนังสือ">
+      <p class="eyebrow">Ask the library</p>
       <div class="field">
         <label for="q">ค้นหาหนังสือ</label>
         <input type="text" id="q" name="q" placeholder="ชื่อหนังสือ หรือผู้แต่ง">
@@ -88,73 +95,108 @@
       <button type="submit" class="btn btn-primary btn-magic">ค้นหา</button>
     </form>
 
-    <section aria-labelledby="catalogue-title">
-      <h2 class="section-title" id="catalogue-title">หนังสือในห้องสมุด</h2>
-      <div class="grid">
-        <article class="book">
-          <div class="cover cover--1" aria-hidden="true"><span class="foil-light">ตำนานแห่งหอคอยดารา</span></div>
-          <div class="label">
-            <h3>ตำนานแห่งหอคอยดารา</h3>
-            <p class="meta">วิชัย ภูมิรักษ์<br>หมวด: นิยายแฟนตาซี</p>
-            <p class="avail"><span class="stamp stamp--ok">ว่าง 2/3</span></p>
-            <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+    <div class="section-head">
+      <p class="eyebrow">The Shelves</p>
+      <h2 id="catalogue-title">ชั้นหนังสือในห้องสมุด</h2>
+      <p class="scroll-hint">เลื่อนดูชั้นหนังสือ &rarr;</p>
+    </div>
+      <section class="shelf-block" aria-labelledby="shelf-1">
+        <div class="shelf-head">
+          <h2 id="shelf-1">ตำนานและเวทมนตร์</h2>
+          <p>6 เล่มบนชั้นนี้ &middot; แตะสันหนังสือเพื่อเปิดดู</p>
+        </div>
+        <div class="shelf">
+          <div class="shelf-scroll">
+          <ul class="books">
+            <li><button type="button" class="spine" style="--w:58px;--h:220px;--c:#2b2f6b" aria-label="ตำนานแห่งหอคอยดารา — วิชัย ภูมิรักษ์" data-title="ตำนานแห่งหอคอยดารา" data-author="วิชัย ภูมิรักษ์" data-category="นิยายแฟนตาซี" data-available="2" data-total="3" data-blurb="หอคอยที่จุดไฟทุกคืนด้วยแสงดาว และเด็กหนุ่มผู้ได้รับกุญแจเล่มสุดท้าย"><span class="s-title">ตำนานแห่งหอคอยดารา</span><span class="s-init" aria-hidden="true">ว</span></button></li>
+            <li><button type="button" class="spine" style="--w:50px;--h:190px;--c:#5a3a22" aria-label="บันทึกนักเล่นแร่แปรธาตุ — สุรีย์ แก้วมณี" data-title="บันทึกนักเล่นแร่แปรธาตุ" data-author="สุรีย์ แก้วมณี" data-category="ประวัติศาสตร์" data-available="3" data-total="4" data-blurb="สมุดจดสูตรและความล้มเหลวของนักเล่นแร่ตลอดสามสิบปี"><span class="s-title">บันทึกนักเล่นแร่แปรธาตุ</span><span class="s-init" aria-hidden="true">ส</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 56" aria-hidden="true"><path d="M16 4h8v10l10 18a14 14 0 0 1-28 0l10-18z" fill="rgba(232,236,255,.12)" stroke="#c9cde0" stroke-width="1.5"/><path d="M9 38a12 12 0 0 0 22 0z" fill="#7a7bff" opacity=".85"/><path d="M15 4h10" stroke="#d9b45a" stroke-width="3"/></svg></li>
+            <li><button type="button" class="spine lean-l" style="--w:64px;--h:240px;--c:#3b1f3a" aria-label="เพลงของมังกรหมอก — เกศินี วงศ์ไพร" data-title="เพลงของมังกรหมอก" data-author="เกศินี วงศ์ไพร" data-category="นิยายแฟนตาซี" data-available="1" data-total="2" data-blurb="มังกรตัวเล็กที่ร้องเพลงเรียกหมอกมาปกคลุมหุบเขา"><span class="s-title">เพลงของมังกรหมอก</span><span class="s-init" aria-hidden="true">ก</span></button></li>
+            <li><button type="button" class="spine" style="--w:46px;--h:205px;--c:#1f3b4d" aria-label="ประตูสู่เมืองใต้เมฆ — ธนากร สุขเสริม" data-title="ประตูสู่เมืองใต้เมฆ" data-author="ธนากร สุขเสริม" data-category="นิยายแฟนตาซี" data-available="3" data-total="3" data-blurb="บันไดวนที่ไม่มีที่สิ้นสุดพาเด็กสามคนขึ้นไปสู่เมืองลอยฟ้า"><span class="s-title">ประตูสู่เมืองใต้เมฆ</span><span class="s-init" aria-hidden="true">ธ</span></button></li>
+            <li><button type="button" class="spine is-out" style="--w:70px;--h:230px;--c:#4a1a1a" aria-label="จดหมายเหตุแห่งอาณาจักรลืม — รัชนี ศรีสุข (ถูกยืมหมด)" data-title="จดหมายเหตุแห่งอาณาจักรลืม" data-author="รัชนี ศรีสุข" data-category="ประวัติศาสตร์" data-available="0" data-total="2" data-blurb="บันทึกของอาณาจักรที่แผนที่ไม่เคยกล่าวถึง"><span class="s-title">จดหมายเหตุแห่งอาณาจักรลืม</span><span class="s-init" aria-hidden="true">ร</span><span class="ribbon" aria-hidden="true">หมด</span></button></li>
+            <li><button type="button" class="spine lean-r" style="--w:52px;--h:215px;--c:#3d2a5c" aria-label="The Lantern Keeper&#x27;s Tale — Marina Holt" data-title="The Lantern Keeper&#x27;s Tale" data-author="Marina Holt" data-category="นิยายแฟนตาซี" data-available="1" data-total="3" data-blurb="A keeper of lanterns follows a light that moves against the wind."><span class="s-title">The Lantern Keeper&#x27;s Tale</span><span class="s-init" aria-hidden="true">M</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 44" aria-hidden="true"><path d="M8 40h24" stroke="#d9b45a" stroke-width="3"/><rect x="14" y="22" width="12" height="18" rx="2" fill="#e8dcc0"/><path class="flame" d="M20 8c4 5 4 9 0 12-4-3-4-7 0-12z" fill="#ffbd45"/></svg></li>
+          </ul>
           </div>
-        </article>
-        <article class="book">
-          <div class="cover cover--2" aria-hidden="true"><span class="foil-light">ศาสตร์แห่งแสงและเงา</span></div>
-          <div class="label">
-            <h3>ศาสตร์แห่งแสงและเงา</h3>
-            <p class="meta">ปรีชา ทองดี<br>หมวด: วิทยาศาสตร์</p>
-            <p class="avail"><span class="stamp stamp--ok">ว่าง 1/2</span></p>
-            <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+          <div class="plank" aria-hidden="true"></div>
+        </div>
+      </section>
+      <section class="shelf-block" aria-labelledby="shelf-2">
+        <div class="shelf-head">
+          <h2 id="shelf-2">ศาสตร์และวิชาการ</h2>
+          <p>6 เล่มบนชั้นนี้ &middot; แตะสันหนังสือเพื่อเปิดดู</p>
+        </div>
+        <div class="shelf">
+          <div class="shelf-scroll">
+          <ul class="books">
+            <li><button type="button" class="spine" style="--w:60px;--h:225px;--c:#243049" aria-label="ศาสตร์แห่งแสงและเงา — ปรีชา ทองดี" data-title="ศาสตร์แห่งแสงและเงา" data-author="ปรีชา ทองดี" data-category="วิทยาศาสตร์" data-available="1" data-total="2" data-blurb="ทำไมเงาจึงยาวขึ้นยามเย็น และแสงเดินทางอย่างไร"><span class="s-title">ศาสตร์แห่งแสงและเงา</span><span class="s-init" aria-hidden="true">ป</span></button></li>
+            <li><button type="button" class="spine is-out" style="--w:54px;--h:200px;--c:#1f4a3a" aria-label="ตำราสมุนไพรแห่งป่าลึก — นภา ชัยวัฒน์ (ถูกยืมหมด)" data-title="ตำราสมุนไพรแห่งป่าลึก" data-author="นภา ชัยวัฒน์" data-category="วิทยาศาสตร์" data-available="0" data-total="2" data-blurb="ภาพวาดมือของพืชสมุนไพรกว่าร้อยชนิด พร้อมวิธีสังเกต"><span class="s-title">ตำราสมุนไพรแห่งป่าลึก</span><span class="s-init" aria-hidden="true">น</span><span class="ribbon" aria-hidden="true">หมด</span></button></li>
+            <li><button type="button" class="spine" style="--w:66px;--h:235px;--c:#2b2f6b" aria-label="ฐานข้อมูลเบื้องต้น — อรทัย สายชล" data-title="ฐานข้อมูลเบื้องต้น" data-author="อรทัย สายชล" data-category="คอมพิวเตอร์" data-available="2" data-total="5" data-blurb="ตาราง คีย์ และคำสั่ง SQL แรกๆ สำหรับผู้เริ่มต้น"><span class="s-title">ฐานข้อมูลเบื้องต้น</span><span class="s-init" aria-hidden="true">อ</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 60" aria-hidden="true"><path d="M8 4h24M8 56h24" stroke="#d9b45a" stroke-width="4"/><path d="M11 6c0 14 9 14 9 24S11 40 11 54h18c0-14-9-14-9-24s9-10 9-24z" fill="rgba(232,236,255,.1)" stroke="#c9cde0" stroke-width="1.5"/><path d="M14 52c1-8 6-9 6-14 0 5 5 6 6 14z" fill="#d9b45a" opacity=".8"/></svg></li>
+            <li><button type="button" class="spine lean-l" style="--w:48px;--h:195px;--c:#3d2a5c" aria-label="ดาราศาสตร์ใต้แสงจันทร์ — ภาณุ เจริญสุข" data-title="ดาราศาสตร์ใต้แสงจันทร์" data-author="ภาณุ เจริญสุข" data-category="วิทยาศาสตร์" data-available="2" data-total="3" data-blurb="คู่มือดูดาวด้วยตาเปล่าในคืนที่พระจันทร์เต็มดวง"><span class="s-title">ดาราศาสตร์ใต้แสงจันทร์</span><span class="s-init" aria-hidden="true">ภ</span></button></li>
+            <li><button type="button" class="spine" style="--w:72px;--h:245px;--c:#1f3b4d" aria-label="Algorithms by Candlelight — Elena Voss" data-title="Algorithms by Candlelight" data-author="Elena Voss" data-category="คอมพิวเตอร์" data-available="1" data-total="2" data-blurb="Sorting, searching and other small spells for the curious coder."><span class="s-title">Algorithms by Candlelight</span><span class="s-init" aria-hidden="true">E</span></button></li>
+            <li><button type="button" class="spine" style="--w:50px;--h:210px;--c:#4a1a1a" aria-label="เคมีของสีและไฟ — วรรณา ใจกว้าง" data-title="เคมีของสีและไฟ" data-author="วรรณา ใจกว้าง" data-category="วิทยาศาสตร์" data-available="3" data-total="3" data-blurb="ทำไมดอกไม้ไฟจึงมีหลายสี และสีย้อมผ้าทำมาจากอะไร"><span class="s-title">เคมีของสีและไฟ</span><span class="s-init" aria-hidden="true">ว</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 56" aria-hidden="true"><path d="M16 4h8v10l10 18a14 14 0 0 1-28 0l10-18z" fill="rgba(232,236,255,.12)" stroke="#c9cde0" stroke-width="1.5"/><path d="M9 38a12 12 0 0 0 22 0z" fill="#7a7bff" opacity=".85"/><path d="M15 4h10" stroke="#d9b45a" stroke-width="3"/></svg></li>
+          </ul>
           </div>
-        </article>
-        <article class="book">
-          <div class="cover cover--3" aria-hidden="true"><span class="foil-light">บันทึกนักเล่นแร่แปรธาตุ</span></div>
-          <div class="label">
-            <h3>บันทึกนักเล่นแร่แปรธาตุ</h3>
-            <p class="meta">สุรีย์ แก้วมณี<br>หมวด: ประวัติศาสตร์</p>
-            <p class="avail"><span class="stamp stamp--ok">ว่าง 3/4</span></p>
-            <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
+          <div class="plank" aria-hidden="true"></div>
+        </div>
+      </section>
+      <section class="shelf-block" aria-labelledby="shelf-3">
+        <div class="shelf-head">
+          <h2 id="shelf-3">วรรณกรรมคลาสสิก</h2>
+          <p>6 เล่มบนชั้นนี้ &middot; แตะสันหนังสือเพื่อเปิดดู</p>
+        </div>
+        <div class="shelf">
+          <div class="shelf-scroll">
+          <ul class="books">
+            <li><button type="button" class="spine" style="--w:68px;--h:240px;--c:#1f4a3a" aria-label="Alice&#x27;s Adventures in Wonderland — Lewis Carroll" data-title="Alice&#x27;s Adventures in Wonderland" data-author="Lewis Carroll" data-category="วรรณกรรมคลาสสิก" data-available="1" data-total="4" data-blurb="หลุมกระต่ายที่พาเด็กหญิงไปพบโลกที่กลับหัวกลับหาง"><span class="s-title">Alice&#x27;s Adventures in Wonderland</span><span class="s-init" aria-hidden="true">L</span></button></li>
+            <li><button type="button" class="spine" style="--w:56px;--h:215px;--c:#5a3a22" aria-label="Tales of the Midnight Court — Henry Alder" data-title="Tales of the Midnight Court" data-author="Henry Alder" data-category="วรรณกรรมคลาสสิก" data-available="2" data-total="2" data-blurb="Stories whispered between the last clock chime and dawn."><span class="s-title">Tales of the Midnight Court</span><span class="s-init" aria-hidden="true">H</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 44" aria-hidden="true"><path d="M8 40h24" stroke="#d9b45a" stroke-width="3"/><rect x="14" y="22" width="12" height="18" rx="2" fill="#e8dcc0"/><path class="flame" d="M20 8c4 5 4 9 0 12-4-3-4-7 0-12z" fill="#ffbd45"/></svg></li>
+            <li><button type="button" class="spine lean-r" style="--w:46px;--h:185px;--c:#243049" aria-label="บทกวีแห่งทะเลสาบเงิน — มนัส พิมพ์ทอง" data-title="บทกวีแห่งทะเลสาบเงิน" data-author="มนัส พิมพ์ทอง" data-category="วรรณกรรมคลาสสิก" data-available="1" data-total="2" data-blurb="รวมบทกวีว่าด้วยผิวน้ำ แสงเดือน และคนพายเรือ"><span class="s-title">บทกวีแห่งทะเลสาบเงิน</span><span class="s-init" aria-hidden="true">ม</span></button></li>
+            <li><button type="button" class="spine is-out" style="--w:62px;--h:230px;--c:#3b1f3a" aria-label="The Clockmaker&#x27;s Daughter — Ivy Marlowe (ถูกยืมหมด)" data-title="The Clockmaker&#x27;s Daughter" data-author="Ivy Marlowe" data-category="วรรณกรรมคลาสสิก" data-available="0" data-total="1" data-blurb="A girl who can hear every clock in the city, and one that has stopped."><span class="s-title">The Clockmaker&#x27;s Daughter</span><span class="s-init" aria-hidden="true">I</span><span class="ribbon" aria-hidden="true">หมด</span></button></li>
+            <li><button type="button" class="spine" style="--w:52px;--h:205px;--c:#2b2f6b" aria-label="สามราตรีในหอนาฬิกา — พิชญา อัศวิน" data-title="สามราตรีในหอนาฬิกา" data-author="พิชญา อัศวิน" data-category="วรรณกรรมคลาสสิก" data-available="2" data-total="3" data-blurb="สามคืนที่เด็กกลุ่มหนึ่งถูกลืมไว้ในหอนาฬิกาเก่า"><span class="s-title">สามราตรีในหอนาฬิกา</span><span class="s-init" aria-hidden="true">พ</span></button></li>
+            <li class="decor" aria-hidden="true"><svg viewBox="0 0 40 60" aria-hidden="true"><path d="M8 4h24M8 56h24" stroke="#d9b45a" stroke-width="4"/><path d="M11 6c0 14 9 14 9 24S11 40 11 54h18c0-14-9-14-9-24s9-10 9-24z" fill="rgba(232,236,255,.1)" stroke="#c9cde0" stroke-width="1.5"/><path d="M14 52c1-8 6-9 6-14 0 5 5 6 6 14z" fill="#d9b45a" opacity=".8"/></svg></li>
+            <li><button type="button" class="spine" style="--w:58px;--h:225px;--c:#3d2a5c" aria-label="Letters from the Northern Lights — Astrid Nilsen" data-title="Letters from the Northern Lights" data-author="Astrid Nilsen" data-category="วรรณกรรมคลาสสิก" data-available="1" data-total="2" data-blurb="Postcards sent from a village where the sky never sleeps."><span class="s-title">Letters from the Northern Lights</span><span class="s-init" aria-hidden="true">A</span></button></li>
+          </ul>
           </div>
-        </article>
-        <article class="book">
-          <div class="cover cover--4" aria-hidden="true"><span class="foil-light">Alice's Adventures in Wonderland</span></div>
-          <div class="label">
-            <h3>Alice's Adventures in Wonderland</h3>
-            <p class="meta">Lewis Carroll<br>หมวด: วรรณกรรมคลาสสิก</p>
-            <p class="avail"><span class="stamp stamp--ok">ว่าง 1/4</span></p>
-            <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
-          </div>
-        </article>
-        <article class="book">
-          <div class="cover cover--1" aria-hidden="true"><span class="foil-light">ตำราสมุนไพรแห่งป่าลึก</span></div>
-          <div class="label">
-            <h3>ตำราสมุนไพรแห่งป่าลึก</h3>
-            <p class="meta">นภา ชัยวัฒน์<br>หมวด: วิทยาศาสตร์</p>
-            <p class="avail"><span class="stamp stamp--out">ถูกยืมหมด</span> <span class="count">ว่าง 0/2</span></p>
-            <button type="button" class="btn btn-primary" disabled>ยืมหนังสือ</button>
-          </div>
-        </article>
-        <article class="book">
-          <div class="cover cover--2" aria-hidden="true"><span class="foil-light">ฐานข้อมูลเบื้องต้น</span></div>
-          <div class="label">
-            <h3>ฐานข้อมูลเบื้องต้น</h3>
-            <p class="meta">อรทัย สายชล<br>หมวด: คอมพิวเตอร์</p>
-            <p class="avail"><span class="stamp stamp--ok">ว่าง 2/5</span></p>
-            <button type="button" class="btn btn-primary btn-magic">ยืมหนังสือ</button>
-          </div>
-        </article>
-      </div>
-    </section>
+          <div class="plank" aria-hidden="true"></div>
+        </div>
+      </section>
   </div>
+
+<dialog class="book-dialog" aria-labelledby="bd-title">
+  <div class="open-book">
+    <div class="bd-cover" aria-hidden="true"><span id="bd-cover-title"></span></div>
+    <div class="bd-page paper">
+      <p class="eyebrow">Book Lending Shop</p>
+      <h2 id="bd-title"></h2>
+      <p class="meta" id="bd-author"></p>
+      <p id="bd-blurb"></p>
+      <p><span class="stamp stamp--ok" id="bd-stamp"></span></p>
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-magic" id="bd-borrow">ยืมหนังสือ</button>
+        <button type="button" class="btn btn-outline" id="bd-close">ปิด</button>
+      </div>
+    </div>
+  </div>
+</dialog>
 </main>
 
 <!-- footer start -->
 <footer class="site-footer">
-  <div class="container">
-    <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
-    <p>&copy; 2569 Arcanum Library &middot; ห้องสมุดมนตรา &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+  <svg class="skyline" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d="M0 160V110H40V90L50 60 60 90V110H110V80H130V70L145 20 160 70V80H180V120H260V95L290 50 320 95V120H380V100H400L410 70 420 100H440V60L470 5 500 60V130H560V105L600 40 640 105V130H700V90H730L745 55 760 90H790V115H860V80L890 25 920 80V120H980V100H1000L1010 65 1020 100H1060V85H1090L1110 40 1130 85V110H1200V160Z"/>
+    <path class="win" d="M70 110v-14a5 5 0 0 1 10 0v14zM205 150v-16a5 5 0 0 1 10 0v16zM335 120v-14a5 5 0 0 1 10 0v14zM520 130v-16a5 5 0 0 1 10 0v16zM660 130v-14a5 5 0 0 1 10 0v14zM1030 118v-14a5 5 0 0 1 10 0v14z"/>
+    <path class="lit" style="--d:0s" d="M465 75v-16a5 5 0 0 1 10 0v16zM595 100v-16a5 5 0 0 1 10 0v16z"/>
+    <path class="lit" style="--d:-2s" d="M140 70v-14a5 5 0 0 1 10 0v14zM885 85v-16a5 5 0 0 1 10 0v16zM1105 85v-14a5 5 0 0 1 10 0v14z"/>
+    <path class="lit" style="--d:-3.5s" d="M285 100v-14a5 5 0 0 1 10 0v14zM740 90v-14a5 5 0 0 1 10 0v14zM225 150v-16a5 5 0 0 1 10 0v16z"/>
+  </svg>
+  <div class="foot-strip">
+    <div class="container">
+      <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
+      <p>&copy; 2569 Book Lending Shop &middot; ร้านยืมหนังสือ &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+    </div>
   </div>
 </footer>
 <!-- footer end -->
