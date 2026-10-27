@@ -23,13 +23,14 @@
   --s-1: .25rem; --s-2: .5rem; --s-3: 1rem; --s-4: 1.5rem; --s-5: 2.5rem; --s-6: 4rem;
   --fs-h2: clamp(1.9rem, 4.2vw, 2.8rem);
   /* ฟอนต์ */
-  --f-ui: "Kanit", sans-serif;
-  --f-head: "Chonburi", serif;
-  --f-latin: "Cinzel", serif;
-  --f-sc: "IM Fell English SC", "Taviraj", serif;
-  --f-paper: "Taviraj", serif;
-  --f-hand: "Charm", "Taviraj", cursive;
-  --f-type: "Special Elite", "Taviraj", monospace;
+  --f-ui: "Trirong", serif; /* เนื้อหา: ตัวพิมพ์โบราณ อ่านง่าย */
+  --f-head: "Srisakdi", "Trirong", serif; /* หัวข้อไทยแบบตำราเวท */
+  --f-latin: "Almendra SC", "Trirong", serif;
+  --f-display: "Almendra Display", "Almendra SC", serif; /* ชื่อร้านตัวใหญ่เท่านั้น (ตัวโปร่ง อ่านยากถ้าเล็ก) */
+  --f-sc: "IM Fell English SC", "Trirong", serif;
+  --f-paper: "Trirong", serif;
+  --f-hand: "Charm", "Trirong", cursive;
+  --f-type: "Special Elite", "Trirong", monospace;
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
   --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
   --corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M3 38V14Q3 3 14 3H38M9 38V17Q9 9 17 9H38M15 15q7 0 7 7t-7 6q-4-1-3-5' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -41,7 +42,7 @@ html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; font: 400 16px/1.7 var(--f-ui); color: var(--moon); background: var(--night); }
 main { position: relative; z-index: 1; flex: 1; padding-bottom: 2rem; overflow-x: clip; } /* กันแสงเรืองของจดหมายล้นขอบจอ */
 .container { width: min(1120px, 100% - 2rem); margin-inline: auto; }
-h1, h2, h3 { font-family: var(--f-head); font-weight: 400; line-height: 1.3; margin: 0 0 .6rem; }
+h1, h2, h3 { font-family: var(--f-head); font-weight: 700; line-height: 1.3; margin: 0 0 .6rem; }
 p { margin: 0 0 .8rem; }
 a { color: var(--link); text-underline-offset: 3px; }
 a:hover { color: #fff; }
@@ -50,7 +51,7 @@ a:hover { color: #fff; }
 .skip-link { position: absolute; left: .5rem; top: -4rem; background: var(--moon); color: var(--night); padding: .6rem 1rem; z-index: 100; border-radius: 30px; }
 .skip-link:focus { top: .5rem; }
 .typed { font-family: var(--f-type); }
-.eyebrow { margin: 0 0 .4rem; font: 500 .8rem var(--f-latin); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+.eyebrow { margin: 0 0 .4rem; font: 400 .85rem var(--f-latin); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
 .tag { display: inline-block; padding: .15rem .9rem; border: 1px solid rgba(201, 205, 224, .55); border-radius: 30px; font: 500 .75rem var(--f-latin); letter-spacing: .14em; text-transform: uppercase; color: var(--moon); }
 .page-title { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 1rem; text-shadow: 0 0 20px var(--violet-glow); }
 .margin-note { margin: 0 0 1rem; color: var(--mist); }
@@ -76,7 +77,7 @@ a:hover { color: #fff; }
 .nav-bar { position: relative; display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem; padding-block: .7rem; }
 .logo { display: flex; align-items: center; gap: .7rem; min-height: 44px; text-decoration: none; color: var(--moon); }
 .logo-mark { width: 2.2rem; height: 2.2rem; fill: rgba(232, 236, 255, .14); stroke: var(--gold); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 7px var(--violet-glow)); }
-.logo-text { font: 700 1.1rem/1.15 var(--f-latin); letter-spacing: .12em; text-transform: uppercase; }
+.logo-text { font: 400 1.45rem/1.1 var(--f-display); letter-spacing: .02em; }
 .logo-text small { display: block; font: 300 .8rem var(--f-ui); letter-spacing: .05em; text-transform: none; color: var(--mist); }
 .nav-menu { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: .2rem 1.3rem; }
 .nav-menu a:not(.btn) { position: relative; display: inline-flex; align-items: center; min-height: 44px; padding-inline: .2rem; font: 500 .9rem var(--f-ui); letter-spacing: .06em; color: var(--moon); text-decoration: none; }
@@ -176,8 +177,8 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
   background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .14) 0 2px, transparent 2px 10px), linear-gradient(180deg, #5a3a22, var(--wood-1) 60%, var(--wood-2)); }
 .board .eyebrow { margin: 0; font-size: .7rem; }
 .board h1 { margin: .1rem 0 0; line-height: 1.15; color: #f3e2a8; text-shadow: 0 0 16px rgba(242, 179, 91, .55); }
-.h1-latin { display: block; font: 700 clamp(1.25rem, 3.4vw, 2.3rem)/1.1 var(--f-latin); letter-spacing: .08em; text-transform: uppercase; }
-.h1-th { display: block; margin-top: .15rem; font: 400 clamp(1.05rem, 2.4vw, 1.5rem)/1.3 var(--f-head); color: var(--amber-soft); }
+.h1-latin { display: block; font: 400 clamp(1.9rem, 4.6vw, 3.1rem)/1.1 var(--f-display); letter-spacing: .02em; }
+.h1-th { display: block; margin-top: .15rem; font: 700 clamp(1.15rem, 2.6vw, 1.7rem)/1.4 var(--f-head); color: var(--amber-soft); }
 
 .front { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) 22%; gap: 3em; align-items: end; padding: 2.4em 3.4em 0; }
 .shop-window { position: relative; height: 25em; overflow: hidden; border: .8em solid #5a3a22; border-bottom-width: 1.2em; border-radius: .5em .5em 0 0;
