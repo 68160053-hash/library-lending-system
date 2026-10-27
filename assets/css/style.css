@@ -276,7 +276,6 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
   background: var(--dim), linear-gradient(90deg, rgba(0, 0, 0, .55) 0, rgba(255, 255, 255, .14) 3.5%, rgba(0, 0, 0, .28) 7%, transparent 15%), repeating-linear-gradient(45deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 3px), linear-gradient(135deg, rgba(255, 255, 255, .12), rgba(0, 0, 0, .3)), var(--noise), var(--c); }
 .book.is-out .face { --dim: linear-gradient(rgba(8, 10, 20, .35), rgba(8, 10, 20, .35)); }
 .book:hover .face, .book:focus-visible .face { box-shadow: 0 0 22px rgba(242, 179, 91, .5); }
-.book.is-open .face { transform: rotateY(-160deg); }
 .face::before { content: ""; position: absolute; inset: 6cqw 5cqw 6cqw 8cqw; border: 1px solid rgba(217, 174, 78, .75); outline: 1px solid rgba(217, 174, 78, .35); outline-offset: 2px; pointer-events: none; }
 .face::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .26) 50%, transparent 62%) 160% 0 / 250% 100% no-repeat; transition: background-position .8s var(--ease-out); }
 .book:hover .face::after, .book:focus-visible .face::after { background-position: -60% 0; }
@@ -317,18 +316,63 @@ input:focus-visible, select:focus-visible { border-color: var(--violet); box-sha
 .dust { position: absolute; left: var(--x); bottom: 30%; z-index: 2; width: var(--s); height: var(--s); border-radius: 50%; background: #ffd9a0; box-shadow: 0 0 8px #ffcf85; opacity: 0; pointer-events: none; animation: dust var(--t) ease-in-out infinite; animation-delay: var(--d); }
 
 /* ----- 12) กล่องหนังสือที่เปิดออก (dialog) ----- */
-.book-dialog { width: min(780px, 100% - 2rem); max-height: calc(100vh - 2rem); padding: 0; border: 0; border-radius: 6px; overflow: auto; color: var(--ink); background: transparent; box-shadow: 0 0 0 1px rgba(201, 205, 224, .4), 0 0 44px var(--violet-glow); }
-.book-dialog[open] { animation: open-book .35s ease-out; }
+/* dialog โปร่งใส ตัวหนังสือ (.tome) คือสิ่งที่เห็น ค่าเริ่มต้น = เปิดอยู่แล้ว (อ่านได้แม้ไม่มีแอนิเมชัน) */
+.book-dialog { width: min(860px, 100% - 2rem); max-height: none; padding: 0; border: 0; overflow: visible; color: var(--ink); background: transparent; }
 .book-dialog::backdrop { background: rgba(6, 8, 16, .8); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-.open-book { display: grid; grid-template-columns: .8fr 1.2fr; }
-.bd-cover { position: relative; display: grid; place-items: center; padding: 1.6rem 1.8rem 1.6rem 2.2rem; text-align: center; font: 400 1.4rem/1.4 var(--f-latin); color: #f3e2a8;
-  background: linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .4)), var(--noise), var(--c); box-shadow: inset -14px 0 14px -8px rgba(0, 0, 0, .6); }
-.bd-cover::before { content: ""; position: absolute; inset: 14px 22px 14px 14px; border: 1px solid #d9ae4e; outline: 1px solid rgba(217, 174, 78, .55); outline-offset: 3px; }
-.bd-page { padding: 2rem 1.8rem; background: linear-gradient(90deg, var(--paper-deep), var(--sheet) 12%); }
-.bd-page h2 { font-size: 1.6rem; }
-.bd-page .meta { margin: 0 0 .8rem; color: var(--ink-soft); }
-.bd-page .actions { margin-top: 1.2rem; }
+.tome { --tx0: -25%; position: relative; display: grid; grid-template-columns: 1fr 1fr; perspective: 1600px; filter: drop-shadow(0 28px 26px rgba(0, 0, 0, .65)); }
+/* ปกหนังด้านหลัง ใหญ่กว่าหน้ากระดาษ 8px */
+.tome-board { position: absolute; inset: -8px; border-radius: 10px;
+  background: linear-gradient(90deg, transparent 49.5%, rgba(0, 0, 0, .55) 50%, transparent 50.6%), linear-gradient(135deg, rgba(255, 255, 255, .1), rgba(0, 0, 0, .35)), var(--noise), color-mix(in srgb, var(--c, #5b3a29) 60%, #000); }
+.tome-board::after { content: ""; position: absolute; inset: 3px; border: 1px solid rgba(217, 174, 78, .6); border-radius: 7px; }
+.tome-page { position: relative; z-index: 1; min-height: 26rem; padding: 2rem 2rem 1.6rem; background: var(--sheet); }
+/* หน้าซ้าย: ขอบในมืดเข้าหาสัน ขอบนอกเป็นเส้นแผ่นกระดาษซ้อนกัน มุมนอกโค้งมากกว่า */
+.tome-left { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; border-radius: 22px 0 0 14px;
+  background: linear-gradient(270deg, rgba(60, 40, 20, .38), transparent 16%), linear-gradient(180deg, rgba(255, 255, 255, .6), transparent 8%), repeating-linear-gradient(90deg, #cdbb8e 0 1px, transparent 1px 3px) left / 9px 100% no-repeat, var(--paper-deep); }
+.tome-right { max-height: 90vh; overflow: auto; border-radius: 0 22px 14px 0;
+  background: linear-gradient(90deg, rgba(60, 40, 20, .38), transparent 8%), linear-gradient(180deg, rgba(255, 255, 255, .6), transparent 6%), repeating-linear-gradient(90deg, #cdbb8e 0 1px, transparent 1px 3px) right / 9px 100% no-repeat, var(--sheet); }
+.tome-right h2 { font-size: 1.7rem; }
+.tome-right .meta { margin: 0 0 .8rem; color: var(--ink-soft); }
+.tome-right .actions { margin-top: 1.2rem; }
 .bd-price { display: inline-block; margin: 4px; font: 600 1.1rem var(--f-paper); color: var(--ink); }
+.tome-art { position: relative; display: grid; place-items: center; align-content: center; gap: .6rem; width: 62%; aspect-ratio: 3 / 4; padding: 1rem; font: 400 1.15rem/1.35 var(--f-latin); color: #f3e2a8; border-radius: 3px 8px 8px 3px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .4)), var(--noise), var(--c); box-shadow: 0 6px 14px rgba(0, 0, 0, .35); }
+.tome-art::before { content: ""; position: absolute; inset: 8px; border: 1px solid #d9ae4e; }
+.tome-art .emb { width: 2.6rem; height: 2.6rem; }
+.tome-hand { margin: 0; font: 400 1.5rem/1.2 var(--f-hand); color: var(--ink-soft); }
+.tome-flourish { margin: 0; font-size: 1.6rem; line-height: 1; color: var(--gold); }
+/* ปกหน้า: ปิดครึ่งขวา บานพับที่ขอบซ้าย (สัน) ปกติซ่อนไว้ แสดงเฉพาะตอนแอนิเมชัน */
+.tome-cover { position: absolute; z-index: 3; top: 0; bottom: 0; left: 50%; width: 50%; transform-origin: left center; transform-style: preserve-3d; visibility: hidden; pointer-events: none; }
+.cover-front, .cover-back { position: absolute; inset: -8px -8px -8px 0; backface-visibility: hidden; border-radius: 3px 12px 12px 3px; }
+.cover-front { display: grid; place-items: center; padding: 2rem; text-align: center; font: 400 1.9rem/1.4 var(--f-display); color: #f3e2a8; text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+  background: linear-gradient(90deg, rgba(0, 0, 0, .5), rgba(255, 255, 255, .12) 4%, transparent 14%), linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .4)), var(--noise), var(--c); }
+.cover-front::before { content: ""; position: absolute; inset: 22px 22px 22px 30px; border: 1px solid #d9ae4e; outline: 1px solid rgba(217, 174, 78, .55); outline-offset: 3px; }
+.cover-back { transform: rotateY(180deg); background: repeating-linear-gradient(45deg, rgba(120, 60, 40, .25) 0 6px, transparent 6px 12px), repeating-linear-gradient(-45deg, rgba(120, 60, 40, .25) 0 6px, transparent 6px 12px), var(--paper-deep); }
+.tome-ribbon { position: absolute; z-index: 2; left: calc(50% - 5px); top: 100%; width: 10px; height: 2.6rem; margin-top: -4px; background: linear-gradient(90deg, #7a1424, #b3243a 50%, #7a1424); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .book-dialog[open] .tome { animation: tome-glide .9s var(--ease-out) backwards; }
+  .book-dialog[open] .tome-cover { animation: cover-open .9s var(--ease-out) both; }
+  .book-dialog[open] .cover-back { animation: endpaper-fade .9s var(--ease-out) both; }
+  .book-dialog[open] .tome-board { animation: board-in .9s var(--ease-out) backwards; }
+  .book-dialog[open] .tome-page { animation: page-settle .9s var(--ease-out) backwards; }
+  /* หน้าซ้ายต้องมาหลัง .tome-page ไม่งั้นถูกทับ: ซ่อนไว้ใต้ปกตอนหนังสือยังปิด */
+  .book-dialog[open] .tome-left { animation: left-in .9s var(--ease-out) backwards, page-settle .9s var(--ease-out) backwards; }
+}
+/* ด้านในปก (ลายกระดาษรองปก) ค่อยๆ จางให้เห็นหน้าซ้าย แทนที่จะหายวับ */
+@keyframes endpaper-fade { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes tome-glide { from { transform: translateX(var(--tx0)); } }
+@keyframes cover-open { from { transform: rotateY(0); visibility: visible; } 95% { visibility: visible; } to { transform: rotateY(-180deg); visibility: hidden; } }
+@keyframes left-in { 0%, 30% { opacity: 0; } 55% { opacity: 1; } }
+@keyframes board-in { from { clip-path: inset(-10px -10px -10px 50%); } to { clip-path: inset(-10px); } }
+@keyframes page-settle { from { transform: scale(.98); } }
+
+/* มือถือ: เห็นหน้าเดียว (หน้าขวา) ปกเปิดจากขอบซ้าย */
+@media (max-width: 639px) {
+  .tome { --tx0: 0; grid-template-columns: 1fr; }
+  .tome-left, .tome-ribbon { display: none; }
+  .tome-right { padding: 1.4rem 1.2rem; border-radius: 6px 18px 14px 6px; }
+  .tome-cover { left: 0; width: 100%; }
+}
 
 /* เลื่อนเจอแล้วค่อยลอยขึ้น: เฉพาะ transform (JS ใส่ class js ให้ html ก่อน ถ้าไม่มี JS เนื้อหาอยู่ที่เดิมเลย) */
 .reveal { transition: transform var(--t-slow) var(--ease-out); }
@@ -401,7 +445,6 @@ tbody .stamp { animation: thunk .5s ease-out backwards; animation-delay: calc(va
 @keyframes dust { 0% { opacity: 0; transform: translate(0, 0); } 25% { opacity: .85; } 100% { opacity: 0; transform: translate(var(--dx), -150px); } }
 @keyframes lamp { from { opacity: .55; } to { opacity: .95; } }
 @keyframes wiggle { 0%, 100% { transform: perspective(700px) rotate(0); } 20% { transform: perspective(700px) translateY(-10px) rotate(-3deg); } 40% { transform: perspective(700px) translateY(-12px) rotate(3deg); } 60% { transform: perspective(700px) translateY(-8px) rotate(-2deg); } 80% { transform: perspective(700px) translateY(-3px) rotate(1deg); } }
-@keyframes open-book { from { transform: scale(.94); } to { transform: none; } }
 @keyframes thunk { from { opacity: .6; transform: scale(1.4) rotate(-10deg); } 60% { opacity: 1; transform: scale(.96) rotate(var(--rot, -3deg)); } to { opacity: 1; transform: scale(1) rotate(var(--rot, -3deg)); } }
 @keyframes unfold { from { transform: scaleY(.96); } to { transform: none; } }
 @keyframes spark-out { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))); opacity: 0; } }
@@ -429,9 +472,6 @@ tbody .stamp { animation: thunk .5s ease-out backwards; animation-delay: calc(va
   .ask, .cols { grid-template-columns: 1fr; }
   .ask { padding: 1.2rem 1.2rem 1.5rem; }
   .letter { padding-inline: 1.2rem; }
-  .open-book { grid-template-columns: 1fr; }
-  .bd-cover { min-height: 130px; padding: 1.2rem 1.6rem; }
-  .bd-cover::before { inset: 10px; }
   .panel { padding: 1rem; }
   .checkout-card, .ledger { padding: 2rem 1rem 1.4rem; }
 }

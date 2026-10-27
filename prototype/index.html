@@ -176,9 +176,17 @@
   </div>
 
 <dialog class="book-dialog" aria-labelledby="bd-title">
-  <div class="open-book">
-    <div class="bd-cover" aria-hidden="true"><span id="bd-cover-title"></span></div>
-    <div class="bd-page paper">
+  <div class="tome"><!-- หนังสือที่เปิดอยู่ตรงหน้า: ปกหนังหมุนเปิดรอบสันหนังสือ -->
+    <div class="tome-board" aria-hidden="true"></div>
+    <section class="tome-page tome-left" aria-hidden="true">
+      <div class="tome-art">
+        <svg class="emb" viewBox="0 0 24 24"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>
+        <span id="bd-cover-title"></span>
+      </div>
+      <p class="tome-hand">อ่านแล้วอย่าลืมคืนนะ</p>
+      <p class="tome-flourish">❦</p>
+    </section>
+    <section class="tome-page tome-right paper">
       <p class="eyebrow">Book Lending Shop</p>
       <h2 id="bd-title"></h2>
       <p class="meta" id="bd-author"></p>
@@ -189,7 +197,12 @@
         <button type="button" class="btn btn-outline" id="bd-buy" hidden>ซื้อเล่มนี้</button>
         <button type="button" class="btn btn-outline" id="bd-close">ปิด</button>
       </div>
+    </section>
+    <div class="tome-cover" aria-hidden="true">
+      <div class="cover-front"><span id="bd-front-title"></span></div>
+      <div class="cover-back"></div>
     </div>
+    <span class="tome-ribbon" aria-hidden="true"></span>
   </div>
 </dialog>
 </main>

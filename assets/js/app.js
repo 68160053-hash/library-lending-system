@@ -56,18 +56,17 @@ document.addEventListener('click', function (e) {
   }
 });
 
-// ----- 3) กล่องรายละเอียด: คลิกปก = ปกเปิดออก (450ms) แล้วค่อยเปิด dialog -----
+// ----- 3) กล่องรายละเอียด: คลิกปก = dialog เป็นหนังสือที่ค่อย ๆ เปิดออกเอง (แอนิเมชันอยู่ใน CSS) -----
 var dlg = document.querySelector('.book-dialog');
 var lastBook = null;
 
 function showBook(book) {
-  book.classList.remove('is-open');
   if (dlg.open) return;
   lastBook = book; // จำเล่มล่าสุดไว้คืน focus
   var d = book.dataset;
   var left = Number(d.available);
   $('bd-title').textContent = d.title;
-  $('bd-cover-title').textContent = d.title;
+  $('bd-cover-title').textContent = $('bd-front-title').textContent = d.title;
   $('bd-author').textContent = d.author + ' · หมวด: ' + d.category;
   $('bd-blurb').textContent = d.blurb || '';
   $('bd-stamp').textContent = left > 0 ? 'ว่าง ' + left + '/' + d.total : 'ถูกยืมหมด';
@@ -83,9 +82,7 @@ if (dlg) {
   document.addEventListener('click', function (e) {
     var book = e.target.closest('.book');
     if (!book) return;
-    if (reduceMotion) { showBook(book); return; } // ลดการเคลื่อนไหว: เปิดทันที ไม่รอปกเปิด
-    book.classList.add('is-open');
-    setTimeout(function () { showBook(book); }, 450);
+    showBook(book);
   });
   $('bd-close').addEventListener('click', function () { dlg.close(); });
   dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); }); // คลิกฉากมืดด้านนอกก็ปิด
