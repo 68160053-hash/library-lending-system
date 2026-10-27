@@ -1,0 +1,2 @@
+# Angsila (Apache): open the PHP app first; index.html is only the GitHub Pages redirect to the prototype
+DirectoryIndex index.php index.html

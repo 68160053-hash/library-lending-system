@@ -1,7 +1,9 @@
 # ความลับ: ต้องมีไฟล์นี้ก่อน git add ครั้งแรก
 .env
 .env.*
-secret/
+secret/*
+!secret/config.example.php
+!secret/.htaccess
 
 # ขยะของระบบ/editor
 *.log

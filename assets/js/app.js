@@ -17,12 +17,15 @@ if (toggle && menu) {
 }
 
 // ----- 1.5) ฟอร์มต้นแบบ: GitHub Pages รับ POST ไม่ได้ จึงดัก submit แล้วไปหน้าถัดไปเฉยๆ (ไม่ส่งข้อมูลไปไหน) -----
-document.querySelectorAll('form[data-demo-next]').forEach(function (f) {
-  f.addEventListener('submit', function (e) {
-    e.preventDefault();
-    location.href = f.dataset.demoNext;
+// ทำเฉพาะบน github.io เท่านั้น: หน้า PHP จริงต้อง submit ได้ตามปกติ ห้ามถูกยกเลิก
+if (location.hostname.endsWith('github.io')) {
+  document.querySelectorAll('form[data-demo-next]').forEach(function (f) {
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      location.href = f.dataset.demoNext;
+    });
   });
-});
+}
 
 // ----- 2) ประกายเวทมนตร์ (ทอง/ม่วงสลับกัน) -----
 document.addEventListener('click', function (e) {

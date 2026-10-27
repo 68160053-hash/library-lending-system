@@ -85,23 +85,24 @@ CREATE TABLE IF NOT EXISTS lib_order_items (
 
 -- ===== ข้อมูลตัวอย่าง (รันซ้ำได้: ข้ามเฉพาะแถวที่ซ้ำ แต่ error อื่นยังแจ้งตามปกติ) =====
 INSERT INTO lib_categories (name) VALUES
-  ('Computer Science'), ('Fiction'), ('Business')
+  ('นิยายแฟนตาซี'), ('วิทยาศาสตร์'), ('ประวัติศาสตร์'), ('วรรณกรรมคลาสสิก'), ('คอมพิวเตอร์')
 ON DUPLICATE KEY UPDATE name = name;
 
 -- ISBN ด้านล่างเป็นค่าสมมติสำหรับทดสอบ
 INSERT INTO lib_books
   (category_id, title, author, isbn, copies_total, copies_available, sale_price, sale_stock) VALUES
-  ((SELECT category_id FROM lib_categories WHERE name='Computer Science'),
+  ((SELECT category_id FROM lib_categories WHERE name='คอมพิวเตอร์'),
    'Database System Concepts', 'Silberschatz', 'SAMPLE-0001', 3, 3, 450.00, 5),
-  ((SELECT category_id FROM lib_categories WHERE name='Fiction'),
+  ((SELECT category_id FROM lib_categories WHERE name='นิยายแฟนตาซี'),
    'Sample Novel', 'Sample Author', 'SAMPLE-0002', 2, 2, NULL, 0),
-  ((SELECT category_id FROM lib_categories WHERE name='Business'),
-   'Sample Business Book', 'Sample Author', 'SAMPLE-0003', 1, 1, 220.00, 2)
+  ((SELECT category_id FROM lib_categories WHERE name='ประวัติศาสตร์'),
+   'Sample History Book', 'Sample Author', 'SAMPLE-0003', 1, 1, 220.00, 2)
 ON DUPLICATE KEY UPDATE isbn = isbn;
 
 -- placeholder ไม่ใช่ hash จริง -> password_verify เป็น false จึง login ไม่ได้จนกว่าจะแทนที่
 -- สร้าง hash ในเครื่องตัวเอง (อย่า commit รหัสผ่านจริง):
---   php -r "echo password_hash('รหัสของคุณ', PASSWORD_DEFAULT);"
+--   php -r "echo password_hash(trim(fgets(STDIN)), PASSWORD_DEFAULT);"
+--   แล้วพิมพ์รหัสตอนโปรแกรมรอ (รหัสจะไม่ค้างในประวัติคำสั่ง)
 INSERT INTO lib_users (email, password_hash, full_name, role) VALUES
   ('member@example.com', 'REPLACE_WITH_BCRYPT_HASH', 'Sample Member', 'member'),
   ('admin@example.com',  'REPLACE_WITH_BCRYPT_HASH', 'Sample Admin',  'admin')

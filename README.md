@@ -13,12 +13,23 @@ TODO: สรุป 2-3 บรรทัดจาก `docs/proposal.md`
 - แอดมิน: ทุกอย่างของเจ้าหน้าที่ + จัดการบทบาทผู้ใช้
 
 ## เทคโนโลยี
-PHP 8 (procedural mysqli), MySQL 8, HTML/CSS, โฮสต์ที่ Angsila
+PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที่ Angsila
 
 ## ติดตั้ง
 1. import `sql/schema.sql` ผ่าน phpMyAdmin
-2. (Milestone 2) คัดลอก `config/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง — ไฟล์ตัวอย่างนี้จะเพิ่มตอนเริ่มเขียน PHP; `secret/` ถูก git-ignore
-3. สมัครสมาชิกผ่านหน้า register ไม่มีรหัสผ่านใน repo
+2. คัดลอก `secret/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง (ไฟล์นี้ถูก git-ignore และ `secret/.htaccess` บล็อกการเข้าทางเว็บ)
+3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีรหัสผ่านใน repo
+4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'staff' WHERE email = 'อีเมลของคุณ';` แล้วเข้าสู่ระบบใหม่
+
+## ความปลอดภัย
+- รหัสผ่านเก็บด้วย bcrypt (`password_hash` / `password_verify`)
+- ทุกคำสั่ง SQL ที่มีค่าจากผู้ใช้ใช้ prepared statement
+- `session_regenerate_id(true)` ตอนเข้าสู่ระบบ และคุกกี้ session เป็น HttpOnly / SameSite=Lax
+- CSRF token ในทุกฟอร์ม POST รวมถึงออกจากระบบ (logout เป็น POST ไม่ใช่ลิงก์)
+- `htmlspecialchars` (ฟังก์ชัน `h()`) ทุกค่าที่แสดงบนหน้า
+- ตรวจบทบาทที่ฝั่งเซิร์ฟเวอร์ (`require_staff()`) ไม่ได้อาศัยแค่ซ่อนเมนู
+- ใส่ `user_id` ของเจ้าของใน WHERE (เช่น ต่ออายุ) สมาชิกจึงแก้ `loan_id` เพื่อต่ออายุของคนอื่นไม่ได้
+- ความลับ (`secret/config.php`, `.env`) ถูก git-ignore
 
 ## เอกสาร
 - `docs/milestone1.md` ขอบเขต, use case, ER, data dictionary, แผนงาน
