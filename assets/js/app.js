@@ -226,6 +226,14 @@ if (reveals.length && 'IntersectionObserver' in window && !reduceMotion) {
   reveals.forEach(function (el) { io.observe(el); });
 }
 
+// ----- 8.5) ลดอาการหน่วง: ส่วนไหนเลื่อนพ้นจอ ก็หยุดแอนิเมชันของส่วนนั้นไว้ก่อน -----
+if ('IntersectionObserver' in window) {
+  var sleeper = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { en.target.classList.toggle('is-offscreen', !en.isIntersecting); });
+  });
+  document.querySelectorAll('#hero, .feature, .site-footer').forEach(function (el) { sleeper.observe(el); });
+}
+
 // ----- 9) สุ่มเล่มหนึ่งให้ขยับเองทุก 6-9 วินาที -----
 function wiggle() {
   var books = document.querySelectorAll('.books li:not([hidden]) .book:not(.is-out)');
