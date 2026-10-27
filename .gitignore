@@ -1,0 +1,11 @@
+# ความลับ: ต้องมีไฟล์นี้ก่อน git add ครั้งแรก
+.env
+.env.*
+secret/
+
+# ขยะของระบบ/editor
+*.log
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
