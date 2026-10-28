@@ -9,9 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     $pass = (string)($_POST['password'] ?? '');
     $confirm = (string)($_POST['password_confirm'] ?? '');
+    // Step 1.5: at most 10 sign-ups per IP per hour (stops scripts that fill the user table)
+    $limited = too_many_attempts($conn, 'register', '', 10, 60);
     // Step 2: validate on the server (the browser's required/minlength can be bypassed)
-    if (mb_strlen($name) < 2 || mb_strlen($name) > 100) $error = 'ชื่อต้องยาว 2-100 ตัวอักษร';
+    if ($limited) { http_response_code(429); $error = 'สมัครบ่อยเกินไป กรุณารอสักครู่'; }
+    elseif (mb_strlen($name) < 2 || mb_strlen($name) > 100) $error = 'ชื่อต้องยาว 2-100 ตัวอักษร';
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 120) $error = 'อีเมลไม่ถูกต้อง';
+    elseif (preg_match('/[\x00-\x1f\x7f]/', $pass)) $error = 'รหัสผ่านมีอักขระที่ใช้ไม่ได้'; // bcrypt stops reading at a NUL byte
     elseif (strlen($pass) < 8 || strlen($pass) > 72) $error = 'รหัสผ่านต้องยาว 8-72 ตัวอักษร'; // 72 = bcrypt limit
     elseif ($pass !== $confirm) $error = 'รหัสผ่านและการยืนยันไม่ตรงกัน';
     else {
@@ -32,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errno = mysqli_stmt_errno($stmt);
             mysqli_stmt_close($stmt);
             // Step 5: success -> login page. Error 1062 = UNIQUE email hit (two people at once); anything else is a real fault.
-            if ($ok) { header('Location: login.php?registered=1'); exit; }
+            if ($ok) { log_attempt($conn, 'register', ''); header('Location: login.php?registered=1'); exit; }
             $error = $errno === 1062 ? 'อีเมลนี้มีผู้ใช้แล้ว' : 'สมัครไม่สำเร็จ ลองใหม่อีกครั้ง';
         }
     }

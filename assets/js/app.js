@@ -71,7 +71,7 @@ function showBook(book) {
   $('bd-blurb').textContent = d.blurb || '';
   $('bd-stamp').textContent = left > 0 ? 'ว่าง ' + left + '/' + d.total : 'ถูกยืมหมด';
   $('bd-stamp').className = left > 0 ? 'stamp stamp--ok' : 'stamp stamp--out';
-  $('bd-borrow').disabled = left === 0; // หมดแล้วยืมไม่ได้ (แต่ซื้อได้ถ้ามีราคาขาย)
+  $('bd-borrow').disabled = left === 0 || $('bd-borrow').hasAttribute('data-soon'); // หมดแล้วยืมไม่ได้ (แต่ซื้อได้ถ้ามีราคาขาย)
   $('bd-price').hidden = $('bd-buy').hidden = !d.sale; // มีราคาขายถึงโชว์ราคาและปุ่มซื้อ
   $('bd-price').textContent = d.sale ? 'ซื้อได้ ฿' + d.sale : '';
   dlg.style.setProperty('--c', book.style.getPropertyValue('--c')); // ปกใช้สีเดียวกับเล่ม

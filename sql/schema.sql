@@ -83,6 +83,17 @@ CREATE TABLE IF NOT EXISTS lib_order_items (
     REFERENCES lib_books (book_id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- บันทึกการล็อกอินผิด/การสมัคร ใช้จำกัดจำนวนครั้ง (กันเดารหัสผ่านและสมัครรัว) ลบแถวเก่าอัตโนมัติจากโค้ด
+CREATE TABLE IF NOT EXISTS lib_attempts (
+  attempt_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  kind       ENUM('login','register') NOT NULL,
+  ip         VARCHAR(45) NOT NULL,
+  email      VARCHAR(120) NOT NULL DEFAULT '',
+  tried_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (attempt_id),
+  KEY idx_lib_attempts_lookup (kind, ip, tried_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ===== ข้อมูลตัวอย่าง (รันซ้ำได้: ข้ามเฉพาะแถวที่ซ้ำ แต่ error อื่นยังแจ้งตามปกติ) =====
 INSERT INTO lib_categories (name) VALUES
   ('นิยายแฟนตาซี'), ('วิทยาศาสตร์'), ('ประวัติศาสตร์'), ('วรรณกรรมคลาสสิก'), ('คอมพิวเตอร์')

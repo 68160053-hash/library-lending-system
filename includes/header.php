@@ -1,4 +1,5 @@
-<?php
+<?php if (!function_exists('h')) { http_response_code(403); exit; } // never run on its own: only included by a page that loaded auth.php
+
 // Shared page top: <head>, night-sky background, site header + nav. Set $pageTitle before including.
 // Every dynamic value goes through h() (from auth.php).
 $navRole = $_SESSION['role'] ?? '';
@@ -40,7 +41,7 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
-        <?php /* TODO(A): add the catalogue link here when the book list page is merged */ ?>
+        <li><a href="index.php"<?= basename($_SERVER['SCRIPT_NAME']) === 'index.php' ? ' aria-current="page"' : '' ?>>หนังสือทั้งหมด</a></li>
         <?php if ($navRole === ''): ?>
         <li><a href="login.php">เข้าสู่ระบบ</a></li>
         <li><a href="register.php">สมัครสมาชิก</a></li>

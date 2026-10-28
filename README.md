@@ -32,11 +32,14 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - ความลับ (`secret/config.php`, `.env`) ถูก git-ignore
 
 - สิทธิ์เจ้าหน้าที่อ่านจากฐานข้อมูลทุกครั้งที่เปิดหน้า staff ลดบทบาทแล้วมีผลทันที
-- ล็อกอินผิด 5 ครั้งล็อก 1 นาที (กันสคริปต์เดารหัสแบบง่าย)
+- จำกัดจำนวนครั้ง เก็บในตาราง `lib_attempts` (ล้างคุกกี้แล้วก็หนีไม่พ้น): ล็อกอินผิด 5 ครั้งต่ออีเมล หรือ 30 ครั้งต่อ IP ใน 15 นาทีโดนล็อก, สมัครได้ 10 ครั้งต่อ IP ต่อชั่วโมง
+- ส่วนหัวความปลอดภัยทุกหน้า: CSP (รันเฉพาะสคริปต์ของเราเอง), X-Frame-Options DENY, nosniff, Referrer-Policy, ซ่อน X-Powered-By, `Cache-Control: no-store` เมื่อล็อกอิน
+- session หมดอายุเมื่อไม่ใช้ 30 นาทีหรือครบ 8 ชั่วโมง, เปลี่ยน session id และ CSRF token ตอนล็อกอิน
+- รหัสผ่านห้ามมีอักขระควบคุม (bcrypt อ่านถึงแค่ NUL)
 
 ## ทดสอบความปลอดภัย
-`tests/sectest.mjs` (32 ข้อ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
-`DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` และ `node tests/sectest.mjs`
+`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/sectest.mjs` และ `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
 ก่อน merge PR ของเพื่อนให้รันซ้ำทุกครั้ง
 
 ## กติกาเขียนโค้ดสำหรับเพื่อน (ตอนทำ PR)

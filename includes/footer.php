@@ -1,4 +1,5 @@
-<?php // Shared page bottom: footer + skyline + script ?>
+<?php if (!function_exists('h')) { http_response_code(403); exit; } // never run on its own: only included by a page that loaded auth.php
+ // Shared page bottom: footer + skyline + script ?>
 <footer class="site-footer">
   <svg class="skyline" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <path d="M0 160V110H40V90L50 60 60 90V110H110V80H130V70L145 20 160 70V80H180V120H260V95L290 50 320 95V120H380V100H400L410 70 420 100H440V60L470 5 500 60V130H560V105L600 40 640 105V130H700V90H730L745 55 760 90H790V115H860V80L890 25 920 80V120H980V100H1000L1010 65 1020 100H1060V85H1090L1110 40 1130 85V110H1200V160Z"/>

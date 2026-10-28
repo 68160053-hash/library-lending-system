@@ -27,6 +27,7 @@ function client() {
 }
 
 // clean previous runs
+sql('DELETE FROM lib_attempts');
 sql("DELETE l FROM lib_loans l JOIN lib_users u USING(user_id) WHERE u.email LIKE '%@t.test'; DELETE FROM lib_users WHERE email LIKE '%@t.test';");
 
 const A = client(), B = client(), S = client();
@@ -69,10 +70,10 @@ ok('T8 SQL injection in login does not log in', !r.loc.includes('my-loans') && !
 r = await A.req('login.php', { method: 'POST', form: { email: 'a@t.test', password: 'password123' } });
 ok('T9 login without CSRF token -> 403', r.status === 403);
 
-const sidBefore = A.jar.PHPSESSID;
+const sidBefore = A.jar.bls_session;
 r = await A.req('login.php', { method: 'POST', form: { email: 'a@t.test', password: 'password123', csrf: t } });
 ok('T10 member login ok -> my-loans.php', r.status === 302 && r.loc.includes('my-loans.php'), r.loc);
-ok('T11 session id changes after login (session_regenerate_id)', A.jar.PHPSESSID && A.jar.PHPSESSID !== sidBefore);
+ok('T11 session id changes after login (session_regenerate_id)', A.jar.bls_session && A.jar.bls_session !== sidBefore);
 ok('T12 session cookie is HttpOnly + SameSite=Lax', /httponly/i.test(A.lastSetCookie) && /samesite=lax/i.test(A.lastSetCookie), A.lastSetCookie);
 
 r = await A.req('my-loans.php');

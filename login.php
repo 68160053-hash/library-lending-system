@@ -4,14 +4,12 @@ if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    // Simple brake against password guessing: 5 wrong tries lock this session for 60 seconds
-    // (stops a naive script; a real attacker can start a new session).
-    if (isset($_SESSION['locked_until']) && time() >= $_SESSION['locked_until']) unset($_SESSION['fail_count'], $_SESSION['locked_until']); // lock expired: count again from 0
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     $password = (string)($_POST['password'] ?? '');
-    if (($_SESSION['fail_count'] ?? 0) >= 5) {
+    // Brake against password guessing: 5 wrong tries for the same email from one IP, or 30 from one IP, in 15 minutes
+    if (too_many_attempts($conn, 'login', $email, 5, 15) || too_many_attempts($conn, 'login', '', 30, 15)) {
         http_response_code(429);
-        $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 1 นาที';
+        $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 15 นาที';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
     } else {
@@ -30,14 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $hash) && $found) {
             // Step 4: new session id (stops session fixation) and remember who logged in.
             session_regenerate_id(true);
-            unset($_SESSION['fail_count'], $_SESSION['locked_until']);
+            $_SESSION['csrf'] = bin2hex(random_bytes(32)); // fresh token for the new login
+            $_SESSION['login_at'] = $_SESSION['last_seen'] = time();
             $_SESSION['user_id'] = $userId; $_SESSION['full_name'] = $fullName; $_SESSION['role'] = $role;
             // Step 5: go to the private page (staff start at the overdue list).
             header('Location: ' . (($role === 'staff' || $role === 'admin') ? 'overdue.php' : 'my-loans.php')); exit;
         }
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'; // same message for unknown email and wrong password
-        $_SESSION['fail_count'] = ($_SESSION['fail_count'] ?? 0) + 1;
-        if ($_SESSION['fail_count'] >= 5) $_SESSION['locked_until'] = time() + 60;
+        log_attempt($conn, 'login', $email);
     }
 }
 $pageTitle = 'เข้าสู่ระบบ';
