@@ -12,7 +12,7 @@ if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function csrf_field() { echo '<input type="hidden" name="csrf" value="'.h($_SESSION['csrf']).'">'; }
 function verify_csrf() {
-    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) { http_response_code(403); exit('Invalid CSRF token'); }
+    if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) { http_response_code(403); exit('หน้าหมดอายุหรือแบบฟอร์มไม่ถูกต้อง <a href="login.php">กลับไปลองใหม่</a>'); }
 }
 function require_login() {
     if (empty($_SESSION['user_id'])) { header('Location: login.php'); exit; }

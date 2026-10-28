@@ -3,7 +3,7 @@
 // and: DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092
 import { execFileSync } from 'node:child_process';
 const BASE = 'http://127.0.0.1:8092/';
-const MYSQL = 'C:/xampp/mysql/bin/mysql.exe';
+const MYSQL = process.env.MYSQL ?? 'C:/xampp/mysql/bin/mysql.exe';
 const sql = (q) => execFileSync(MYSQL, ['-h', '127.0.0.1', '-P', '3399', '-u', 'root', '--default-character-set=utf8mb4', '-N', '-B', 'lib_sec', '-e', q]).toString().trim();
 
 let pass = 0, fail = 0;

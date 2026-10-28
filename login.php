@@ -6,13 +6,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     // Simple brake against password guessing: 5 wrong tries lock this session for 60 seconds
     // (stops a naive script; a real attacker can start a new session).
-    if (($_SESSION['fail_count'] ?? 0) >= 5 && time() < ($_SESSION['locked_until'] ?? 0)) {
-        http_response_code(429);
-        $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 1 นาที';
-    } else {
+    if (isset($_SESSION['locked_until']) && time() >= $_SESSION['locked_until']) unset($_SESSION['fail_count'], $_SESSION['locked_until']); // lock expired: count again from 0
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     $password = (string)($_POST['password'] ?? '');
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+    if (($_SESSION['fail_count'] ?? 0) >= 5) {
+        http_response_code(429);
+        $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 1 นาที';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
     } else {
         // Step 1: one user by email, prepared statement (the email is never concatenated into SQL).
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $found = mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
         // Step 3: compare with password_verify against the stored hash, never with ==.
-        // An unknown email is checked against a dummy hash too, so both cases take the same time.
+        // An unknown email is checked against a dummy hash too, so both cases take about the same time.
         if (!$found) $hash = '$2y$10$zzb7tZBBW2Qrh3AJ5xM2g.LK5f8pCE8.ugOd7V5/51CyTxuHsC0Gm';
         if (password_verify($password, $hash) && $found) {
             // Step 4: new session id (stops session fixation) and remember who logged in.
@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'; // same message for unknown email and wrong password
         $_SESSION['fail_count'] = ($_SESSION['fail_count'] ?? 0) + 1;
         if ($_SESSION['fail_count'] >= 5) $_SESSION['locked_until'] = time() + 60;
-    }
     }
 }
 $pageTitle = 'เข้าสู่ระบบ';
