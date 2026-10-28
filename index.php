@@ -14,8 +14,9 @@ while ($res && ($row = mysqli_fetch_assoc($res))) $cats[] = $row;
 $like = '%' . addcslashes($q, '%_\\') . '%';
 $sql = 'SELECT b.book_id, b.category_id, c.name, b.title, b.author, b.copies_total, b.copies_available, b.sale_price
         FROM lib_books b JOIN lib_categories c ON c.category_id = b.category_id
-        WHERE (? = "" OR b.title LIKE ? OR b.author LIKE ?) AND (? = "" OR c.name = ?)
-        ORDER BY b.category_id, b.title';
+        WHERE (CHAR_LENGTH(?) = 0 OR b.title LIKE ? OR b.author LIKE ?) AND (CHAR_LENGTH(?) = 0 OR c.name = ?)
+        ORDER BY b.category_id, b.title
+        LIMIT 300';
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, 'sssss', $q, $like, $like, $catName, $catName);
 mysqli_stmt_execute($stmt);

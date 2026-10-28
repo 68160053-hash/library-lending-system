@@ -186,11 +186,13 @@ if (items.length) {
   });
   $('q').addEventListener('input', applyFilter);
   $('category').addEventListener('change', applyFilter);
-  $('q').form.addEventListener('submit', function (e) { // ต้นแบบนี้กรองสดอยู่แล้ว จึงไม่ต้องโหลดหน้าใหม่
-    e.preventDefault();
-    applyFilter();
-    $('shelves').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-  });
+  if (location.hostname.endsWith('github.io')) { // เฉพาะต้นแบบ: PHP จริงต้องส่ง GET ให้เซิร์ฟเวอร์กรองเอง (กว้างขึ้นจากผลที่กรองแล้วได้)
+    $('q').form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      applyFilter();
+      $('shelves').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  }
 }
 
 // ----- 7) หนังสือแนะนำคืนนี้: ลูกศรสลับ 3 เล่ม (เล่มที่มี data-pick) -----

@@ -141,3 +141,4 @@
 5. `foreach` สร้างปกหนังสือ (ชั้นละหมวด) แถวตาราง จดหมายแดง; `--c` ของปกมาจากฐานข้อมูลหรือสุ่มจาก id; `is-out` เมื่อ `copies_available = 0`; `data-sale` ใส่เมื่อมี `sale_price`; การกรองป้ายหมวด/ค้นหาให้ทำด้วย GET + `WHERE ... LIKE ?` (prepared statement) ส่วน JS เป็นแค่ส่วนเสริม
 6. ปุ่ม "ยืมหนังสือ" ใน dialog ตอนนี้เป็น `type="button"` ของจริงต้องห่อด้วย `<form method="post">` + csrf_token + hidden book_id (ให้ JS ใส่ค่า `data-id` ของปก) ปุ่ม "ซื้อเล่มนี้" ก็ต้องเป็นฟอร์ม POST + CSRF เช่นกัน และตรวจซ้ำฝั่ง PHP; ปุ่ม disabled ต้องตรวจฝั่งเซิร์ฟเวอร์ด้วย
 7. ลิงก์ "ออกจากระบบ" ของจริงควรเป็นฟอร์ม POST + CSRF; SQL ใช้ prepared statement เสมอ
+8. หน้าร้านมี 2 สำเนา: `prototype/index.html` (ต้นแบบบน GitHub Pages) และ `index.php` (ดึงจาก DB) แก้ดีไซน์หน้าร้านต้องแก้ทั้งสองที่ ส่วนปุ่ม "ยืมหนังสือ" ใน `index.php` มี `data-soon` อยู่ ให้ลบออกเมื่อมี `borrow.php`

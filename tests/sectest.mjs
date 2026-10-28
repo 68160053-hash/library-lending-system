@@ -4,6 +4,7 @@
 import { execFileSync } from 'node:child_process';
 const BASE = 'http://127.0.0.1:8092/';
 const MYSQL = process.env.MYSQL ?? 'C:/xampp/mysql/bin/mysql.exe';
+if (!/sec|test/.test(process.env.DB_NAME ?? 'lib_sec')) throw new Error('refusing to run: DB_NAME must be a throwaway test database (name contains sec or test)');
 const sql = (q) => execFileSync(MYSQL, ['-h', '127.0.0.1', '-P', '3399', '-u', 'root', '--default-character-set=utf8mb4', '-N', '-B', 'lib_sec', '-e', q]).toString().trim();
 
 let pass = 0, fail = 0;
@@ -152,9 +153,9 @@ r = await S.req('overdue.php');
 ok('T31 demoted staff loses access at once (no re-login)', r.status === 403, 'status ' + r.status);
 const L = client();
 t = await L.token('login.php');
-for (let i = 0; i < 5; i++) await L.req('login.php', { method: 'POST', form: { email: 'b@t.test', password: 'wrongpass' + i, csrf: t } });
+for (let i = 0; i < 10; i++) await L.req('login.php', { method: 'POST', form: { email: 'b@t.test', password: 'wrongpass' + i, csrf: t } });
 r = await L.req('login.php', { method: 'POST', form: { email: 'b@t.test', password: 'password456', csrf: t } });
-ok('T32 5 wrong tries lock login even with the right password', r.status === 429 && !r.loc, 'status ' + r.status);
+ok('T32 10 wrong tries lock login even with the right password', r.status === 429 && !r.loc, 'status ' + r.status);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 sql("DELETE l FROM lib_loans l JOIN lib_users u USING(user_id) WHERE u.email LIKE '%@t.test'; DELETE FROM lib_users WHERE email LIKE '%@t.test';");

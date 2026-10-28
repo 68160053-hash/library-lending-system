@@ -6,8 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     $password = (string)($_POST['password'] ?? '');
-    // Brake against password guessing: 5 wrong tries for the same email from one IP, or 30 from one IP, in 15 minutes
-    if (too_many_attempts($conn, 'login', $email, 5, 15) || too_many_attempts($conn, 'login', '', 30, 15)) {
+    // Brake against password guessing: 10 wrong tries for the same email from one IP, or 100 from one IP, in 15 minutes (shared campus Wi-Fi means one IP can be many students)
+    if (too_many_attempts($conn, 'login', $email, 10, 15) || too_many_attempts($conn, 'login', '', 100, 15)) {
         http_response_code(429);
         $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 15 นาที';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
