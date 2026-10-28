@@ -40,7 +40,7 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
-        <li><a href="index.php">หนังสือทั้งหมด</a></li>
+        <?php /* TODO(A): add the catalogue link here when the book list page is merged */ ?>
         <?php if ($navRole === ''): ?>
         <li><a href="login.php">เข้าสู่ระบบ</a></li>
         <li><a href="register.php">สมัครสมาชิก</a></li>

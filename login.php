@@ -4,6 +4,12 @@ if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
+    // Simple brake against password guessing: 5 wrong tries lock this session for 60 seconds
+    // (stops a naive script; a real attacker can start a new session).
+    if (($_SESSION['fail_count'] ?? 0) >= 5 && time() < ($_SESSION['locked_until'] ?? 0)) {
+        http_response_code(429);
+        $error = 'ลองผิดหลายครั้งเกินไป กรุณารอ 1 นาที';
+    } else {
     $email = strtolower(trim((string)($_POST['email'] ?? '')));
     $password = (string)($_POST['password'] ?? '');
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
@@ -19,14 +25,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $found = mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
         // Step 3: compare with password_verify against the stored hash, never with ==.
-        if ($found && password_verify($password, $hash)) {
+        // An unknown email is checked against a dummy hash too, so both cases take the same time.
+        if (!$found) $hash = '$2y$10$zzb7tZBBW2Qrh3AJ5xM2g.LK5f8pCE8.ugOd7V5/51CyTxuHsC0Gm';
+        if (password_verify($password, $hash) && $found) {
             // Step 4: new session id (stops session fixation) and remember who logged in.
             session_regenerate_id(true);
+            unset($_SESSION['fail_count'], $_SESSION['locked_until']);
             $_SESSION['user_id'] = $userId; $_SESSION['full_name'] = $fullName; $_SESSION['role'] = $role;
             // Step 5: go to the private page (staff start at the overdue list).
             header('Location: ' . (($role === 'staff' || $role === 'admin') ? 'overdue.php' : 'my-loans.php')); exit;
         }
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'; // same message for unknown email and wrong password
+        $_SESSION['fail_count'] = ($_SESSION['fail_count'] ?? 0) + 1;
+        if ($_SESSION['fail_count'] >= 5) $_SESSION['locked_until'] = time() + 60;
+    }
     }
 }
 $pageTitle = 'เข้าสู่ระบบ';

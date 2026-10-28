@@ -29,10 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = mysqli_prepare($conn, "INSERT INTO lib_users (email, password_hash, full_name, role) VALUES (?, ?, ?, 'member')");
             mysqli_stmt_bind_param($stmt, 'sss', $email, $hash, $name);
             $ok = mysqli_stmt_execute($stmt);
+            $errno = mysqli_stmt_errno($stmt);
             mysqli_stmt_close($stmt);
-            // Step 5: success -> login page. A failed INSERT is most likely the UNIQUE email (two people at once).
+            // Step 5: success -> login page. Error 1062 = UNIQUE email hit (two people at once); anything else is a real fault.
             if ($ok) { header('Location: login.php?registered=1'); exit; }
-            $error = 'อีเมลนี้มีผู้ใช้แล้ว';
+            $error = $errno === 1062 ? 'อีเมลนี้มีผู้ใช้แล้ว' : 'สมัครไม่สำเร็จ ลองใหม่อีกครั้ง';
         }
     }
 }

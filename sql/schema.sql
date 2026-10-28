@@ -99,11 +99,5 @@ INSERT INTO lib_books
    'Sample History Book', 'Sample Author', 'SAMPLE-0003', 1, 1, 220.00, 2)
 ON DUPLICATE KEY UPDATE isbn = isbn;
 
--- placeholder ไม่ใช่ hash จริง -> password_verify เป็น false จึง login ไม่ได้จนกว่าจะแทนที่
--- สร้าง hash ในเครื่องตัวเอง (อย่า commit รหัสผ่านจริง):
---   php -r "echo password_hash(trim(fgets(STDIN)), PASSWORD_DEFAULT);"
---   แล้วพิมพ์รหัสตอนโปรแกรมรอ (รหัสจะไม่ค้างในประวัติคำสั่ง)
-INSERT INTO lib_users (email, password_hash, full_name, role) VALUES
-  ('member@example.com', 'REPLACE_WITH_BCRYPT_HASH', 'Sample Member', 'member'),
-  ('admin@example.com',  'REPLACE_WITH_BCRYPT_HASH', 'Sample Admin',  'admin')
-ON DUPLICATE KEY UPDATE email = email;
+-- ไม่มีผู้ใช้ตัวอย่างใน SQL (กันบัญชีที่ชื่อรู้กันทั้งโลก): สมัครที่ register.php
+-- แล้วยกเป็นเจ้าหน้าที่ด้วย  UPDATE lib_users SET role = 'staff' WHERE email = 'อีเมลของคุณ';

@@ -1,2 +1,6 @@
 # Angsila (Apache): open the PHP app first; index.html is only the GitHub Pages redirect to the prototype
 DirectoryIndex index.php index.html
+
+# Hide internal folders and git data from the web (works only if Angsila allows .htaccess overrides)
+RedirectMatch 404 /\.git
+RedirectMatch 404 ^/(?:.*/)?(sql|docs|includes|config|tests)/

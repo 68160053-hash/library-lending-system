@@ -18,7 +18,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 ## ติดตั้ง
 1. import `sql/schema.sql` ผ่าน phpMyAdmin
 2. คัดลอก `secret/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง (ไฟล์นี้ถูก git-ignore และ `secret/.htaccess` บล็อกการเข้าทางเว็บ)
-3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีรหัสผ่านใน repo
+3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีผู้ใช้ตัวอย่างหรือรหัสผ่านใน repo
 4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'staff' WHERE email = 'อีเมลของคุณ';` แล้วเข้าสู่ระบบใหม่
 
 ## ความปลอดภัย
@@ -30,6 +30,18 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - ตรวจบทบาทที่ฝั่งเซิร์ฟเวอร์ (`require_staff()`) ไม่ได้อาศัยแค่ซ่อนเมนู
 - ใส่ `user_id` ของเจ้าของใน WHERE (เช่น ต่ออายุ) สมาชิกจึงแก้ `loan_id` เพื่อต่ออายุของคนอื่นไม่ได้
 - ความลับ (`secret/config.php`, `.env`) ถูก git-ignore
+
+- สิทธิ์เจ้าหน้าที่อ่านจากฐานข้อมูลทุกครั้งที่เปิดหน้า staff ลดบทบาทแล้วมีผลทันที
+- ล็อกอินผิด 5 ครั้งล็อก 1 นาที (กันสคริปต์เดารหัสแบบง่าย)
+
+## ทดสอบความปลอดภัย
+`tests/sectest.mjs` (32 ข้อ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` และ `node tests/sectest.mjs`
+ก่อน merge PR ของเพื่อนให้รันซ้ำทุกครั้ง
+
+## กติกาเขียนโค้ดสำหรับเพื่อน (ตอนทำ PR)
+- ยืมหนังสือ: ตัดจำนวนเล่มด้วย UPDATE เดียว `UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id = ? AND copies_available > 0` แล้วดู `affected_rows` (ถ้า 0 = เล่มหมด) และทำ INSERT lib_loans ใน transaction เดียวกัน ห้าม SELECT ดูก่อนแล้วค่อย UPDATE
+- ทุก UPDATE/DELETE ใส่ id ของเจ้าของใน WHERE และหน้า staff เรียก `require_staff()` (ต้อง include `config/db.php` ก่อน)
 
 ## เอกสาร
 - `docs/milestone1.md` ขอบเขต, use case, ER, data dictionary, แผนงาน
