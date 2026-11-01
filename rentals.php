@@ -16,7 +16,7 @@ $tabs = [
 ];
 $tabIn = is_string($_GET['tab'] ?? '') ? ($_GET['tab'] ?? '') : '';
 $tab = isset($tabs[$tabIn]) ? $tabIn : 'review';
-$q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 60);
+$q = mb_substr(trim(get_str('q')), 0, 60);
 $qNum = (int)preg_replace('/\D/', '', $q);      // "#00012" or "12" finds order 12
 $like = '%' . addcslashes($q, '%_\\') . '%';
 

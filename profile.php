@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
             session_regenerate_id(true); // a changed password gets a fresh session id
+            $_SESSION['pwv'] = pw_fingerprint($conn, $me); // every OTHER session of this member stops working: their old fingerprint no longer matches
             flash('ok', 'เปลี่ยนรหัสผ่านเรียบร้อย');
             header('Location: profile.php'); exit;
         }

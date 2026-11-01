@@ -11,6 +11,7 @@ require 'auth.php'; require 'config/db.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit('<a href="my-orders.php">กลับ</a>'); }
 require_login();
 verify_csrf();
+if (is_staff()) role_now(); // a demoted staff member must not keep staff powers until the session ends
 $orderId = filter_var($_POST['order_id'] ?? null, FILTER_VALIDATE_INT);
 $loanId = filter_var($_POST['loan_id'] ?? null, FILTER_VALIDATE_INT);
 $action = (string)($_POST['action'] ?? '');

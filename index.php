@@ -2,8 +2,8 @@
 require 'auth.php'; require 'config/db.php'; require_once 'includes/discover.php';
 // Home = the fair hall: banner, floor map of five zones, curated rows, then the full catalogue.
 // Filters come from the URL (?q=&category=&avail=1&sort=&maxprice=&page=), all read with prepared statements.
-$q = is_string($_GET['q'] ?? '') ? mb_substr(trim($_GET['q'] ?? ''), 0, 100) : '';
-$cat = is_string($_GET['category'] ?? '') ? max(0, (int)$_GET['category']) : 0;
+$q = mb_substr(trim(get_str('q')), 0, 100);
+$cat = max(0, (int)get_str('category'));
 $avail = (($_GET['avail'] ?? '') === '1') ? 1 : 0;
 $maxIn = $_GET['maxprice'] ?? '';
 $maxprice = (is_string($maxIn) && is_numeric($maxIn) && $maxIn > 0) ? round(min((float)$maxIn, 9999), 2) : 0.0;   // garbage or arrays = no limit
@@ -11,10 +11,10 @@ $maxText = $maxprice > 0 ? rtrim(rtrim(number_format($maxprice, 2, '.', ''), '0'
 $sorts = ['new' => ['ใหม่ล่าสุด', 'b.book_id DESC'], 'price_asc' => ['ราคาเช่าต่ำ → สูง', 'b.rent_per_day ASC, b.title'],
           'price_desc' => ['ราคาเช่าสูง → ต่ำ', 'b.rent_per_day DESC, b.title'], 'title' => ['ชื่อ A → Z', 'b.title ASC'],
           'rating' => ['รีวิวดีที่สุด', 'COALESCE(r.a, 0) DESC, COALESCE(r.n, 0) DESC, b.title'], 'rented' => ['เช่าบ่อยที่สุด', 'COALESCE(lc.n, 0) DESC, b.title']];
-$sortIn = is_string($_GET['sort'] ?? '') ? ($_GET['sort'] ?? '') : '';   // ?sort[]=x must not reach the array lookup
+$sortIn = get_str('sort');   // ?sort[]=x must not reach the array lookup
 $sort = isset($sorts[$sortIn]) ? $sortIn : 'new';   // only a key from the list above ever reaches the SQL text
 $perPage = 12;
-$page = max(1, is_string($_GET['page'] ?? '') ? (int)$_GET['page'] : 1);
+$page = max(1, (int)get_str('page'));
 $like = '%' . addcslashes($q, '%_\\') . '%';                           // "%" and "_" typed by the user stay plain characters
 
 // Categories with the number of books in each (the five zones of the hall)

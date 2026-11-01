@@ -6,13 +6,13 @@ if (!$googleReady) fail('off');
 if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
 
 // 1) state must match the one we made in google-login.php, and it works only once
-$state = (string)($_GET['state'] ?? '');
+$state = get_str('state');
 $expected = (string)($_SESSION['g_state'] ?? '');
 $nonce = (string)($_SESSION['g_nonce'] ?? '');
 unset($_SESSION['g_state'], $_SESSION['g_nonce']);
 if ($expected === '' || !hash_equals($expected, $state)) fail('state');
 if (isset($_GET['error'])) fail('denied');                 // the person pressed "cancel" at Google
-$code = (string)($_GET['code'] ?? '');
+$code = get_str('code');
 if ($code === '' || strlen($code) > 2048) fail('code');
 
 // 2) swap the one-time code for an ID token. This call is made by OUR server with our secret, never by the browser.
@@ -55,4 +55,5 @@ session_regenerate_id(true);
 $_SESSION['csrf'] = bin2hex(random_bytes(32));
 $_SESSION['login_at'] = $_SESSION['last_seen'] = time();
 $_SESSION['user_id'] = $account[0]; $_SESSION['full_name'] = $account[1]; $_SESSION['role'] = $account[2];
+$_SESSION['pwv'] = pw_fingerprint($conn, $account[0]);
 header('Location: ' . (($account[2] === 'staff' || $account[2] === 'admin') ? 'dashboard.php' : 'index.php')); exit;

@@ -5,7 +5,7 @@ if (!empty($_SESSION['user_id'])) { header('Location: ' . (is_staff() ? 'dashboa
 $googleMsgs = ['off' => 'ยังไม่เปิดใช้การเข้าสู่ระบบด้วย Google', 'state' => 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณากดปุ่ม Google ใหม่', 'denied' => 'ยกเลิกการเข้าสู่ระบบด้วย Google',
     'code' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง', 'token' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง',
     'email' => 'บัญชี Google นี้ยังไม่ได้ยืนยันอีเมล', 'taken' => 'อีเมลนี้สมัครด้วยรหัสผ่านไว้แล้ว กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน'];
-$googleError = $googleMsgs[$_GET['google_error'] ?? ''] ?? '';
+$googleError = $googleMsgs[get_str('google_error')] ?? '';
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['csrf'] = bin2hex(random_bytes(32)); // fresh token for the new login
             $_SESSION['login_at'] = $_SESSION['last_seen'] = time();
             $_SESSION['user_id'] = $userId; $_SESSION['full_name'] = $fullName; $_SESSION['role'] = $role;
+            $_SESSION['pwv'] = pw_fingerprint($conn, $userId);
             // Step 5: go to the private page (staff start at the overdue list).
             header('Location: ' . (($role === 'staff' || $role === 'admin') ? 'dashboard.php' : 'index.php')); exit;
         }

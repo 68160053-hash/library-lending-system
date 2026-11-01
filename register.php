@@ -5,7 +5,7 @@ if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
 $googleMsgs = ['off' => 'ยังไม่เปิดใช้การเข้าสู่ระบบด้วย Google', 'state' => 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณากดปุ่ม Google ใหม่', 'denied' => 'ยกเลิกการเข้าสู่ระบบด้วย Google',
     'code' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง', 'token' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง',
     'email' => 'บัญชี Google นี้ยังไม่ได้ยืนยันอีเมล', 'taken' => 'อีเมลนี้สมัครด้วยรหัสผ่านไว้แล้ว กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน'];
-$googleError = $googleMsgs[$_GET['google_error'] ?? ''] ?? '';
+$googleError = $googleMsgs[get_str('google_error')] ?? '';
 $error = ''; $name = ''; $email = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();

@@ -40,7 +40,7 @@ $v = function ($file) { return (int)@filemtime(__DIR__ . '/../' . $file); };
     <form class="search" action="index.php" method="get" role="search">
       <label class="sr-only" for="hq">ค้นหาหนังสือ</label>
       <?= icon('search', 18) ?>
-      <input type="text" id="hq" name="q" placeholder="ค้นหาชื่อหนังสือหรือผู้แต่ง" maxlength="100" autocomplete="off" value="<?= h(is_string($_GET['q'] ?? '') ? $_GET['q'] : '') ?>" data-suggest>
+      <input type="text" id="hq" name="q" placeholder="ค้นหาชื่อหนังสือหรือผู้แต่ง" maxlength="100" autocomplete="off" value="<?= h(get_str('q')) ?>" data-suggest>
       <button type="submit">ค้นหา</button>
     </form>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav"><?= icon('menu', 20) ?>เมนู</button>

@@ -15,7 +15,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     session_name('bls_session');
-    session_set_cookie_params(['httponly' => true, 'secure' => $isHttps, 'samesite' => 'Lax']);
+    // The cookie belongs to this app's folder only: the university host also serves other students' sites under other paths.
+    $cookiePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/') . '/';
+    session_set_cookie_params(['path' => $cookiePath, 'httponly' => true, 'secure' => $isHttps, 'samesite' => 'Lax']);
     session_start();
 }
 // A logged-in session dies after 30 minutes without activity or 8 hours in total
@@ -38,8 +40,25 @@ function csrf_field() { echo '<input type="hidden" name="csrf" value="'.h($_SESS
 function verify_csrf() {
     if (!hash_equals($_SESSION['csrf'], (string)($_POST['csrf'] ?? ''))) { http_response_code(403); exit('หน้าหมดอายุหรือแบบฟอร์มไม่ถูกต้อง <a href="login.php">กลับไปลองใหม่</a>'); }
 }
+// First 16 hex digits of the stored password hash's SHA-256 (Google accounts have no hash). It changes when the password changes.
+function pw_fingerprint($conn, $userId) {
+    $stmt = mysqli_prepare($conn, "SELECT LEFT(SHA2(IFNULL(password_hash, ''), 256), 16) FROM lib_users WHERE user_id = ?");
+    $uid = (int)$userId;
+    mysqli_stmt_bind_param($stmt, 'i', $uid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $fp);
+    $fp = mysqli_stmt_fetch($stmt) ? (string)$fp : '';
+    mysqli_stmt_close($stmt);
+    return $fp;
+}
 function require_login() {
+    global $conn;
     if (empty($_SESSION['user_id'])) { header('Location: login.php'); exit; }
+    if (isset($conn)) { // a session opened before the password was changed (or the user was deleted) is no longer valid
+        $fp = pw_fingerprint($conn, $_SESSION['user_id']);
+        if (!isset($_SESSION['pwv'])) $_SESSION['pwv'] = $fp;
+        elseif ($fp === '' || !hash_equals($_SESSION['pwv'], $fp)) { $_SESSION = []; session_regenerate_id(true); header('Location: login.php'); exit; }
+    }
 }
 function is_staff() {
     $role = $_SESSION['role'] ?? '';
@@ -47,9 +66,8 @@ function is_staff() {
 }
 // Role is checked on the server for every staff page (hiding the menu is not security).
 // The role is re-read from the DB each time, so demoting a user takes effect at once (needs $conn from config/db.php).
-function require_staff() {
+function role_now() {
     global $conn;
-    require_login();
     $stmt = mysqli_prepare($conn, 'SELECT role FROM lib_users WHERE user_id = ?');
     mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
     mysqli_stmt_execute($stmt);
@@ -57,6 +75,10 @@ function require_staff() {
     $found = mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
     $_SESSION['role'] = $found ? $role : ''; // keep the menu in sync; a deleted user loses all rights
+}
+function require_staff() {
+    require_login();
+    role_now();
     if (!is_staff()) { http_response_code(403); exit('หน้านี้สำหรับเจ้าหน้าที่เท่านั้น'); }
 }
 

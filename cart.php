@@ -48,7 +48,7 @@ $rentTotal = 0; $depositTotal = 0; $blocked = false;
 foreach ($items as $it) { $rentTotal += $it['rent_per_day'] * $days; $depositTotal += $it['deposit']; if ($it['copies_available'] < 1) $blocked = true; }
 
 // Optional coupon (a read-only preview: the coupon is only used up when the order is placed)
-$couponIn = (string)($_GET['coupon'] ?? '');
+$couponIn = get_str('coupon');
 $coupon = null;
 if ($items && trim($couponIn) !== '') {
     $bundle = bundle_discount($rentTotal, count($items));

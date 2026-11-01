@@ -1,7 +1,7 @@
 <?php
 require 'auth.php'; require 'config/db.php';
 require_staff(); // server-side role check: members get 403
-$q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 100);
+$q = mb_substr(trim(get_str('q')), 0, 100);
 $like = '%' . addcslashes($q, '%_\\') . '%';
 
 $stmt = mysqli_prepare($conn, 'SELECT b.book_id, b.title, b.author, c.name, b.category_id, b.copies_total, b.copies_available, b.rent_per_day, b.deposit, b.isbn, b.featured,

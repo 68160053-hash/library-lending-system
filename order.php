@@ -1,6 +1,7 @@
 <?php
 require 'auth.php'; require 'config/db.php'; require_once __DIR__ . '/includes/orders.php';
 require_login();
+if (is_staff()) role_now(); // staff rights come from the database
 auto_lose_overdue($conn);
 // One order: ?id=<order id>. The owner sees their own order; staff can open any order and get the action buttons.
 $orderId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);

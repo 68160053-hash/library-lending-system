@@ -16,7 +16,7 @@ mysqli_stmt_bind_result($stmt, $uName, $uPhone, $uAddress);
 mysqli_stmt_fetch($stmt);
 mysqli_stmt_close($stmt);
 $f = ['days' => (int)($_GET['days'] ?? 7), 'name' => $uName, 'phone' => $uPhone, 'address' => $uAddress];
-$couponIn = (string)($_GET['coupon'] ?? '');
+$couponIn = get_str('coupon');
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, 'i', $userId);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM lib_orders WHERE user_id = ? AND status = 'open' AND pay_status = 'unpaid'");
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM lib_orders WHERE user_id = ? AND status = 'open' AND pay_status IN ('unpaid', 'reported')");
         mysqli_stmt_bind_param($stmt, 'i', $userId);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_bind_result($stmt, $unpaid);
         mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
-        if ($unpaid >= 3) { mysqli_rollback($conn); $error = 'คุณมีใบสั่งเช่าที่ยังไม่ชำระ 3 ใบแล้ว กรุณาชำระหรือยกเลิกก่อน'; }
+        if ($unpaid >= 3) { mysqli_rollback($conn); $error = 'คุณมีใบสั่งเช่าที่ยังไม่ได้รับการยืนยันชำระเงิน 3 ใบแล้ว กรุณารอร้านยืนยันหรือยกเลิกก่อน'; }
     }
     if ($error === '' && ($_POST['do'] ?? '') !== 'apply') {
         // Step 3: take one copy of every book out of stock. Each UPDATE checks and changes the number in one go,

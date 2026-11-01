@@ -4,6 +4,9 @@
 
 // 1234.5 -> "1,234.50"
 function money($n) { return number_format((float)$n, 2); }
+// A ?name= value as text: '' when it is missing or an array (?name[]=x must never reach string code).
+function get_str($key) { $v = $_GET[$key] ?? ''; return is_string($v) ? $v : ''; }
+
 // Order number as shown to people: 12 -> "#00012"
 function order_no($id) { return '#' . str_pad((string)(int)$id, 5, '0', STR_PAD_LEFT); }
 

@@ -4,7 +4,7 @@ require_admin(); // server-side check: only admins, read from the database
 
 $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน้าที่', 'admin' => 'แอดมิน'];
 $myId = (int)$_SESSION['user_id'];
-$q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 100);
+$q = mb_substr(trim(get_str('q')), 0, 100);
 $like = '%' . addcslashes($q, '%_\\') . '%';
 
 $stmt = mysqli_prepare($conn, 'SELECT user_id, full_name, email, role, created_at, google_sub IS NOT NULL FROM lib_users
