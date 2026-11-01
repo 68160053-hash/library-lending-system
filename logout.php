@@ -12,11 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: login.php?logged_out=1'); exit;
 }
 // A GET request (typing the URL or a link) must NOT log out: show a confirm form instead.
-$pageTitle = 'ออกจากระบบ';
+$pageTitle = 'ออกจากระบบ'; $pageCss = ['platform'];
 require 'includes/header.php';
 ?>
-<div class="auth-wrap"><div class="card center">
+<div class="auth-hall" style="max-width:520px;grid-template-columns:1fr"><div class="auth-main center">
   <h1>ออกจากระบบ?</h1>
+  <p class="muted">แล้วกลับมาอ่านต่อได้ทุกเมื่อ</p>
   <form action="logout.php" method="post"><?php csrf_field(); ?><button type="submit" class="btn btn-primary btn-block">ยืนยันออกจากระบบ</button></form>
   <p class="small" style="margin:1rem 0 0"><a href="index.php">กลับหน้าร้าน</a></p>
 </div></div>

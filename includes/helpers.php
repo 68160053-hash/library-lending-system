@@ -54,6 +54,19 @@ function cancel_order($conn, $orderId, $ownerId) {
     mysqli_stmt_bind_param($stmt, 'i', $orderId); mysqli_stmt_execute($stmt); mysqli_stmt_close($stmt);
     $stmt = mysqli_prepare($conn, "UPDATE lib_orders SET status = 'cancelled' WHERE order_id = ?");
     mysqli_stmt_bind_param($stmt, 'i', $orderId); mysqli_stmt_execute($stmt); mysqli_stmt_close($stmt);
+    // a coupon used by this order goes back to the pool (the DELETE's affected row guards against releasing twice)
+    $stmt = mysqli_prepare($conn, 'SELECT coupon_id FROM lib_coupon_uses WHERE order_id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $orderId); mysqli_stmt_execute($stmt); mysqli_stmt_bind_result($stmt, $couponId);
+    $hadCoupon = mysqli_stmt_fetch($stmt); mysqli_stmt_close($stmt);
+    if ($hadCoupon) {
+        $stmt = mysqli_prepare($conn, 'DELETE FROM lib_coupon_uses WHERE order_id = ? AND coupon_id = ?');
+        mysqli_stmt_bind_param($stmt, 'ii', $orderId, $couponId); mysqli_stmt_execute($stmt);
+        $freed = mysqli_stmt_affected_rows($stmt); mysqli_stmt_close($stmt);
+        if ($freed === 1) {
+            $stmt = mysqli_prepare($conn, 'UPDATE lib_coupons SET used_count = GREATEST(used_count, 1) - 1 WHERE coupon_id = ?');
+            mysqli_stmt_bind_param($stmt, 'i', $couponId); mysqli_stmt_execute($stmt); mysqli_stmt_close($stmt);
+        }
+    }
     mysqli_commit($conn);
     return true;
 }
@@ -65,4 +78,52 @@ function expire_unpaid_orders($conn) {
     $res = mysqli_query($conn, "SELECT order_id FROM lib_orders WHERE status = 'open' AND pay_status = 'unpaid' AND shipped_at IS NULL AND ordered_at < NOW() - INTERVAL 48 HOUR LIMIT 20");
     while ($res && ($row = mysqli_fetch_row($res))) $ids[] = (int)$row[0];
     foreach ($ids as $id) cancel_order($conn, $id, 0);
+}
+
+// ---- v3 shared helpers (several pages use these; keep their behaviour stable) ----
+
+// In-web notification for one member. $kind: paid / shipped / due_soon / overdue / lost / info. $link: a page of ours (order.php?id=5).
+function notify($conn, $userId, $kind, $message, $link = '') {
+    $userId = (int)$userId;
+    if ($userId < 1) return;
+    $message = mb_substr((string)$message, 0, 200); $link = mb_substr((string)$link, 0, 120); $kind = mb_substr((string)$kind, 0, 20);
+    $stmt = mysqli_prepare($conn, 'INSERT INTO lib_notifications (user_id, kind, message, link) VALUES (?, ?, ?, ?)');
+    mysqli_stmt_bind_param($stmt, 'isss', $userId, $kind, $message, $link);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+// How many notifications the member has not opened yet (shown on the bell).
+function unread_notifications($conn, $userId) {
+    $stmt = mysqli_prepare($conn, 'SELECT COUNT(*) FROM lib_notifications WHERE user_id = ? AND read_at IS NULL');
+    $uid = (int)$userId;
+    mysqli_stmt_bind_param($stmt, 'i', $uid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $n);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    return (int)$n;
+}
+
+// Bundle discount on the RENT only (never the deposit): 3 books = 10%, 4 or more = 15%. Returns the baht amount to take off.
+function bundle_discount($rentTotal, $bookCount) {
+    $pct = $bookCount >= 4 ? 15 : ($bookCount >= 3 ? 10 : 0);
+    return round($rentTotal * $pct / 100, 2);
+}
+
+// Overdue for this many days a rented book is treated as lost (deposit kept). One place to change the rule.
+const AUTO_LOST_DAYS = 14;
+
+// Star rating as text for screen readers and plain output: 4.5 -> "4.5 / 5".
+function rating_text($avg) { return number_format((float)$avg, 1) . ' / 5'; }
+
+// The fair hall has five coloured zones. A category's zone is its id folded onto 1-5: class "z1".."z5", letter "A".."E".
+function zone_of($categoryId) { return (((int)$categoryId - 1) % 5 + 5) % 5 + 1; }
+function zone_class($categoryId) { return 'z' . zone_of($categoryId); }
+function zone_letter($categoryId) { return chr(64 + zone_of($categoryId)); }
+
+// Inline icon from the sprite assets/icons.svg (drawn for this shop, one 2px stroke). $name e.g. 'cart', 'heart', 'bell'.
+function icon($name, $size = 20) {
+    $name = preg_replace('/[^a-z0-9-]/', '', (string)$name); $size = (int)$size;
+    return '<svg class="ic" width="' . $size . '" height="' . $size . '" aria-hidden="true" focusable="false"><use href="assets/icons.svg#' . $name . '"/></svg>';
 }

@@ -1,73 +1,115 @@
 <?php
-require 'auth.php'; require 'config/db.php';
-// Home = the catalogue. Filters come from the URL (?q=&category=&avail=1&sort=&page=), all read with prepared statements.
+require 'auth.php'; require 'config/db.php'; require_once 'includes/discover.php';
+// Home = the fair hall: banner, floor map of five zones, curated rows, then the full catalogue.
+// Filters come from the URL (?q=&category=&avail=1&sort=&maxprice=&page=), all read with prepared statements.
 $q = is_string($_GET['q'] ?? '') ? mb_substr(trim($_GET['q'] ?? ''), 0, 100) : '';
-$cat = max(0, (int)($_GET['category'] ?? 0));
+$cat = is_string($_GET['category'] ?? '') ? max(0, (int)$_GET['category']) : 0;
 $avail = (($_GET['avail'] ?? '') === '1') ? 1 : 0;
+$maxIn = $_GET['maxprice'] ?? '';
+$maxprice = (is_string($maxIn) && is_numeric($maxIn) && $maxIn > 0) ? round(min((float)$maxIn, 9999), 2) : 0.0;   // garbage or arrays = no limit
+$maxText = $maxprice > 0 ? rtrim(rtrim(number_format($maxprice, 2, '.', ''), '0'), '.') : '';
 $sorts = ['new' => ['ใหม่ล่าสุด', 'b.book_id DESC'], 'price_asc' => ['ราคาเช่าต่ำ → สูง', 'b.rent_per_day ASC, b.title'],
-          'price_desc' => ['ราคาเช่าสูง → ต่ำ', 'b.rent_per_day DESC, b.title'], 'title' => ['ชื่อ A → Z', 'b.title ASC']];
+          'price_desc' => ['ราคาเช่าสูง → ต่ำ', 'b.rent_per_day DESC, b.title'], 'title' => ['ชื่อ A → Z', 'b.title ASC'],
+          'rating' => ['รีวิวดีที่สุด', 'COALESCE(r.a, 0) DESC, COALESCE(r.n, 0) DESC, b.title'], 'rented' => ['เช่าบ่อยที่สุด', 'COALESCE(lc.n, 0) DESC, b.title']];
 $sortIn = is_string($_GET['sort'] ?? '') ? ($_GET['sort'] ?? '') : '';   // ?sort[]=x must not reach the array lookup
 $sort = isset($sorts[$sortIn]) ? $sortIn : 'new';   // only a key from the list above ever reaches the SQL text
 $perPage = 12;
-$page = max(1, (int)($_GET['page'] ?? 1));
+$page = max(1, is_string($_GET['page'] ?? '') ? (int)$_GET['page'] : 1);
 $like = '%' . addcslashes($q, '%_\\') . '%';                           // "%" and "_" typed by the user stay plain characters
 
-// Categories with the number of books in each (for the side menu)
+// Categories with the number of books in each (the five zones of the hall)
 $cats = [];
 $res = mysqli_query($conn, 'SELECT c.category_id, c.name, COUNT(b.book_id) FROM lib_categories c LEFT JOIN lib_books b ON b.category_id = c.category_id GROUP BY c.category_id, c.name ORDER BY c.category_id');
 while ($res && ($row = mysqli_fetch_row($res))) $cats[] = $row;
+$minRent = 0;
+$res = mysqli_query($conn, 'SELECT MIN(rent_per_day) FROM lib_books');
+if ($res && ($row = mysqli_fetch_row($res))) $minRent = (float)$row[0];
 
 // How many books match (for the page numbers)
-$where = '(CHAR_LENGTH(?) = 0 OR b.title LIKE ? OR b.author LIKE ?) AND (? = 0 OR b.category_id = ?) AND (? = 0 OR b.copies_available > 0)';
+$where = '(CHAR_LENGTH(?) = 0 OR b.title LIKE ? OR b.author LIKE ?) AND (? = 0 OR b.category_id = ?) AND (? = 0 OR b.copies_available > 0) AND (? = 0 OR b.rent_per_day <= ?)';
+$types = 'sssiiidd';
+$params = [$q, $like, $like, $cat, $cat, $avail, $maxprice, $maxprice];
 $stmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM lib_books b WHERE $where");
-mysqli_stmt_bind_param($stmt, 'sssiii', $q, $like, $like, $cat, $cat, $avail);
+mysqli_stmt_bind_param($stmt, $types, ...$params);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_bind_result($stmt, $total);
 mysqli_stmt_fetch($stmt);
 mysqli_stmt_close($stmt);
 $pages = max(1, (int)ceil($total / $perPage));
 if ($page > $pages) $page = $pages;
-$offset = ($page - 1) * $perPage;
-
-// One page of books
-$sql = 'SELECT b.book_id, b.title, b.author, b.isbn, b.rent_per_day, b.copies_available, c.name
-        FROM lib_books b JOIN lib_categories c ON c.category_id = b.category_id
-        WHERE ' . $where . ' ORDER BY ' . $sorts[$sort][1] . ' LIMIT ? OFFSET ?';
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, 'sssiiiii', $q, $like, $like, $cat, $cat, $avail, $perPage, $offset);
-mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $bookId, $title, $author, $isbn, $rent, $left, $catName);
-$books = [];
-while (mysqli_stmt_fetch($stmt)) $books[] = ['id' => $bookId, 'title' => $title, 'author' => $author, 'isbn' => $isbn, 'rent' => $rent, 'left' => $left, 'cat' => $catName];
-mysqli_stmt_close($stmt);
+$books = discover_books($conn, $where, $types, $params, $sorts[$sort][1], $perPage, ($page - 1) * $perPage);
+$wished = wished_ids($conn, $_SESSION['user_id'] ?? 0);
 
 // A link to this page with one filter changed
 function url_with($changes) {
-    global $q, $cat, $avail, $sort;
-    $p = array_merge(['q' => $q, 'category' => $cat, 'avail' => $avail, 'sort' => $sort === 'new' ? '' : $sort], $changes);
+    global $q, $cat, $avail, $sort, $maxText;
+    $p = array_merge(['q' => $q, 'category' => $cat, 'avail' => $avail, 'sort' => $sort === 'new' ? '' : $sort, 'maxprice' => $maxText], $changes);
     return 'index.php?' . http_build_query(array_filter($p, function ($v) { return $v !== '' && $v !== 0 && $v !== '0'; }));
 }
-$filtered = $q !== '' || $cat > 0 || $avail;
+$filtered = $q !== '' || $cat > 0 || $avail || $maxprice > 0;
+$curated = [];
+if (!$filtered && $page === 1) {
+    $feat = discover_books($conn, 'b.featured = 1', '', [], 'b.book_id DESC', 6);
+    if ($feat) $curated[] = ['เจ้าหน้าที่คัดสรร', $feat, ''];
+    $curated[] = ['มาใหม่', discover_books($conn, '1 = 1', '', [], 'b.book_id DESC', 6), 'index.php?sort=new#catalogue'];
+    $ids = [];
+    $res = mysqli_query($conn, "SELECT book_id FROM lib_loans WHERE status <> 'pending' AND borrowed_at >= CURDATE() - INTERVAL 90 DAY GROUP BY book_id ORDER BY COUNT(*) DESC, book_id DESC LIMIT 6");
+    while ($res && ($row = mysqli_fetch_row($res))) $ids[] = (int)$row[0];
+    if ($ids) $curated[] = ['ยอดนิยม', books_by_ids($conn, $ids), 'index.php?sort=rented#catalogue'];
+}
 $pageTitle = 'หนังสือทั้งหมด';
+$pageCss = ['discover']; $pageJs = ['discover'];
 require 'includes/header.php';
 ?>
 <?php if (!$filtered && $page === 1): ?>
-<section class="hero" aria-label="แนะนำร้าน">
-  <div><h1>เช่าหนังสือออนไลน์ ส่งถึงบ้าน</h1><p>เลือกหนังสือที่อยากอ่าน เช่า 7, 14 หรือ 30 วัน จ่ายค่าเช่าและมัดจำครั้งเดียว ส่งหนังสือกลับแล้วรับมัดจำคืน</p></div>
-  <ul><li>ค่าเช่าเริ่มวันละไม่กี่บาท</li><li>มัดจำคืนเมื่อร้านได้รับหนังสือ</li><li>ติดตามสถานะและเลขพัสดุได้ในหน้า "การเช่าของฉัน"</li></ul>
+<section class="banner" aria-labelledby="hall-title">
+  <h1 id="hall-title">เช่าหนังสือเล่มโปรด ส่งถึงหน้าบ้าน</h1>
+  <p>เลือกเช่า 7, 14 หรือ 30 วัน โอนครั้งเดียวทั้งค่าเช่าและมัดจำ อ่านจบแล้วส่งคืน</p>
+  <form class="desk" action="index.php" method="get" role="search">
+    <label class="sr-only" for="dq">ค้นหาหนังสือ</label>
+    <?= icon('search', 22) ?>
+    <input type="text" id="dq" name="q" placeholder="ชื่อหนังสือหรือผู้แต่ง" maxlength="100" autocomplete="off" data-suggest>
+    <button type="submit" class="btn btn-yellow">ค้นหา</button>
+  </form>
+  <ul class="perks">
+    <li><?= icon('tag', 18) ?>เช่าเริ่มวันละ ฿<?= h(rtrim(rtrim(money($minRent), '0'), '.')) ?></li>
+    <li><?= icon('shield', 18) ?>มัดจำคืนเต็มจำนวนเมื่อส่งหนังสือกลับ</li>
+    <li><?= icon('truck', 18) ?>ส่งถึงบ้านพร้อมเลขพัสดุ</li>
+  </ul>
 </section>
 <?php endif; ?>
 
-<div class="layout-2">
+<nav aria-label="ผังงานหนังสือ แบ่งตามหมวด">
+  <div class="floor">
+    <?php foreach ($cats as $c): $on = $cat === (int)$c[0]; ?>
+    <a class="zone <?= zone_class($c[0]) ?><?= $on ? ' on' : '' ?>" href="<?= $on ? 'index.php#catalogue' : 'index.php?category=' . (int)$c[0] . '#catalogue' ?>"<?= $on ? ' aria-current="true"' : '' ?>>
+      <span class="zl" aria-hidden="true"><?= h(zone_letter($c[0])) ?></span>
+      <span class="zn"><?= h($c[1]) ?></span>
+      <span class="zc"><span><?= (int)$c[2] ?> เล่ม</span><?= icon($on ? 'x' : 'chevron', 18) ?></span>
+    </a>
+    <?php endforeach; ?>
+  </div>
+</nav>
+
+<?php foreach ($curated as $row): if (!$row[1]) continue; ?>
+<section class="shelf-row" aria-label="<?= h($row[0]) ?>">
+  <div class="row-head"><h2><?= h($row[0]) ?></h2><?php if ($row[2] !== ''): ?><a href="<?= h($row[2]) ?>">ดูทั้งหมด<?= icon('chevron', 16) ?></a><?php endif; ?></div>
+  <div class="rail"><?php foreach ($row[1] as $b) echo book_card($b, $wished); ?></div>
+</section>
+<?php endforeach; ?>
+
+<div class="layout-2" id="catalogue">
   <aside class="card filters" aria-label="ตัวกรอง">
     <form action="index.php" method="get">
       <h3>ค้นหา</h3>
-      <div class="field"><label class="sr-only" for="fq">ค้นหา</label><input type="text" id="fq" name="q" maxlength="100" value="<?= h($q) ?>" placeholder="ชื่อหนังสือหรือผู้แต่ง"></div>
+      <div class="field"><label class="sr-only" for="fq">ค้นหา</label><input type="text" id="fq" name="q" maxlength="100" autocomplete="off" value="<?= h($q) ?>" placeholder="ชื่อหนังสือหรือผู้แต่ง" data-suggest></div>
       <h3>หมวดหมู่</h3>
       <ul class="cat-list">
         <li><a href="<?= h(url_with(['category' => '', 'page' => ''])) ?>" class="<?= $cat === 0 ? 'on' : '' ?>">ทุกหมวด</a></li>
         <?php foreach ($cats as $c): ?><li><a href="<?= h(url_with(['category' => $c[0], 'page' => ''])) ?>" class="<?= $cat === (int)$c[0] ? 'on' : '' ?>"><span><?= h($c[1]) ?></span><span class="muted"><?= (int)$c[2] ?></span></a></li><?php endforeach; ?>
       </ul>
+      <h3>ค่าเช่า</h3>
+      <div class="field"><label for="mp" class="small muted">ไม่เกินวันละ (บาท)</label><input type="number" id="mp" name="maxprice" min="1" max="9999" step="1" inputmode="numeric" value="<?= h($maxText) ?>" placeholder="เช่น 10"></div>
       <h3>สถานะ</h3>
       <label><input type="checkbox" name="avail" value="1"<?= $avail ? ' checked' : '' ?>> เฉพาะเล่มที่ว่าง</label>
       <input type="hidden" name="category" value="<?= (int)$cat ?>"><input type="hidden" name="sort" value="<?= h($sort) ?>">
@@ -80,7 +122,7 @@ require 'includes/header.php';
     <div class="toolbar">
       <div><h2 id="list-title" style="margin:0"><?= $filtered ? 'ผลการค้นหา' : 'หนังสือทั้งหมด' ?></h2><span class="muted small">พบ <?= (int)$total ?> เล่ม</span></div>
       <form action="index.php" method="get" class="inline-form">
-        <input type="hidden" name="q" value="<?= h($q) ?>"><input type="hidden" name="category" value="<?= (int)$cat ?>"><input type="hidden" name="avail" value="<?= (int)$avail ?>">
+        <input type="hidden" name="q" value="<?= h($q) ?>"><input type="hidden" name="category" value="<?= (int)$cat ?>"><input type="hidden" name="avail" value="<?= (int)$avail ?>"><input type="hidden" name="maxprice" value="<?= h($maxText) ?>">
         <label class="sr-only" for="sort">เรียงตาม</label>
         <select id="sort" name="sort" data-autosubmit><?php foreach ($sorts as $key => $s): ?><option value="<?= h($key) ?>"<?= $sort === $key ? ' selected' : '' ?>><?= h($s[0]) ?></option><?php endforeach; ?></select>
       </form>
@@ -89,23 +131,7 @@ require 'includes/header.php';
     <div class="card empty"><h3>ไม่พบหนังสือที่ตรงกัน</h3><p>ลองเปลี่ยนคำค้นหรือล้างตัวกรอง</p><a class="btn btn-outline" href="index.php">ดูหนังสือทั้งหมด</a></div>
     <?php else: ?>
     <div class="grid-cards">
-      <?php foreach ($books as $b): ?>
-      <article class="book-card">
-        <a class="cover-link" href="book.php?id=<?= (int)$b['id'] ?>" tabindex="-1" aria-hidden="true"><?= cover_html($b['isbn'], $b['title'], $b['id'], false) ?></a>
-        <div class="body">
-          <span class="muted small"><?= h($b['cat']) ?></span>
-          <h3><a href="book.php?id=<?= (int)$b['id'] ?>"><?= h($b['title']) ?></a></h3>
-          <span class="author"><?= h($b['author']) ?></span>
-          <div class="foot">
-            <span class="price">฿<?= h(rtrim(rtrim(money($b['rent']), '0'), '.')) ?><small>/วัน</small></span>
-            <?php if ($b['left'] > 0): ?>
-            <form action="cart.php" method="post" class="inline-form"><?php csrf_field(); ?><input type="hidden" name="action" value="add"><input type="hidden" name="book_id" value="<?= (int)$b['id'] ?>"><input type="hidden" name="back" value="<?= h('index.php' . ($_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '')) ?>">
-              <button type="submit" class="btn btn-outline btn-sm" aria-label="ใส่ตะกร้า <?= h($b['title']) ?>">+ ตะกร้า</button></form>
-            <?php else: ?><span class="badge b-bad">ถูกเช่าหมด</span><?php endif; ?>
-          </div>
-        </div>
-      </article>
-      <?php endforeach; ?>
+      <?php foreach ($books as $b) echo book_card($b, $wished); ?>
     </div>
     <?php if ($pages > 1): ?>
     <nav class="pager" aria-label="เลือกหน้า">

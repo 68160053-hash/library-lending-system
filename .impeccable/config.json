@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "assets/css/app.css"
+        ],
+        "createdAt": "2026-11-01T07:03:32.459Z",
+        "reason": "agent decision: false positive, the 3px solid border-top is the progress connector line between ticket-stub steps (.stepper li::after), not a card border"
+      }
+    ]
+  }
+}

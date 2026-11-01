@@ -1,0 +1,142 @@
+/* Discovery pages: home hall, book page, shelf. Loaded after app.css via $pageCss = ['discover']. */
+
+/* ---- banner: quarter-circle sun in the corner, so the type-ahead list can overflow the banner ---- */
+.banner { overflow: visible; }
+.banner::after { right: 0; top: 0; width: 220px; height: 220px; border-radius: 0 var(--radius) 0 100%; opacity: .12; pointer-events: none; }
+.banner h1 { max-width: 20ch; }
+.desk .btn { flex: none; }
+.perks { margin-top: .2rem; }
+
+/* ---- type-ahead list (header search and the desk) ---- */
+.desk { position: relative; }
+.suggest { position: absolute; z-index: 40; top: calc(100% + .35rem); left: 0; right: 0; margin: 0; padding: .35rem; list-style: none; background: var(--card); color: var(--text); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: var(--shadow-lg); max-height: 22rem; overflow-y: auto; }
+.suggest[hidden] { display: none; }
+.suggest li { padding: .5rem .75rem; border-radius: 9px; cursor: pointer; display: flex; flex-direction: column; border-left: 4px solid transparent; }
+.suggest li[aria-selected="true"], .suggest li:hover { background: var(--blue-soft); border-left-color: var(--yellow); }
+.suggest .s-title { font: 600 .98rem/1.35 var(--display); }
+.suggest .s-sub { color: var(--muted); font-size: .85rem; }
+
+/* ---- floor map extras ---- */
+.floor + .shelf-row, .floor ~ .shelf-row:first-of-type { margin-top: 0; }
+.zone .zn { font-size: 1.1rem; }
+
+/* ---- rows: pennant heading + a rail that scrolls on phones ---- */
+.shelf-row { margin: 0 0 1.4rem; }
+.row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 0 0 .5rem; }
+.row-head h2 { margin: 0; display: inline-flex; align-items: center; gap: .6rem; }
+.row-head h2::before { content: ""; width: .65rem; height: 1.45rem; background: var(--red); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 74%, 0 100%); flex: none; }
+.row-head a { font: 600 .92rem var(--display); display: inline-flex; align-items: center; gap: .2rem; }
+.rail { display: grid; grid-auto-flow: column; grid-auto-columns: max(172px, calc((100% - 5rem) / 6)); gap: 1rem; overflow-x: auto; padding: .5rem .25rem 1rem; margin: 0 -.25rem; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.rail > .book-card { scroll-snap-align: start; }
+#catalogue { scroll-margin-top: 6rem; margin-top: 1rem; }
+
+/* ---- the price-tagged card ---- */
+.zwrap { display: contents; }
+.heart-form { display: contents; }
+.book-card .cover-wrap { position: relative; }
+.book-card .cover-link:hover { text-decoration: none; }
+.book-card .cover { background: transparent; box-shadow: none; filter: drop-shadow(0 8px 9px rgba(18, 32, 110, .35)); }
+.book-card .cover-ph { box-shadow: none; filter: drop-shadow(0 8px 9px rgba(18, 32, 110, .35)); }
+.book-card .burst { top: 3rem; right: .15rem; width: 3.2rem; height: 3.2rem; }
+.book-card .body { gap: .35rem; }
+.book-card .body .zone-chip { font-size: .78rem; }
+.book-card .foot { justify-content: flex-start; }
+.book-card .foot .btn-sm { padding: .3rem .8rem; }
+.price-tag .price, :root .price-tag .price { color: inherit; font: inherit; }
+.price-tag .price small { color: inherit; font: 500 .72rem var(--font); margin-left: .1rem; }
+.rating-none { font-size: .85rem; }
+.rating span { display: inline-flex; }
+.rating .off { color: var(--line-2); }
+.rating .muted { margin-left: .15rem; font-weight: 400; }
+.heart-btn { background: var(--card); color: var(--red); border: 1px solid var(--line); text-decoration: none; }
+.heart-btn[aria-pressed="true"] { border-color: var(--red); }
+.heart-btn:hover { text-decoration: none; }
+@media (max-width: 520px) {
+  .grid-cards { grid-template-columns: repeat(2, 1fr); gap: .8rem; }
+  .rail { grid-auto-columns: 158px; gap: .8rem; }
+  .book-card .cover-link { padding: .8rem .7rem 1.5rem; }
+  .book-card .body { padding: .7rem .75rem .8rem; }
+  .price-tag { font-size: .95rem; padding: .32rem .6rem .32rem 1.35rem; }
+  .book-card .burst { top: 2.6rem; width: 2.8rem; height: 2.8rem; font-size: .66rem; }
+  .book-card .foot .btn-sm { font-size: .82rem; padding: .3rem .65rem; }
+}
+
+/* ---- filters ---- */
+.filters .field { margin-bottom: .4rem; }
+
+/* ---- book page ---- */
+.bk { grid-template-columns: 260px minmax(0, 1fr) 360px; gap: 2rem; }
+.bk-cover { position: sticky; top: 6.5rem; }
+.cover-box { position: relative; background: color-mix(in srgb, var(--zc) 14%, var(--card)); border-radius: var(--radius); padding: 1.2rem 1.2rem 1.4rem; }
+.cover-box .cover { filter: drop-shadow(0 12px 14px rgba(18, 32, 110, .4)); box-shadow: none; background: transparent; aspect-ratio: 2 / 3; object-fit: contain; border-radius: 0; }
+.cover-box .cover-ph { box-shadow: none; filter: drop-shadow(0 12px 14px rgba(18, 32, 110, .4)); }
+.cover-box .zl-sticker { position: absolute; top: .6rem; left: .6rem; width: 1.8rem; height: 1.8rem; display: grid; place-items: center; border-radius: 6px; background: var(--zc); color: #fff; font: 800 .95rem var(--display); }
+:root[data-theme="dark"] .cover-box .zl-sticker { color: #0a1030; }
+.bk-main h1 { margin-top: .5rem; }
+.bk-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
+.bk-buy { position: sticky; top: 6.5rem; }
+.bk-buy .plans { grid-template-columns: 1fr; gap: .8rem; }
+.bk-buy .plan { display: grid; grid-template-columns: auto 1fr; align-items: baseline; text-align: left; padding: .7rem .9rem; }
+.bk-buy .plan .days-label { margin: 0; }
+.bk-buy .plan b { text-align: right; font-size: 1.4rem; }
+.bk-buy .plan small { grid-column: 1 / -1; margin-top: .1rem; }
+.bk-buy .plan.pop::before { left: auto; right: .9rem; transform: none; top: -.65rem; }
+@media (max-width: 1080px) {
+  .bk { grid-template-columns: 220px minmax(0, 1fr); gap: 1.5rem; }
+  .bk-buy { grid-column: 1 / -1; position: static; }
+}
+@media (min-width: 601px) and (max-width: 1080px) {
+  .bk-buy .plans { grid-template-columns: repeat(3, 1fr); }
+  .bk-buy .plan { display: block; text-align: center; padding: .9rem 1rem; }
+  .bk-buy .plan b { text-align: center; font-size: 1.6rem; }
+  .bk-buy .plan .days-label { margin-bottom: .2rem; }
+  .bk-buy .plan.pop::before { left: 50%; right: auto; transform: translateX(-50%); }
+  .bk-buy .btn-block { width: auto; display: inline-flex; }
+}
+@media (max-width: 760px) {
+  .bk { grid-template-columns: 1fr; gap: 1.2rem; }
+  .bk-cover { position: static; }
+  .cover-box { max-width: 260px; margin: 0 auto; }
+  .bk-cover .cover, .bk-cover .cover-ph { max-width: none; margin: 0; }
+}
+
+/* sticky buy bar (phones) */
+.buybar { display: none; }
+@media (max-width: 760px) {
+  .buybar { display: flex; align-items: center; gap: 1rem; position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; padding: .6rem 1rem calc(.6rem + env(safe-area-inset-bottom)); background: var(--card); border-top: 2px solid var(--ink); box-shadow: 0 -8px 20px -10px rgba(18, 32, 110, .4); }
+  .buybar form { flex: 1; } .buybar .btn { width: 100%; }
+  .buybar .price-tag { position: relative; left: auto; bottom: auto; display: block; white-space: nowrap; }
+  body:has(.buybar) { padding-bottom: 4.6rem; }
+}
+
+/* ---- reviews ---- */
+.reviews { margin-top: 2rem; }
+.rv-grid { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 2rem; align-items: start; }
+@media (max-width: 760px) { .rv-grid { grid-template-columns: 1fr; gap: 1.2rem; } }
+.rv-avg { margin: 0; font-size: 2.6rem; line-height: 1.1; } .rv-avg b { font-weight: 800; }
+.rv-sum .rating { margin: .2rem 0 .8rem; }
+.dist { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.dist li { display: grid; grid-template-columns: 3.6rem 1fr 1.8rem; gap: .6rem; align-items: center; font-size: .9rem; }
+.dist-bar { height: .65rem; border-radius: 99px; background: var(--line); overflow: hidden; }
+.dist-bar i { display: block; height: 100%; background: var(--ink); border-radius: 99px; }
+:root[data-theme="dark"] .dist-bar i { background: var(--yellow); }
+.rv-form { margin-bottom: 1.4rem; padding-bottom: 1.4rem; border-bottom: 1px dashed var(--line-2); }
+.stars { --star: #d79a00; border: 0; padding: 0; margin: 0 0 1rem; min-width: 0; display: flex; flex-direction: row-reverse; justify-content: flex-end; flex-wrap: wrap; gap: .1rem; }
+:root[data-theme="dark"] .stars { --star: var(--yellow); }
+.stars legend { float: left; width: 100%; padding: 0; margin-bottom: .3rem; font: 600 .95rem var(--display); }
+.stars input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.stars label { cursor: pointer; color: var(--line-2); padding: .15rem; border-radius: 8px; display: inline-flex; }
+.stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label { color: var(--star); }
+.stars input:focus-visible + label { outline: 3px solid var(--yellow); outline-offset: 1px; box-shadow: 0 0 0 5px var(--ink); }
+.rv-list { list-style: none; margin: 0; padding: 0; }
+.rv-list li { padding: .9rem 0; border-bottom: 1px dashed var(--line-2); } .rv-list li:last-child { border-bottom: 0; }
+.rv-list p { margin: .3rem 0 0; overflow-wrap: anywhere; }
+.rv-top { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .8rem; }
+
+/* OS dark mode without a saved choice: theme.js leaves data-theme unset, so mirror the dark rules used above */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .banner { background: #1a2470; }
+  :root:not([data-theme="light"]) .dist-bar i { background: var(--yellow); }
+  :root:not([data-theme="light"]) .stars { --star: var(--yellow); }
+  :root:not([data-theme="light"]) .cover-box .zl-sticker { color: #0a1030; }
+}

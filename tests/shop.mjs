@@ -52,7 +52,7 @@ let r;
 
 // ===== Catalogue and book page =====
 r = await anon.req('index.php');
-ok('P1 catalogue shows books with prices, 12 cards on page 1', r.status === 200 && (r.text.match(/class="book-card"/g) || []).length === 12 && /฿\d+<small>\/วัน/.test(r.text));
+ok('P1 catalogue shows books with prices, 12 cards on page 1', r.status === 200 && (r.text.split('id="catalogue"')[1].match(/class="book-card"/g) || []).length === 12 && /฿\d+<small>\/วัน/.test(r.text));
 r = await anon.req('index.php?q=' + encodeURIComponent('Shop Book Three'));
 ok('P2 search finds the book', r.text.includes('Shop Book Three') && !r.text.includes('Shop Book One'));
 r = await anon.req('index.php?q=' + encodeURIComponent('%'));

@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS lib_books (
   description      TEXT NULL,                          -- เรื่องย่อ (แสดงในหน้ารายละเอียด)
   copies_total     SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   copies_available SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  featured         TINYINT(1) NOT NULL DEFAULT 0,      -- 1 = เจ้าหน้าที่คัดสรร (โชว์หน้าแรก)
   rent_per_day     DECIMAL(8,2) NOT NULL DEFAULT 10,   -- ค่าเช่าต่อวัน (บาท)
   deposit          DECIMAL(8,2) NOT NULL DEFAULT 100,  -- ค่ามัดจำต่อเล่ม คืนตอนส่งหนังสือกลับ
   PRIMARY KEY (book_id),
@@ -57,6 +58,8 @@ CREATE TABLE IF NOT EXISTS lib_orders (
   ship_name        VARCHAR(100) NOT NULL DEFAULT '',
   ship_phone       VARCHAR(20) NOT NULL DEFAULT '',
   ship_address     VARCHAR(255) NOT NULL DEFAULT '',
+  coupon_code      VARCHAR(30) NULL,                            -- โค้ดส่วนลดที่ใช้ (ถ้ามี)
+  discount_total   DECIMAL(10,2) NOT NULL DEFAULT 0,            -- ส่วนลดรวม (ชุดเช่า + โค้ด) หักจากค่าเช่าเท่านั้น
   pay_status       ENUM('unpaid','reported','confirmed') NOT NULL DEFAULT 'unpaid', -- ยังไม่จ่าย / ลูกค้าแจ้งโอนแล้ว / เจ้าหน้าที่ยืนยันแล้ว
   pay_note         VARCHAR(80) NOT NULL DEFAULT '',             -- ข้อความที่ลูกค้าแจ้งตอนโอน (เวลา/ธนาคาร)
   pay_reported_at  DATETIME NULL,
@@ -118,3 +121,63 @@ ON DUPLICATE KEY UPDATE name = name;
 -- ไม่มีผู้ใช้ตัวอย่างใน SQL (กันบัญชีที่ชื่อรู้กันทั้งโลก): สมัครที่ register.php
 -- แล้วตั้งแอดมินคนแรกด้วย  UPDATE lib_users SET role = 'admin' WHERE email = 'อีเมลของคุณ';
 -- หนังสือตัวอย่าง: นำเข้า sql/seed_books.sql (สร้างด้วย tools/fetch_books.mjs)
+
+-- ===== v3: รีวิว ชั้นหนังสือ ส่วนลด การแจ้งเตือน =====
+CREATE TABLE IF NOT EXISTS lib_reviews (
+  review_id  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  book_id    INT UNSIGNED NOT NULL,
+  user_id    INT UNSIGNED NOT NULL,
+  rating     TINYINT UNSIGNED NOT NULL,                         -- 1-5 ดาว (ตรวจที่ฝั่งเซิร์ฟเวอร์)
+  body       VARCHAR(400) NOT NULL DEFAULT '',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (review_id),
+  UNIQUE KEY uq_lib_reviews_user_book (user_id, book_id),       -- รีวิวได้เล่มละ 1 ครั้งต่อคน (และต้องเคยเช่าและคืนแล้ว ตรวจในโค้ด)
+  KEY idx_lib_reviews_book (book_id),
+  CONSTRAINT fk_lib_reviews_book FOREIGN KEY (book_id) REFERENCES lib_books (book_id) ON DELETE CASCADE,
+  CONSTRAINT fk_lib_reviews_user FOREIGN KEY (user_id) REFERENCES lib_users (user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS lib_wishlist (
+  user_id  INT UNSIGNED NOT NULL,
+  book_id  INT UNSIGNED NOT NULL,
+  added_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, book_id),
+  CONSTRAINT fk_lib_wish_user FOREIGN KEY (user_id) REFERENCES lib_users (user_id) ON DELETE CASCADE,
+  CONSTRAINT fk_lib_wish_book FOREIGN KEY (book_id) REFERENCES lib_books (book_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS lib_coupons (
+  coupon_id    INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  code         VARCHAR(30) NOT NULL,                            -- ตัวพิมพ์ใหญ่ A-Z 0-9
+  kind         ENUM('percent','amount') NOT NULL,               -- ลดเป็น % ของค่าเช่า หรือลดเป็นบาท
+  value        DECIMAL(8,2) NOT NULL,
+  min_rent     DECIMAL(8,2) NOT NULL DEFAULT 0,                 -- ค่าเช่าขั้นต่ำก่อนลด
+  max_uses     INT UNSIGNED NULL,                               -- NULL = ไม่จำกัด
+  used_count   INT UNSIGNED NOT NULL DEFAULT 0,
+  expires_on   DATE NULL,
+  active       TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (coupon_id),
+  UNIQUE KEY uq_lib_coupons_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS lib_coupon_uses (
+  coupon_id INT UNSIGNED NOT NULL,
+  user_id   INT UNSIGNED NOT NULL,
+  order_id  INT UNSIGNED NOT NULL,
+  PRIMARY KEY (coupon_id, user_id),                             -- ใช้โค้ดเดียวกันได้คนละครั้ง
+  CONSTRAINT fk_lib_cu_coupon FOREIGN KEY (coupon_id) REFERENCES lib_coupons (coupon_id) ON DELETE CASCADE,
+  CONSTRAINT fk_lib_cu_user FOREIGN KEY (user_id) REFERENCES lib_users (user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS lib_notifications (
+  notif_id   INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id    INT UNSIGNED NOT NULL,
+  kind       VARCHAR(20) NOT NULL,                              -- paid / shipped / due_soon / overdue / lost / info
+  message    VARCHAR(200) NOT NULL,
+  link       VARCHAR(120) NOT NULL DEFAULT '',                  -- หน้าในเว็บ เช่น order.php?id=5
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  read_at    DATETIME NULL,
+  PRIMARY KEY (notif_id),
+  KEY idx_lib_notif_user (user_id, read_at, notif_id),
+  CONSTRAINT fk_lib_notif_user FOREIGN KEY (user_id) REFERENCES lib_users (user_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,0 +1,78 @@
+/* Cart, checkout, order page, my orders: tickets, pay box, loan cards. Uses the tokens of app.css only. */
+.disc { color: var(--ok); }
+.price-sum { margin-top: .4rem; }
+.sum .total { font-size: 1.3rem; }
+
+/* cover tile: the cover sits on a tint of its zone colour */
+.cover-tile { display: block; padding: .45rem; border-radius: 8px; background: color-mix(in srgb, var(--zc, var(--ink)) 16%, var(--card)); border: 1px solid color-mix(in srgb, var(--zc, var(--ink)) 45%, var(--line)); line-height: 0; position: relative; }
+.cover-tile::after { content: ""; position: absolute; top: 0; left: 0; width: 14px; height: 14px; border-radius: 8px 0 8px 0; background: var(--zc, var(--ink)); }
+.cover-tile .cover, .cover-tile .cover-ph { width: 100%; border-radius: 3px; }
+.cover-tile.empty-tile { display: grid; place-items: center; aspect-ratio: 2 / 3; color: var(--zc); line-height: 1; }
+
+/* cart + checkout lines */
+.cart-lines li { grid-template-columns: 76px 1fr auto; }
+.cart-lines .cover-tile { width: 76px; padding: .3rem; }
+.cart-lines .cover-tile .cover, .cart-lines .cover-tile .cover-ph { width: 100%; box-shadow: none; }
+.cart-lines.mini li { grid-template-columns: 52px 1fr; padding: .6rem 0; }
+.cart-lines.mini .cover-tile { width: 52px; padding: .2rem; }
+.cart-lines.mini li > span:last-child { display: none; }
+.cart-lines .btn { gap: .3rem; }
+.nudge { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; margin: .8rem 0; padding: .6rem .9rem; border-radius: 12px; background: var(--warn-soft); color: var(--text); border: 1px dashed color-mix(in srgb, var(--warn) 55%, transparent); font-weight: 600; }
+.nudge .ic { color: var(--warn); }
+.nudge a { font-weight: 600; margin-left: auto; }
+
+/* coupon field */
+.coupon-field { margin: 1rem 0 .6rem; }
+.coupon-row { display: flex; gap: .5rem; }
+.coupon-row input { text-transform: uppercase; letter-spacing: .04em; min-width: 0; }
+.coupon-row .btn { flex: none; padding-inline: 1rem; }
+.coupon-ok { color: var(--ok); font-weight: 600; display: flex; gap: .3rem; align-items: center; }
+.coupon-err { color: var(--bad); font-weight: 600; }
+
+/* order page */
+.order-badge { font-size: 1rem; padding: .3rem 1rem; }
+.page-head .order-badge { align-self: flex-start; }
+.alert .ic { margin-top: .25rem; }
+.stepper { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem .5rem .9rem; box-shadow: var(--shadow); position: relative; }
+.stepper::before { content: ""; position: absolute; top: 0; left: 1.2rem; width: 3.4rem; height: .4rem; border-radius: 0 0 6px 6px; background: var(--yellow); }
+.stepper li.done::before { content: attr(data-n); }
+.stepper li.done::after, .stepper li.now::after { border-top-color: var(--ok); }
+@media (max-width: 600px) {
+  .stepper { flex-direction: column; padding: 1rem; gap: .2rem; }
+  .stepper li { text-align: left; padding: .3rem 0 .3rem 2.8rem; min-width: 0; min-height: 2.2rem; display: flex; align-items: center; }
+  .stepper li::before { left: 0; top: 50%; transform: translateY(-50%); }
+  .stepper li::after { display: none; }
+}
+.loan-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+.loan { display: grid; grid-template-columns: 84px 1fr auto; gap: 1rem; align-items: start; padding: .9rem 0; border-bottom: 1px dashed var(--line-2); }
+.loan:last-child { border-bottom: 0; }
+.loan .cover-tile { width: 84px; }
+.loan-main { display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
+.loan-badges { display: flex; flex-wrap: wrap; gap: .35rem; }
+.loan-facts { display: grid; grid-template-columns: auto 1fr; gap: .15rem 1rem; margin: .2rem 0 0; font-size: .95rem; }
+.loan-facts dt { color: var(--muted); } .loan-facts dd { margin: 0; }
+.loan-facts .num { text-align: left; }
+.loan-act { display: flex; flex-direction: column; gap: .4rem; align-items: stretch; }
+.loan-act .inline-form { display: flex; flex-direction: column; gap: .4rem; }
+@media (max-width: 600px) {
+  .loan { grid-template-columns: 64px 1fr; }
+  .loan .cover-tile { width: 64px; }
+  .loan-act { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+  .loan-act .inline-form { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* PromptPay box */
+.promptpay { text-align: center; background: var(--card); border-style: solid; border-color: var(--ink); }
+.qr-frame { display: inline-block; margin: .7rem auto .3rem; padding: .7rem; background: #fff; border-radius: 12px; border: 2px solid var(--line-2); line-height: 0; }
+.qr-frame .qr { width: min(240px, 70vw); height: auto; aspect-ratio: 1; image-rendering: pixelated; }
+.qr-amount { font-size: 1.6rem; margin: 0 0 .5rem; }
+
+/* my orders */
+.order-cards { display: grid; gap: 1rem; }
+.order-cards .order-card + .order-card { margin-top: 0; }
+.order-card { display: grid; grid-template-columns: auto 1fr; gap: 1.1rem; align-items: start; }
+.order-covers { display: flex; gap: .4rem; }
+.order-covers .cover-tile { width: 58px; padding: .25rem; }
+.order-body { min-width: 0; }
+.order-titles { margin: 0 0 .5rem; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .order-card { grid-template-columns: 1fr; } .order-covers .cover-tile { width: 52px; } }

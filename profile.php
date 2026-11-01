@@ -55,14 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'โปรไฟล์';
+$pageTitle = 'โปรไฟล์'; $pageCss = ['platform'];
 require 'includes/header.php';
 ?>
 <div class="page-head"><div><h1>โปรไฟล์ของฉัน</h1><p>ข้อมูลนี้ใช้เติมให้อัตโนมัติตอนสั่งเช่า</p></div></div>
+<div class="who"><span class="who-mark" aria-hidden="true"><?= h(mb_strtoupper(mb_substr($name, 0, 1))) ?></span><div><b><?= h($name) ?></b><span><?= h($email) ?></span></div></div>
+<div class="quick"><a class="btn btn-outline btn-sm" href="my-orders.php"><?= icon('receipt', 18) ?>การเช่าของฉัน</a><a class="btn btn-outline btn-sm" href="notifications.php"><?= icon('bell', 18) ?>การแจ้งเตือน</a><a class="btn btn-outline btn-sm" href="logout.php">ออกจากระบบ</a></div>
 <div class="cols-2">
   <section class="card" aria-labelledby="p-info">
     <h3 id="p-info">ข้อมูลส่วนตัว</h3>
-    <?php if ($errors['profile']): ?><div class="alert alert-err" role="alert"><?= h($errors['profile']) ?></div><?php endif; ?>
+    <?php if ($errors['profile']): ?><div class="alert alert-err" role="alert"><?= icon('info', 20) ?><span><?= h($errors['profile']) ?></span></div><?php endif; ?>
     <form action="profile.php" method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="profile">
       <div class="field"><label for="email">อีเมล</label><input type="email" id="email" value="<?= h($email) ?>" disabled><p class="hint">เปลี่ยนอีเมลไม่ได้</p></div>
       <div class="field"><label for="full_name">ชื่อ-นามสกุล</label><input type="text" id="full_name" name="full_name" maxlength="100" autocomplete="name" value="<?= h($name) ?>" required></div>
@@ -75,10 +77,10 @@ require 'includes/header.php';
     <h3 id="p-pw">เปลี่ยนรหัสผ่าน</h3>
     <?php if ($viaGoogle): ?><div class="alert alert-info">บัญชีนี้เข้าสู่ระบบด้วย Google จึงไม่มีรหัสผ่านของร้าน</div>
     <?php else: ?>
-    <?php if ($errors['password']): ?><div class="alert alert-err" role="alert"><?= h($errors['password']) ?></div><?php endif; ?>
+    <?php if ($errors['password']): ?><div class="alert alert-err" role="alert"><?= icon('info', 20) ?><span><?= h($errors['password']) ?></span></div><?php endif; ?>
     <form action="profile.php" method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="password">
       <div class="field"><label for="old_password">รหัสผ่านเดิม</label><div class="pw-wrap"><input type="password" id="old_password" name="old_password" autocomplete="current-password" required><button type="button" class="pw-toggle" data-pw-toggle="old_password" aria-pressed="false">แสดง</button></div></div>
-      <div class="field"><label for="new_password">รหัสผ่านใหม่</label><div class="pw-wrap"><input type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="8" maxlength="72" required><button type="button" class="pw-toggle" data-pw-toggle="new_password" aria-pressed="false">แสดง</button></div><p class="hint">อย่างน้อย 8 ตัวอักษร</p></div>
+      <div class="field"><label for="new_password">รหัสผ่านใหม่</label><div class="pw-wrap"><input type="password" id="new_password" name="new_password" autocomplete="new-password" minlength="8" maxlength="72" data-strength required><button type="button" class="pw-toggle" data-pw-toggle="new_password" aria-pressed="false">แสดง</button></div><p class="hint">อย่างน้อย 8 ตัวอักษร</p></div>
       <div class="field"><label for="new_password_confirm">ยืนยันรหัสผ่านใหม่</label><div class="pw-wrap"><input type="password" id="new_password_confirm" name="new_password_confirm" autocomplete="new-password" required><button type="button" class="pw-toggle" data-pw-toggle="new_password_confirm" aria-pressed="false">แสดง</button></div></div>
       <button type="submit" class="btn btn-primary">เปลี่ยนรหัสผ่าน</button>
     </form>

@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-01T00:00:00Z",
+  "title": "Design System: Book Lending Shop",
+  "extensions": {
+    "colorMeta": {
+      "hall-blue-ink": { "role": "primary", "displayName": "Hall Blue Ink", "canonical": "#12206e", "tonalRamp": ["#050a21","#091037","#0d164d","#101d63","#2f3b80","#6871a3","#a2a7c6","#dbdee9"] },
+      "banner-yellow": { "role": "secondary", "displayName": "Banner Yellow", "canonical": "#ffd21f", "tonalRamp": ["#4d3f09","#806910","#b39316","#e5bd1c","#ffd73a","#ffe271","#ffeda7","#fff8dd"] },
+      "flag-red": { "role": "tertiary", "displayName": "Flag Red", "canonical": "#d62a25", "tonalRamp": ["#400d0b","#6b1513","#961d1a","#c12621","#db443f","#e57874","#efaba9","#f9dfde"] },
+      "cool-hall-floor": { "role": "neutral", "displayName": "Cool Hall Floor", "canonical": "#f3f5fb", "tonalRamp": ["#0a1030","#131b4a","#26306d","#5b6388","#a3acd6","#dde1f0","#f3f5fb","#ffffff"] },
+      "zone-1-fantasy-violet": { "role": "zone", "displayName": "Fantasy Violet", "canonical": "#6a3df0", "tonalRamp": ["#201248","#351f78","#4a2ba8","#5f37d8","#7c55f2","#a084f5","#c4b3f9","#e9e2fd"] },
+      "zone-2-science-green": { "role": "zone", "displayName": "Science Green", "canonical": "#0f8a43", "tonalRamp": ["#052914","#084522","#0b612f","#0d7c3c","#2c985a","#66b587","#a1d1b5","#dbede3"] },
+      "zone-3-history-orange": { "role": "zone", "displayName": "History Orange", "canonical": "#bd4f00", "tonalRamp": ["#391800","#5f2800","#843700","#aa4700","#c5641f","#d58f5d","#e5ba9b","#f5e5d9"] },
+      "zone-4-literature-rose": { "role": "zone", "displayName": "Literature Rose", "canonical": "#d81e5b", "tonalRamp": ["#41091b","#6c0f2e","#971540","#c21b52","#dd396f","#e67097","#f0a7bf","#f9dde6"] },
+      "zone-5-computing-cyan": { "role": "zone", "displayName": "Computing Cyan", "canonical": "#0a7ea4", "tonalRamp": ["#032631","#053f52","#075873","#097194","#288eaf","#63adc5","#9fccdb","#daecf1"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Banner headline only, Prompt 800 in banner yellow." },
+      "headline": { "displayName": "Headline", "purpose": "Page h1." },
+      "title": { "displayName": "Title", "purpose": "Section and card headings." },
+      "body": { "displayName": "Body", "purpose": "Sarabun reading text, 1.65 line height for Thai." },
+      "label": { "displayName": "Label", "purpose": "Buttons, nav, tabs, field labels, prices in Prompt." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px rgba(18,32,110,.08), 0 4px 14px rgba(18,32,110,.08)", "purpose": "Cards, KPIs, notifications (dark: black .4/.35)." },
+      { "name": "lift", "value": "0 16px 38px rgba(18,32,110,.2)", "purpose": "Banner, buy box, hovered book card, suggest list." },
+      { "name": "cover-drop", "value": "drop-shadow(0 8px 9px rgba(18,32,110,.35))", "purpose": "Covers on their zone board." },
+      { "name": "price-flag", "value": "0 6px 12px -6px rgba(0,0,0,.5)", "purpose": "Tilted yellow price tag." },
+      { "name": "focus-pair", "value": "outline 3px #ffd21f, offset 2px, plus 0 0 0 5px #12206e", "purpose": "Focus ring on every interactive element." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(.2, .8, .2, 1)", "purpose": "All hover, press and rise transitions." },
+      { "name": "rise", "value": ".5s ease, translateY(16px) to 0, stagger 40ms up to 240ms", "purpose": "Book cards entering." },
+      { "name": "lift", "value": ".15s to .22s, translateY(-1px to -4px)", "purpose": "Buttons, KPI links, book cards, zone blocks." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "520px" },
+      { "name": "sm", "value": "600px" },
+      { "name": "md", "value": "760px" },
+      { "name": "nav", "value": "860px" },
+      { "name": "lg", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink pill; the default action.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">ค้นหา</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.2rem;border-radius:999px;border:2px solid transparent;font:600 1rem Prompt,Sarabun,sans-serif;cursor:pointer;line-height:1.2;transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s}.ds-btn:active{transform:translateY(1px) scale(.99)}.ds-btn-primary{background:#12206e;color:#fff}.ds-btn-primary:hover{background:#2c3a8c}.ds-btn:focus-visible{outline:3px solid #ffd21f;outline-offset:2px;box-shadow:0 0 0 5px #12206e}"
+    },
+    {
+      "name": "Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Flag red pill; the one main action (sign up, buy).",
+      "html": "<button class=\"ds-btn ds-btn-accent\">สมัครสมาชิก</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.2rem;border-radius:999px;border:2px solid transparent;font:600 1rem Prompt,Sarabun,sans-serif;cursor:pointer;line-height:1.2;transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s}.ds-btn-accent{background:#d62a25;color:#fff;box-shadow:0 6px 14px -6px #d62a25}.ds-btn-accent:hover{background:#b01f1b;transform:translateY(-1px)}.ds-btn:focus-visible{outline:3px solid #ffd21f;outline-offset:2px;box-shadow:0 0 0 5px #12206e}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Quiet secondary action.",
+      "html": "<button class=\"ds-btn ds-btn-outline\">ดูทั้งหมด</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1.2rem;border-radius:999px;border:2px solid transparent;font:600 1rem Prompt,Sarabun,sans-serif;cursor:pointer;line-height:1.2}.ds-btn-outline{background:transparent;color:#12206e;border-color:#c8cee6}.ds-btn-outline:hover{background:#e6eafb;border-color:#12206e}.ds-btn:focus-visible{outline:3px solid #ffd21f;outline-offset:2px;box-shadow:0 0 0 5px #12206e}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "12px field with a 2px border and yellow focus.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"ค้นหาชื่อหนังสือหรือผู้แต่ง\">",
+      "css": ".ds-input{width:100%;padding:.65rem .85rem;border:2px solid #c8cee6;border-radius:12px;font:400 1rem Sarabun,sans-serif;background:#fff;color:#151b3b;caret-color:#d62a25}.ds-input::placeholder{color:#5b6388;opacity:1}.ds-input:focus{border-color:#12206e;outline:3px solid #ffd21f;outline-offset:0}"
+    },
+    {
+      "name": "Nav Pills",
+      "kind": "nav",
+      "refersTo": "button-primary",
+      "description": "Pill nav; the current page is a filled ink pill with a red cart count.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">หนังสือ</a><a href=\"#\">ตะกร้า <span class=\"ds-count\">2</span></a></nav>",
+      "css": ".ds-nav{display:flex;gap:.2rem}.ds-nav a{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .8rem;border-radius:999px;font:500 .95rem Prompt,sans-serif;color:#151b3b;text-decoration:none}.ds-nav a:hover{background:#e6eafb}.ds-nav a[aria-current=page]{background:#12206e;color:#fff}.ds-nav a:focus-visible{outline:3px solid #ffd21f;outline-offset:2px;box-shadow:0 0 0 5px #12206e}.ds-count{display:inline-grid;place-items:center;min-width:1.25rem;height:1.25rem;padding:0 .32rem;border-radius:99px;background:#d62a25;color:#fff;font:700 .75rem Prompt,sans-serif}"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Pill status badge in neutral and ok tints.",
+      "html": "<span class=\"ds-badge\">ใหม่</span> <span class=\"ds-badge ds-ok\">ชำระแล้ว</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.12rem .7rem;border-radius:99px;font:600 .8rem Prompt,sans-serif;background:#e6eafb;color:#12206e}.ds-ok{background:#e1f4e8;color:#0f7a3d}"
+    },
+    {
+      "name": "Price Tag",
+      "kind": "custom",
+      "refersTo": "price-tag",
+      "description": "Tilted yellow baht-per-day tag with a punched hole.",
+      "html": "<span class=\"ds-price\">฿5<small>/วัน</small></span>",
+      "css": ".ds-price{position:relative;display:inline-block;background:#ffd21f;color:#3a2c00;font:800 1.05rem/1 Prompt,sans-serif;padding:.38rem .7rem .38rem 1.5rem;border-radius:4px 12px 12px 4px;box-shadow:0 6px 12px -6px rgba(0,0,0,.5);transform:rotate(-3deg);font-variant-numeric:tabular-nums}.ds-price::before{content:'';position:absolute;left:.5rem;top:50%;width:.5rem;height:.5rem;margin-top:-.25rem;border-radius:50%;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}.ds-price small{font:500 .72rem Sarabun,sans-serif;margin-left:.1rem}"
+    },
+    {
+      "name": "Zone Block",
+      "kind": "custom",
+      "refersTo": "zone-block",
+      "description": "Hall floor map tile: zone letter, name, count; acts as a category button.",
+      "html": "<a class=\"ds-zone\" href=\"#\"><span class=\"ds-zl\">A</span><span class=\"ds-zn\">แฟนตาซี</span></a>",
+      "css": ".ds-zone{display:flex;flex-direction:column;justify-content:space-between;gap:.6rem;min-height:112px;width:200px;padding:.9rem 1rem;border-radius:10px;background:#6a3df0;color:#fff;text-decoration:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s}.ds-zone:hover{transform:translateY(-3px) rotate(-.4deg);box-shadow:0 12px 22px -10px #6a3df0}.ds-zone:focus-visible{outline:3px solid #ffd21f;outline-offset:2px;box-shadow:0 0 0 5px #12206e}.ds-zl{font:800 2.6rem/1 Prompt,sans-serif;opacity:.9}.ds-zn{font:700 1.1rem/1.25 Prompt,sans-serif}"
+    },
+    {
+      "name": "Book Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Cover on a zone-tinted board with a price tag and title.",
+      "html": "<article class=\"ds-book\"><div class=\"ds-board\"><div class=\"ds-cover\">ชื่อหนังสือ</div><span class=\"ds-tag\">฿5/วัน</span></div><div class=\"ds-body\"><h3>ชื่อหนังสือ</h3><span>ผู้แต่ง</span></div></article>",
+      "css": ".ds-book{width:188px;background:#fff;border:1px solid #dde1f0;border-radius:14px;box-shadow:0 1px 2px rgba(18,32,110,.08),0 4px 14px rgba(18,32,110,.08);overflow:hidden;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}.ds-book:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(18,32,110,.2)}.ds-board{position:relative;padding:1rem 1rem 1.6rem;background:color-mix(in srgb,#6a3df0 14%,#fff)}.ds-cover{aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;border-radius:4px;background:#6a3df0;color:#fff;font:700 1.05rem/1.3 Prompt,sans-serif;filter:drop-shadow(0 8px 9px rgba(18,32,110,.35))}.ds-tag{position:absolute;left:.6rem;bottom:.55rem;background:#ffd21f;color:#3a2c00;font:800 1.05rem/1 Prompt,sans-serif;padding:.38rem .7rem;border-radius:4px 12px 12px 4px;transform:rotate(-3deg)}.ds-body{padding:.9rem 1rem 1rem;font-family:Sarabun,sans-serif;color:#5b6388}.ds-body h3{margin:0;font:700 1rem/1.35 Prompt,sans-serif;color:#151b3b}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Thai Book Fair Hall",
+    "overview": "The shop is a book fair floor in full swing that happens to rent. Hall-blue ink sits on a cool white floor, a banner-yellow price flag and a flag-red call to action carry the energy, and five zone colours do the sorting that a template storefront would do with a sidebar. The covers are the shop's real colour; the interface frames them with zone-tinted backing boards, soft shadows and fair objects: a bunting strip, a booth-fascia header, a price tag with a punched hole, a starburst sticker, a hall floor map as category navigation, and a ticket-stub order timeline.\n\nTone is lively but never childish: Thai-first copy, Prompt at 700 to 800 for banners, prices and labels, Sarabun for reading, generous Thai line height (1.65). Light is the fair by day; dark is the hall after closing, with a deep navy floor, the same five zones lifted for contrast, and yellow staying yellow.",
+    "keyCharacteristics": [
+      "Hall-blue ink and banner yellow carry identity; flag red marks the one action that matters.",
+      "Five zone colours (A to E) tint category chips, cover backing boards, headings and charts.",
+      "Fully pill-shaped controls over softly rounded (14px) cards.",
+      "Soft blue-tinted ambient shadows; depth comes from lift on hover, not from hard edges.",
+      "Dashed rules and dotted connectors echo tickets and floor plans.",
+      "Light and dark themes are first-class, toggled by data-theme and falling back to prefers-color-scheme."
+    ],
+    "rules": [
+      { "name": "The One Red Rule", "body": "Flag red marks the single action or price on a screen (accent button, price number, cart count). Everything else clickable is ink.", "section": "colors" },
+      { "name": "The Zone Is Identity Rule", "body": "A zone colour appears only on things that belong to that zone (chip, backing board, heading mark, chart bar). Never use a zone hue as generic decoration or status.", "section": "colors" },
+      { "name": "The Flip Rule", "body": "In dark mode, filled ink/red/zone surfaces take dark text (#0a1030 or #1a0605), never white.", "section": "colors" },
+      { "name": "The Price Is Display Rule", "body": "Money is always Prompt, tabular, heavier than its neighbours.", "section": "typography" },
+      { "name": "The Soft Ink Shadow Rule", "body": "Shadows are blurred and tinted with hall blue; no hard offset shadows.", "section": "elevation" },
+      { "name": "The Focus Pair Rule", "body": "Focus is a 3px yellow outline plus a 5px ink ring, so it reads on both yellow-adjacent and dark surfaces.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do show rent and refundable deposit together before any commitment, using the price tag and the Prompt tabular total.",
+      "Do set a zone with .z1 to .z5 and read --zc; tint backing boards at 14% over the card colour.",
+      "Do give filled ink, red and zone surfaces dark text in dark mode.",
+      "Do keep the yellow-plus-ink focus pair on every interactive element.",
+      "Do honour prefers-reduced-motion; the rise-in and lift effects are decoration only.",
+      "Do use real covers; where none exists use the zone-coloured placeholder with the title."
+    ],
+    "donts": [
+      "Don't return to a clean white grid of identical cards under a hero; the floor map, rails and tags are the structure.",
+      "Don't use red for anything but the single main action or price on a screen.",
+      "Don't use a zone hue for status or decoration; status is ok, warn, bad.",
+      "Don't add photographs of a shop, testimonials or sales figures; none exist.",
+      "Don't add hard offset shadows or new radii outside the shape set above.",
+      "Don't make the interface childish; keep copy short and Thai-first."
+    ]
+  }
+}

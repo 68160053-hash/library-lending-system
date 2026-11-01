@@ -19,6 +19,14 @@ if ($orderId === false || $orderId < 1 || !in_array($action, ['report_pay', 'can
 if (in_array($action, ['confirm_pay', 'ship', 'receive', 'lost'], true)) require_staff(); // staff rights from the database
 $back = 'Location: order.php?id=' . $orderId;
 $done = 0;
+// Who gets the notification: the member who owns the order (staff actions only)
+function order_owner($conn, $orderId) {
+    $stmt = mysqli_prepare($conn, 'SELECT user_id FROM lib_orders WHERE order_id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $orderId); mysqli_stmt_execute($stmt); mysqli_stmt_bind_result($stmt, $uid);
+    $ok = mysqli_stmt_fetch($stmt); mysqli_stmt_close($stmt);
+    return $ok ? (int)$uid : 0;
+}
+$ordLink = 'order.php?id=' . $orderId;
 
 if ($action === 'report_pay') {
     $note = mb_substr(trim((string)($_POST['pay_note'] ?? '')), 0, 80);
@@ -39,6 +47,7 @@ if ($action === 'report_pay') {
     mysqli_stmt_execute($stmt);
     $done = mysqli_stmt_affected_rows($stmt);
     mysqli_stmt_close($stmt);
+    if ($done === 1) notify($conn, order_owner($conn, $orderId), 'paid', 'ร้านยืนยันการชำระเงินแล้ว กำลังเตรียมจัดส่งหนังสือ ใบสั่งเช่า ' . order_no($orderId), $ordLink);
     flash($done === 1 ? 'ok' : 'err', $done === 1 ? 'ยืนยันการชำระเงินแล้ว พร้อมจัดส่ง' : 'ยืนยันไม่ได้ ใบสั่งเช่านี้อยู่ในขั้นตอนอื่นแล้ว');
 } elseif ($action === 'ship') {
     $couriers = ['ไปรษณีย์ไทย', 'Kerry Express', 'Flash Express', 'J&T Express', 'อื่นๆ'];
@@ -59,6 +68,7 @@ if ($action === 'report_pay') {
         mysqli_stmt_close($stmt);
         mysqli_commit($conn);
     } else mysqli_rollback($conn);
+    if ($done === 1) notify($conn, order_owner($conn, $orderId), 'shipped', 'ร้านส่งพัสดุแล้ว ขนส่ง ' . $courier . ' เลขพัสดุ ' . $tracking . ' ใบสั่งเช่า ' . order_no($orderId), $ordLink);
     flash($done === 1 ? 'ok' : 'err', $done === 1 ? 'บันทึกการจัดส่งแล้ว เริ่มนับวันเช่าตั้งแต่วันนี้' : 'จัดส่งไม่ได้ ต้องยืนยันการชำระเงินก่อน หรือส่งไปแล้ว');
 } else { // receive or lost: one book of the order
     if ($loanId === false || $loanId < 1) { http_response_code(400); exit('Invalid request'); }
@@ -77,6 +87,11 @@ if ($action === 'report_pay') {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         mysqli_commit($conn);
+        $stmt = mysqli_prepare($conn, 'SELECT b.title FROM lib_loans l JOIN lib_books b ON b.book_id = l.book_id WHERE l.loan_id = ?');
+        mysqli_stmt_bind_param($stmt, 'i', $loanId); mysqli_stmt_execute($stmt); mysqli_stmt_bind_result($stmt, $bTitle); mysqli_stmt_fetch($stmt); mysqli_stmt_close($stmt);
+        $t = mb_substr((string)$bTitle, 0, 60);
+        if ($action === 'receive') notify($conn, order_owner($conn, $orderId), 'info', 'ร้านรับหนังสือ "' . $t . '" คืนแล้ว คืนมัดจำตามยอดในใบสั่งเช่า', $ordLink);
+        else notify($conn, order_owner($conn, $orderId), 'lost', 'หนังสือ "' . $t . '" ถูกบันทึกว่าสูญหาย ไม่คืนมัดจำ', $ordLink);
     } else mysqli_rollback($conn);
     flash($done === 1 ? 'ok' : 'err', $done === 1 ? ($action === 'receive' ? 'บันทึกรับคืนแล้ว คืนมัดจำตามยอดที่แสดงในตาราง' : 'บันทึกว่าหนังสือสูญหายแล้ว') : 'ทำรายการไม่ได้ เล่มนี้อยู่ในขั้นตอนอื่นแล้ว');
 }

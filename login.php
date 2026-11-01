@@ -43,17 +43,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         log_attempt($conn, 'login', $email);
     }
 }
-$pageTitle = 'เข้าสู่ระบบ';
+$pageTitle = 'เข้าสู่ระบบ'; $pageCss = ['platform'];
 require 'includes/header.php';
 ?>
-<div class="auth-wrap">
-  <div class="card">
+<div class="auth-hall">
+  <aside class="auth-side">
+    <h2>ยินดีต้อนรับกลับสู่ฮอลล์</h2>
+    <p>เข้าสู่ระบบเพื่อเช่าหนังสือและติดตามสถานะการเช่าของคุณ</p>
+    <ul>
+      <li><?= icon('calendar', 20) ?>เช่า 7 / 14 / 30 วัน</li>
+      <li><?= icon('shield', 20) ?>มัดจำคืนเต็มจำนวนเมื่อร้านได้รับหนังสือ</li>
+      <li><?= icon('truck', 20) ?>ส่งถึงบ้านพร้อมเลขพัสดุ</li>
+    </ul>
+  </aside>
+  <div class="auth-main">
     <h1>เข้าสู่ระบบ</h1>
     <p class="muted">เข้าสู่ระบบเพื่อเช่าหนังสือและติดตามสถานะ</p>
-    <?php if (isset($_GET['registered'])): ?><div class="alert alert-ok" role="status">สมัครสมาชิกเรียบร้อย กรุณาเข้าสู่ระบบ</div><?php endif; ?>
-    <?php if (isset($_GET['logged_out'])): ?><div class="alert alert-info" role="status">ออกจากระบบแล้ว</div><?php endif; ?>
-    <?php if ($googleError): ?><div class="alert alert-err" role="alert"><?= h($googleError) ?></div><?php endif; ?>
-    <?php if ($error): ?><div class="alert alert-err" role="alert"><?= h($error) ?></div><?php endif; ?>
+    <?php if (isset($_GET['registered'])): ?><div class="alert alert-ok" role="status"><?= icon('check', 20) ?><span>สมัครสมาชิกเรียบร้อย กรุณาเข้าสู่ระบบ</span></div><?php endif; ?>
+    <?php if (isset($_GET['logged_out'])): ?><div class="alert alert-info" role="status"><?= icon('info', 20) ?><span>ออกจากระบบแล้ว</span></div><?php endif; ?>
+    <?php if ($googleError): ?><div class="alert alert-err" role="alert"><?= icon('info', 20) ?><span><?= h($googleError) ?></span></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-err" role="alert"><?= icon('info', 20) ?><span><?= h($error) ?></span></div><?php endif; ?>
     <form action="login.php" method="post">
       <?php csrf_field(); ?>
       <div class="field"><label for="email">อีเมล</label><input type="email" id="email" name="email" autocomplete="username" required></div>
@@ -62,9 +71,9 @@ require 'includes/header.php';
     </form>
     <?php if ($googleReady): ?>
     <p class="or-line"><span>หรือ</span></p>
-    <a class="btn btn-outline btn-block" href="google-login.php">เข้าสู่ระบบด้วย Google</a>
+    <a class="btn btn-outline btn-block btn-google" href="google-login.php"><span class="g-mark" aria-hidden="true">G</span>เข้าสู่ระบบด้วย Google</a>
     <?php endif; ?>
-    <p class="center small" style="margin:1.2rem 0 0">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a></p>
+    <p class="switch-line">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a></p>
   </div>
 </div>
 <?php require 'includes/footer.php'; ?>
