@@ -19,9 +19,9 @@ $googleRedirect = getenv('GOOGLE_REDIRECT_URI') ?: ($secret['google_redirect_uri
 $googleReady = $googleId !== '' && $googleSecret !== '' && $googleRedirect !== '' && function_exists('curl_init');
 // Where customers send the money (shown on the payment box). Set shop_* keys in secret/config.php; these are placeholders.
 $shop = [
-    'bank' => getenv('SHOP_BANK') ?: ($secret['shop_bank'] ?? 'ธนาคาร (ตั้งค่าใน secret/config.php)'),
-    'account_no' => getenv('SHOP_ACCOUNT_NO') ?: ($secret['shop_account_no'] ?? '000-0-00000-0'),
-    'account_name' => getenv('SHOP_ACCOUNT_NAME') ?: ($secret['shop_account_name'] ?? 'Book Lending Shop'),
+    'bank' => getenv('SHOP_BANK') ?: ($secret['shop_bank'] ?? ''),
+    'account_no' => getenv('SHOP_ACCOUNT_NO') ?: ($secret['shop_account_no'] ?? ''),   // empty = no bank box, the shop tells the customer how to pay
+    'account_name' => getenv('SHOP_ACCOUNT_NAME') ?: ($secret['shop_account_name'] ?? ''),
     'promptpay' => getenv('SHOP_PROMPTPAY') ?: ($secret['shop_promptpay'] ?? ''),
 ];
 mysqli_set_charset($conn, 'utf8mb4');

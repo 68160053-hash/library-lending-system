@@ -116,9 +116,13 @@ require 'includes/header.php';
       <?php if ($pay === 'reported' || $pay === 'confirmed'): ?><p class="muted small"><?= $payNote !== '' ? 'หมายเหตุจากผู้โอน: ' . h($payNote) : '' ?></p><?php endif; ?>
 
       <?php if ($open && $pay === 'unpaid' && $isOwner): ?>
+      <?php if ($shop['account_no'] === ''): ?>
+      <div class="paybox"><strong>ยอดที่ต้องชำระ ฿<?= h(money($grand)) ?></strong><p class="small" style="margin:.4rem 0 0">ร้านจะแจ้งวิธีชำระเงินให้ทางเบอร์โทรที่ให้ไว้ เมื่อชำระแล้วกดปุ่มด้านล่าง</p></div>
+      <?php else: ?>
       <div class="paybox"><strong>โอนเงินมาที่</strong>
         <dl><dt>ธนาคาร</dt><dd><?= h($shop['bank']) ?></dd><dt>เลขบัญชี</dt><dd><?= h($shop['account_no']) ?></dd><dt>ชื่อบัญชี</dt><dd><?= h($shop['account_name']) ?></dd><?php if ($shop['promptpay'] !== ''): ?><dt>พร้อมเพย์</dt><dd><?= h($shop['promptpay']) ?></dd><?php endif; ?><dt>ยอดโอน</dt><dd class="price">฿<?= h(money($grand)) ?></dd></dl>
       </div>
+      <?php endif; ?>
       <form action="order-action.php" method="post"><?php csrf_field(); ?><input type="hidden" name="order_id" value="<?= (int)$orderId ?>"><input type="hidden" name="action" value="report_pay">
         <div class="field"><label for="pay_note">รายละเอียดการโอน (ไม่บังคับ)</label><input type="text" id="pay_note" name="pay_note" maxlength="80" placeholder="เช่น โอนเวลา 14:30 จากกสิกร"></div>
         <button type="submit" class="btn btn-accent btn-block">แจ้งโอนเงินแล้ว</button></form>

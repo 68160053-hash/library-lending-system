@@ -133,7 +133,7 @@ ok('K15 8 parallel checkouts by one member -> at most 3 unpaid orders', Number(s
 
 // ===== Orders: pages and access =====
 r = await A.req('order.php?id=' + o1);
-ok('O1 owner sees the order: stepper, payment box with bank info, report form', r.status === 200 && r.text.includes('stepper') && r.text.includes('โอนเงินมาที่') && r.text.includes('name="pay_note"') && r.text.includes('฿442.00'));
+ok('O1 owner sees the order: stepper, payment box with bank info, report form', r.status === 200 && r.text.includes('stepper') && r.text.includes('ยอดที่ต้องชำระ ฿442.00') && !r.text.includes('โอนเงินมาที่') &&r.text.includes('name="pay_note"') && r.text.includes('฿442.00'));
 r = await B.req('order.php?id=' + o1); ok("O2 another member gets 404 for Rita's order", r.status === 404);
 r = await anon.req('order.php?id=' + o1); ok('O3 guest -> login', r.status === 302 && r.loc.includes('login'));
 r = await S.req('order.php?id=' + o1); ok('O4 staff can open any order and sees the confirm button', r.status === 200 && r.text.includes('ยืนยันได้รับเงินแล้ว'));

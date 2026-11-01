@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_close($stmt);
                 mysqli_commit($conn);
                 $_SESSION['cart'] = [];
-                flash('ok', 'สั่งเช่าเรียบร้อย กรุณาโอนเงินภายใน 48 ชั่วโมง แล้วกด "แจ้งโอนเงิน"');
+                flash('ok', 'สั่งเช่าเรียบร้อย กรุณาชำระเงินภายใน 48 ชั่วโมง แล้วกด "แจ้งโอนเงิน"');
                 header('Location: order.php?id=' . (int)$orderId); exit;
             }
         }
@@ -106,7 +106,7 @@ foreach ($items as $it) { $rentTotal += $it['rent_per_day'] * $f['days']; $depos
 $pageTitle = 'ชำระเงิน';
 require 'includes/header.php';
 ?>
-<div class="page-head"><div><h1>ยืนยันการเช่า</h1><p>กรอกที่อยู่จัดส่ง แล้วโอนเงินตามยอดในขั้นตอนถัดไป</p></div></div>
+<div class="page-head"><div><h1>ยืนยันการเช่า</h1><p>กรอกที่อยู่จัดส่ง แล้วชำระเงินตามยอดในขั้นตอนถัดไป</p></div></div>
 <?php if ($error): ?><div class="alert alert-err" role="alert"><?= h($error) ?></div><?php endif; ?>
 <form action="checkout.php" method="post" class="checkout">
   <?php csrf_field(); ?>
