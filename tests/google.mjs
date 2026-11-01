@@ -85,7 +85,7 @@ r = await v.req('google-callback.php?state=' + st + '&code=' + 'a'.repeat(3000))
 ok('G14 an absurdly long code is refused before any call to Google', r.loc.includes('google_error=code'));
 v = client(BASE_G); st = new URL((await v.req('google-login.php')).loc).searchParams.get('state');
 r = await v.req('google-callback.php?state=' + st + '&code=not-a-real-code');
-ok('G15 a fake code is rejected by Google and nobody is logged in', r.loc.includes('google_error=token') && (await v.req('my-loans.php')).loc.includes('login.php'));
+ok('G15 a fake code is rejected by Google and nobody is logged in', r.loc.includes('google_error=token') && (await v.req('my-orders.php')).loc.includes('login.php'));
 r = await v.req('login.php?google_error=token');
 ok('G16 the token error is shown as a fixed message', r.text.includes('เข้าสู่ระบบด้วย Google ไม่สำเร็จ'));
 r = await v.req('login.php?google_error=' + encodeURIComponent('<script>alert(1)</script>'));

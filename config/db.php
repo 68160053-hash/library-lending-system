@@ -17,5 +17,12 @@ $googleId = getenv('GOOGLE_CLIENT_ID') ?: ($secret['google_client_id'] ?? '');
 $googleSecret = getenv('GOOGLE_CLIENT_SECRET') ?: ($secret['google_client_secret'] ?? '');
 $googleRedirect = getenv('GOOGLE_REDIRECT_URI') ?: ($secret['google_redirect_uri'] ?? '');
 $googleReady = $googleId !== '' && $googleSecret !== '' && $googleRedirect !== '' && function_exists('curl_init');
+// Where customers send the money (shown on the payment box). Set shop_* keys in secret/config.php; these are placeholders.
+$shop = [
+    'bank' => getenv('SHOP_BANK') ?: ($secret['shop_bank'] ?? 'ธนาคาร (ตั้งค่าใน secret/config.php)'),
+    'account_no' => getenv('SHOP_ACCOUNT_NO') ?: ($secret['shop_account_no'] ?? '000-0-00000-0'),
+    'account_name' => getenv('SHOP_ACCOUNT_NAME') ?: ($secret['shop_account_name'] ?? 'Book Lending Shop'),
+    'promptpay' => getenv('SHOP_PROMPTPAY') ?: ($secret['shop_promptpay'] ?? ''),
+];
 mysqli_set_charset($conn, 'utf8mb4');
 mysqli_query($conn, "SET time_zone = '+07:00'"); // CURDATE() must be Thai time even if the server runs UTC

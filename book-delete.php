@@ -12,4 +12,5 @@ $stmt = mysqli_prepare($conn, 'DELETE FROM lib_books WHERE book_id = ?');
 mysqli_stmt_bind_param($stmt, 'i', $bookId);
 $ok = mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
-header('Location: books.php?' . ($ok ? 'deleted=1' : 'delete_error=1')); exit;
+flash($ok ? 'ok' : 'err', $ok ? 'ลบหนังสือเรียบร้อย' : 'ลบไม่ได้ เพราะหนังสือเล่มนี้มีประวัติการเช่าอยู่แล้ว');
+header('Location: books.php'); exit;

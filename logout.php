@@ -15,15 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'ออกจากระบบ';
 require 'includes/header.php';
 ?>
-<main id="main">
-  <div class="container">
-    <section class="letter paper frame">
-      <h1>ออกจากระบบ?</h1>
-      <form method="post"><?php csrf_field(); ?>
-        <button type="submit" class="btn btn-primary btn-block">ยืนยันออกจากระบบ</button>
-      </form>
-      <p class="form-foot"><a href="index.php">กลับ</a></p>
-    </section>
-  </div>
-</main>
+<div class="auth-wrap"><div class="card center">
+  <h1>ออกจากระบบ?</h1>
+  <form action="logout.php" method="post"><?php csrf_field(); ?><button type="submit" class="btn btn-primary btn-block">ยืนยันออกจากระบบ</button></form>
+  <p class="small" style="margin:1rem 0 0"><a href="index.php">กลับหน้าร้าน</a></p>
+</div></div>
 <?php require 'includes/footer.php'; ?>

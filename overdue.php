@@ -2,40 +2,38 @@
 require 'auth.php'; require 'config/db.php';
 require_staff(); // server-side role check: members get 403
 
-// All unreturned loans past their due date. No user input here, so mysqli_query is safe.
-// Only parcels already shipped can be overdue. Fee = late days x the daily rate saved on the rental.
-$sql = "SELECT u.full_name, b.title, l.due_date,
+// Only books already shipped can be overdue. Fee = late days x the daily rate saved on the rental (plus any renewal fee).
+$sql = "SELECT l.order_id, u.full_name, u.phone, b.title, l.due_date,
                DATEDIFF(CURDATE(), l.due_date) AS days_late,
-               DATEDIFF(CURDATE(), l.due_date) * l.daily_rate AS fine
+               DATEDIFF(CURDATE(), l.due_date) * l.daily_rate AS fine, l.deposit
         FROM lib_loans l
         JOIN lib_users u ON u.user_id = l.user_id
         JOIN lib_books b ON b.book_id = l.book_id
         WHERE l.status = 'shipped' AND l.due_date < CURDATE()
         ORDER BY l.due_date";
 $result = mysqli_query($conn, $sql);
-$count = $result ? mysqli_num_rows($result) : 0;
+$rows = [];
+while ($result && ($r = mysqli_fetch_assoc($result))) $rows[] = $r;
 
-$pageTitle = 'รายการเกินกำหนด';
+$pageTitle = 'เกินกำหนดคืน';
 require 'includes/header.php';
 ?>
-<main id="main">
-  <div class="container">
-    <p class="eyebrow">OVERDUE NOTICES</p>
-    <h1 class="page-title">รายการเกินกำหนดคืน</h1>
-    <p class="margin-note">สำหรับเจ้าหน้าที่ &middot; ค่าปรับ = วันที่เกินกำหนด x ราคาเช่าต่อวันของเล่มนั้น</p>
-    <p class="count-line">เกินกำหนด <?= (int)$count ?> รายการ</p>
-    <div class="letters">
-      <?php if ($result): while ($row = mysqli_fetch_assoc($result)): ?>
-      <article class="red-letter paper">
-        <span class="seal seal--sm" aria-hidden="true">B</span>
-        <h2 class="member"><?= h($row['full_name']) ?></h2>
-        <p class="book-name"><?= h($row['title']) ?></p>
-        <p class="late-info">กำหนดคืน <span class="typed"><?= h(date('d/m/Y', strtotime($row['due_date']))) ?></span> &middot; <span class="stamp stamp--late">เกิน <?= h($row['days_late']) ?> วัน</span></p>
-        <p class="fine"><span class="fine-label">ค่าปรับ</span> <?= h(number_format($row['fine'], 2)) ?> บาท</p>
-        <a class="btn btn-primary" href="rentals.php?status=shipped">ไปหน้ารับคืน</a>
-      </article>
-      <?php endwhile; endif; ?>
-    </div>
-  </div>
-</main>
+<div class="page-head"><div><h1>หนังสือเกินกำหนดคืน</h1><p>ค่าปรับ = วันที่เกินกำหนด x ราคาเช่าต่อวันของเล่มนั้น (หักจากมัดจำตอนรับคืน)</p></div></div>
+<div class="card"><div class="tbl-wrap"><table class="tbl">
+  <caption class="sr-only">หนังสือที่เกินกำหนดคืน</caption>
+  <thead><tr><th>ผู้เช่า</th><th>เบอร์โทร</th><th>หนังสือ</th><th>กำหนดคืน</th><th class="num">เกิน</th><th class="num">ค่าปรับ</th><th class="num">มัดจำ</th><th></th></tr></thead>
+  <tbody>
+  <?php foreach ($rows as $r): $over = $r['fine'] >= $r['deposit']; ?>
+  <tr>
+    <td><?= h($r['full_name']) ?></td><td><?= h($r['phone']) ?></td><td><?= h($r['title']) ?></td>
+    <td><?= h(date('d/m/Y', strtotime($r['due_date']))) ?></td>
+    <td class="num"><span class="badge b-bad"><?= (int)$r['days_late'] ?> วัน</span></td>
+    <td class="num">฿<?= h(money($r['fine'])) ?></td>
+    <td class="num">฿<?= h(money($r['deposit'])) ?><?= $over ? ' <span class="badge b-bad">ค่าปรับเกินมัดจำ</span>' : '' ?></td>
+    <td><?php if ($r['order_id']): ?><a class="btn btn-outline btn-sm" href="order.php?id=<?= (int)$r['order_id'] ?>">เปิดใบสั่งเช่า</a><?php endif; ?></td>
+  </tr>
+  <?php endforeach; ?>
+  <?php if (!$rows): ?><tr><td colspan="8" class="center muted" style="padding:2rem">ไม่มีหนังสือเกินกำหนด</td></tr><?php endif; ?>
+  </tbody>
+</table></div></div>
 <?php require 'includes/footer.php'; ?>

@@ -9,10 +9,11 @@ $role = (string)($_POST['role'] ?? '');
 // Only these three values are ever written to the database (the role never comes straight from the form into SQL).
 if ($userId === false || $userId < 1 || !in_array($role, ['member', 'staff', 'admin'], true)) { http_response_code(400); exit('Invalid request'); }
 // An admin cannot change their own role, so the system can never be left with no admin.
-if ($userId === (int)$_SESSION['user_id']) { header('Location: users.php?error=1'); exit; }
+if ($userId === (int)$_SESSION['user_id']) { flash('err', 'เปลี่ยนบทบาทของตัวเองไม่ได้ เพื่อไม่ให้ไม่เหลือแอดมิน'); header('Location: users.php'); exit; }
 
 $stmt = mysqli_prepare($conn, 'UPDATE lib_users SET role = ? WHERE user_id = ?');
 mysqli_stmt_bind_param($stmt, 'si', $role, $userId);
 mysqli_stmt_execute($stmt);
 mysqli_stmt_close($stmt);
-header('Location: users.php?saved=1'); exit;
+flash('ok', 'เปลี่ยนบทบาทเรียบร้อย');
+header('Location: users.php'); exit;

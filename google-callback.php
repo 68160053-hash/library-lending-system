@@ -55,4 +55,4 @@ session_regenerate_id(true);
 $_SESSION['csrf'] = bin2hex(random_bytes(32));
 $_SESSION['login_at'] = $_SESSION['last_seen'] = time();
 $_SESSION['user_id'] = $account[0]; $_SESSION['full_name'] = $account[1]; $_SESSION['role'] = $account[2];
-header('Location: ' . (($account[2] === 'staff' || $account[2] === 'admin') ? 'rentals.php' : 'index.php')); exit;
+header('Location: ' . (($account[2] === 'staff' || $account[2] === 'admin') ? 'dashboard.php' : 'index.php')); exit;

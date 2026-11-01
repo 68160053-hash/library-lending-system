@@ -49,48 +49,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'สมัครสมาชิก';
 require 'includes/header.php';
 ?>
-<main id="main">
-  <div class="container">
-    <div class="letter-wrap">
-      <div class="envelope" aria-hidden="true"></div>
-      <span class="seal" aria-hidden="true">B</span>
-      <section class="letter paper frame" aria-labelledby="reg-title">
-        <p class="greeting">ถึง ผู้มาเยือนคนใหม่,</p>
-        <h1 id="reg-title">ลงทะเบียนเป็นสมาชิก</h1>
-        <?php if ($error): ?>
-        <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($error) ?></span></div>
-        <?php endif; ?>
-        <?php if ($googleError): ?>
-        <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($googleError) ?></span></div>
-        <?php endif; ?>
-        <form action="register.php" method="post">
-          <?php csrf_field(); ?>
-          <div class="field">
-            <label for="full_name">ชื่อ-นามสกุล</label>
-            <input type="text" id="full_name" name="full_name" autocomplete="name" maxlength="100" value="<?= h($name) ?>" required>
-          </div>
-          <div class="field">
-            <label for="email">อีเมล</label>
-            <input type="email" id="email" name="email" autocomplete="username" maxlength="120" value="<?= h($email) ?>" required>
-          </div>
-          <div class="field">
-            <label for="password">รหัสผ่าน</label>
-            <div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="pw-hint" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
-            <p class="hint" id="pw-hint">อย่างน้อย 8 ตัวอักษร</p>
-          </div>
-          <div class="field">
-            <label for="password_confirm">ยืนยันรหัสผ่าน</label>
-            <div class="pw-wrap"><input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required><button type="button" class="pw-toggle" data-pw-toggle="password_confirm" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
-          </div>
-          <button type="submit" class="btn btn-primary btn-magic btn-block">สมัครสมาชิก</button>
-        </form>
-        <?php if ($googleReady): ?>
-        <p class="or-line"><span>หรือ</span></p>
-        <a class="btn btn-outline btn-block" href="google-login.php">เข้าสู่ระบบด้วย Google</a>
-        <?php endif; ?>
-        <p class="form-foot">มีบัญชีแล้ว? <a href="login.php">เข้าสู่ระบบ</a></p>
-      </section>
-    </div>
+<div class="auth-wrap">
+  <div class="card">
+    <h1>สมัครสมาชิก</h1>
+    <p class="muted">สมัครฟรี เช่าหนังสือได้ทันที</p>
+    <?php if ($googleError): ?><div class="alert alert-err" role="alert"><?= h($googleError) ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-err" role="alert"><?= h($error) ?></div><?php endif; ?>
+    <form action="register.php" method="post">
+      <?php csrf_field(); ?>
+      <div class="field"><label for="full_name">ชื่อ-นามสกุล</label><input type="text" id="full_name" name="full_name" autocomplete="name" maxlength="100" value="<?= h($name) ?>" required></div>
+      <div class="field"><label for="email">อีเมล</label><input type="email" id="email" name="email" autocomplete="username" maxlength="120" value="<?= h($email) ?>" required></div>
+      <div class="field"><label for="password">รหัสผ่าน</label><div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="pw-hint" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false">แสดง</button></div><p class="hint" id="pw-hint">อย่างน้อย 8 ตัวอักษร</p></div>
+      <div class="field"><label for="password_confirm">ยืนยันรหัสผ่าน</label><div class="pw-wrap"><input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required><button type="button" class="pw-toggle" data-pw-toggle="password_confirm" aria-pressed="false">แสดง</button></div></div>
+      <button type="submit" class="btn btn-primary btn-block">สมัครสมาชิก</button>
+    </form>
+    <?php if ($googleReady): ?>
+    <p class="or-line"><span>หรือ</span></p>
+    <a class="btn btn-outline btn-block" href="google-login.php">สมัครด้วย Google</a>
+    <?php endif; ?>
+    <p class="center small" style="margin:1.2rem 0 0">มีบัญชีแล้ว? <a href="login.php">เข้าสู่ระบบ</a></p>
   </div>
-</main>
+</div>
 <?php require 'includes/footer.php'; ?>

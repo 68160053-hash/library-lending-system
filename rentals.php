@@ -1,83 +1,72 @@
 <?php
 require 'auth.php'; require 'config/db.php';
-require_staff(); // server-side role check: members get 403
+require_staff(); // server-side role check from the database: members get 403
+expire_unpaid_orders($conn);
 
-// Which rentals to show: a fixed list of allowed values, so nothing from the URL reaches the SQL text.
-$filters = ['pending' => 'รอส่งพัสดุ', 'shipped' => 'ส่งแล้ว', 'returned' => 'คืนแล้ว', 'lost' => 'สูญหาย'];
-$status = (string)($_GET['status'] ?? 'pending');
-if (!isset($filters[$status])) $status = 'pending';
+// The tab shown. The SQL piece for each tab is fixed text written here; the URL only picks a key from this list.
+$shippedBooks = "EXISTS (SELECT 1 FROM lib_loans l WHERE l.order_id = o.order_id AND l.status = 'shipped')";
+$tabs = [
+    'review'    => ['รอตรวจสอบการโอน', "o.status = 'open' AND o.pay_status = 'reported'"],
+    'unpaid'    => ['รอชำระเงิน', "o.status = 'open' AND o.pay_status = 'unpaid'"],
+    'ship'      => ['เตรียมจัดส่ง', "o.status = 'open' AND o.pay_status = 'confirmed' AND o.shipped_at IS NULL"],
+    'renting'   => ['อยู่ระหว่างเช่า', "o.status = 'open' AND o.shipped_at IS NOT NULL AND $shippedBooks"],
+    'done'      => ['เสร็จสิ้น', "o.status = 'open' AND o.shipped_at IS NOT NULL AND NOT $shippedBooks"],
+    'cancelled' => ['ยกเลิก', "o.status = 'cancelled'"],
+    'all'       => ['ทั้งหมด', '1 = 1'],
+];
+$tabIn = is_string($_GET['tab'] ?? '') ? ($_GET['tab'] ?? '') : '';
+$tab = isset($tabs[$tabIn]) ? $tabIn : 'review';
+$q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 60);
+$qNum = (int)preg_replace('/\D/', '', $q);      // "#00012" or "12" finds order 12
+$like = '%' . addcslashes($q, '%_\\') . '%';
 
-// Late fee = days past the due date x the daily rate saved on the rental. The refund is the deposit minus that fee (never below 0).
-// Nothing is stored for these amounts: they are worked out from the dates every time the page is shown.
-$sql = "SELECT l.loan_id, u.full_name, b.title, l.ship_address, l.status, l.borrowed_at, l.due_date, l.deposit, l.daily_rate,
-               CASE WHEN l.status = 'shipped' THEN GREATEST(0, DATEDIFF(CURDATE(), l.due_date))
-                    WHEN l.status = 'returned' THEN GREATEST(0, DATEDIFF(l.returned_at, l.due_date)) ELSE 0 END AS late_days
-        FROM lib_loans l
-        JOIN lib_users u ON u.user_id = l.user_id
-        JOIN lib_books b ON b.book_id = l.book_id
-        WHERE l.status = ?
-        ORDER BY l.loan_id DESC LIMIT 200";
+// number on each tab
+$counts = [];
+foreach ($tabs as $key => $t) {
+    $res = mysqli_query($conn, 'SELECT COUNT(*) FROM lib_orders o WHERE ' . $t[1]);
+    $row = $res ? mysqli_fetch_row($res) : [0];
+    $counts[$key] = (int)$row[0];
+}
+
+$sql = 'SELECT o.order_id, o.ordered_at, u.full_name, o.rent_days, o.rent_total, o.deposit_total, o.pay_status, o.status, o.shipped_at,
+               (SELECT COUNT(*) FROM lib_loans l WHERE l.order_id = o.order_id) AS n_items,
+               (SELECT COUNT(*) FROM lib_loans l WHERE l.order_id = o.order_id AND l.status = \'shipped\') AS n_shipped
+        FROM lib_orders o JOIN lib_users u ON u.user_id = o.user_id
+        WHERE (' . $tabs[$tab][1] . ') AND (CHAR_LENGTH(?) = 0 OR o.order_id = ? OR u.full_name LIKE ? OR u.email LIKE ?)
+        ORDER BY o.order_id DESC LIMIT 200';
 $stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, 's', $status);
+mysqli_stmt_bind_param($stmt, 'siss', $q, $qNum, $like, $like);
 mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $loanId, $member, $title, $address, $st, $borrowedAt, $dueDate, $deposit, $rate, $lateDays);
+mysqli_stmt_bind_result($stmt, $orderId, $orderedAt, $member, $days, $rentTotal, $depositTotal, $pay, $status, $shippedAt, $nItems, $nShipped);
+$orders = [];
+while (mysqli_stmt_fetch($stmt)) $orders[] = compact('orderId', 'orderedAt', 'member', 'days', 'rentTotal', 'depositTotal', 'pay', 'status', 'shippedAt', 'nItems', 'nShipped');
+mysqli_stmt_close($stmt);
 
-$pageTitle = 'จัดการการเช่า';
+$pageTitle = 'คำสั่งเช่า';
 require 'includes/header.php';
 ?>
-<main id="main">
-  <div class="container">
-    <section class="panel frame-silver" aria-labelledby="rent-title">
-    <p class="eyebrow">RENTAL DESK</p>
-    <h1 class="page-title" id="rent-title">จัดการการเช่า</h1>
-    <?php if (isset($_GET['done'])): ?><p class="hint">บันทึกเรียบร้อย</p><?php endif; ?>
-    <?php if (isset($_GET['error'])): ?>
-    <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span>ทำรายการไม่ได้ รายการนี้อยู่ในขั้นตอนอื่นแล้ว</span></div>
-    <?php endif; ?>
-    <div class="sign-rail" role="group" aria-label="กรองตามสถานะ">
-      <?php foreach ($filters as $key => $label): ?>
-      <a class="sign-tab" href="rentals.php?status=<?= h($key) ?>" aria-pressed="<?= $key === $status ? 'true' : 'false' ?>"><?= h($label) ?></a>
-      <?php endforeach; ?>
-    </div>
-    <div class="checkout-card paper frame">
-      <div class="table-wrap">
-        <table>
-          <caption>รายการเช่า: <?= h($filters[$status]) ?></caption>
-          <thead><tr><th scope="col">ผู้เช่า</th><th scope="col">หนังสือ</th><th scope="col">ที่อยู่จัดส่ง</th><th scope="col">กำหนดคืน</th><th scope="col" class="num">ค่าปรับ</th><th scope="col" class="num">มัดจำ</th><th scope="col">ดำเนินการ</th></tr></thead>
-          <tbody>
-            <?php $count = 0; while (mysqli_stmt_fetch($stmt)): $count++; $fine = $lateDays * $rate; ?>
-            <tr>
-              <td data-label="ผู้เช่า"><?= h($member) ?></td>
-              <td data-label="หนังสือ" class="book-title"><?= h($title) ?></td>
-              <td data-label="ที่อยู่จัดส่ง"><?= h($address) ?></td>
-              <td data-label="กำหนดคืน"><span class="typed"><?= h(date('d/m/Y', strtotime($dueDate))) ?></span><?= $lateDays > 0 ? ' <span class="stamp stamp--late">เกิน ' . (int)$lateDays . ' วัน</span>' : '' ?></td>
-              <td data-label="ค่าปรับ" class="num typed"><?= h(number_format($fine, 2)) ?> บาท</td>
-              <td data-label="มัดจำ" class="num typed"><?= h(number_format($deposit, 2)) ?> บาท<?= $st === 'returned' ? '<br>คืนให้ ' . h(number_format(max(0, $deposit - $fine), 2)) : '' ?><?= $st === 'lost' ? '<br>ไม่คืน' : '' ?></td>
-              <td data-label="ดำเนินการ">
-                <?php if ($st === 'pending'): ?>
-                <form action="rental-action.php" method="post"><?php csrf_field(); ?>
-                  <input type="hidden" name="loan_id" value="<?= (int)$loanId ?>"><input type="hidden" name="action" value="ship">
-                  <button type="submit" class="btn btn-primary btn-magic">ส่งพัสดุแล้ว</button>
-                </form>
-                <?php elseif ($st === 'shipped'): ?>
-                <form action="rental-action.php" method="post"><?php csrf_field(); ?>
-                  <input type="hidden" name="loan_id" value="<?= (int)$loanId ?>"><input type="hidden" name="action" value="receive">
-                  <button type="submit" class="btn btn-primary btn-magic">รับคืนแล้ว</button>
-                </form>
-                <form action="rental-action.php" method="post"><?php csrf_field(); ?>
-                  <input type="hidden" name="loan_id" value="<?= (int)$loanId ?>"><input type="hidden" name="action" value="lost">
-                  <button type="submit" class="btn btn-outline">แจ้งสูญหาย</button>
-                </form>
-                <?php else: ?>-<?php endif; ?>
-              </td>
-            </tr>
-            <?php endwhile; ?>
-            <?php if ($count === 0): ?><tr><td colspan="7">ไม่มีรายการในสถานะนี้</td></tr><?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    </section>
-  </div>
-</main>
-<?php mysqli_stmt_close($stmt); require 'includes/footer.php'; ?>
+<div class="page-head"><div><h1>คำสั่งเช่า</h1><p>ตรวจการโอน จัดส่งพัสดุ และรับคืนหนังสือ</p></div>
+  <form action="rentals.php" method="get" class="search" style="max-width:320px"><input type="hidden" name="tab" value="all"><label class="sr-only" for="oq">ค้นหา</label><input type="text" id="oq" name="q" value="<?= h($q) ?>" maxlength="60" placeholder="เลขที่ใบสั่ง ชื่อ หรืออีเมล"><button type="submit">ค้นหา</button></form></div>
+<nav class="tabs" aria-label="กรองตามสถานะ">
+  <?php foreach ($tabs as $key => $t): ?><a href="rentals.php?tab=<?= h($key) ?>" class="<?= $key === $tab ? 'on' : '' ?>"><?= h($t[0]) ?> (<?= (int)$counts[$key] ?>)</a><?php endforeach; ?>
+</nav>
+<div class="card"><div class="tbl-wrap"><table class="tbl">
+  <caption class="sr-only">ใบสั่งเช่า: <?= h($tabs[$tab][0]) ?></caption>
+  <thead><tr><th>เลขที่</th><th>วันที่สั่ง</th><th>ผู้เช่า</th><th class="num">เล่ม</th><th class="num">ยอดโอน</th><th>การชำระเงิน</th><th>สถานะ</th><th></th></tr></thead>
+  <tbody>
+  <?php foreach ($orders as $o): $st = order_stage($o['status'], $o['pay'], $o['shippedAt'], $o['nShipped']); ?>
+  <tr>
+    <td><a href="order.php?id=<?= (int)$o['orderId'] ?>"><strong><?= h(order_no($o['orderId'])) ?></strong></a></td>
+    <td><?= h(date('d/m/Y H:i', strtotime($o['orderedAt']))) ?></td>
+    <td><?= h($o['member']) ?></td>
+    <td class="num"><?= (int)$o['nItems'] ?></td>
+    <td class="num">฿<?= h(money($o['rentTotal'] + $o['depositTotal'])) ?></td>
+    <td><span class="badge <?= $o['pay'] === 'confirmed' ? 'b-ok' : ($o['pay'] === 'reported' ? 'b-info' : 'b-warn') ?>"><?= $o['pay'] === 'confirmed' ? 'ชำระแล้ว' : ($o['pay'] === 'reported' ? 'แจ้งโอนแล้ว' : 'ยังไม่ชำระ') ?></span></td>
+    <td><span class="badge <?= h($st[1]) ?>"><?= h($st[0]) ?></span></td>
+    <td><a class="btn btn-outline btn-sm" href="order.php?id=<?= (int)$o['orderId'] ?>">เปิด</a></td>
+  </tr>
+  <?php endforeach; ?>
+  <?php if (!$orders): ?><tr><td colspan="8" class="center muted" style="padding:2rem">ไม่มีใบสั่งเช่าในหมวดนี้</td></tr><?php endif; ?>
+  </tbody>
+</table></div></div>
+<?php require 'includes/footer.php'; ?>

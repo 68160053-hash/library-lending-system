@@ -32,6 +32,7 @@ if (!empty($_SESSION['user_id'])) {
 // One CSRF token per session, used by every POST form
 if (empty($_SESSION['csrf'])) $_SESSION['csrf'] = bin2hex(random_bytes(32));
 
+require __DIR__ . '/includes/helpers.php';
 function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function csrf_field() { echo '<input type="hidden" name="csrf" value="'.h($_SESSION['csrf']).'">'; }
 function verify_csrf() {

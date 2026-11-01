@@ -1,6 +1,6 @@
 <?php
 require 'auth.php'; require 'config/db.php';
-if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
+if (!empty($_SESSION['user_id'])) { header('Location: ' . (is_staff() ? 'dashboard.php' : 'index.php')); exit; }
 // Messages for the ?google_error=... codes sent by google-callback.php (only these fixed texts are ever shown)
 $googleMsgs = ['off' => 'ยังไม่เปิดใช้การเข้าสู่ระบบด้วย Google', 'state' => 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณากดปุ่ม Google ใหม่', 'denied' => 'ยกเลิกการเข้าสู่ระบบด้วย Google',
     'code' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง', 'token' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง',
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['login_at'] = $_SESSION['last_seen'] = time();
             $_SESSION['user_id'] = $userId; $_SESSION['full_name'] = $fullName; $_SESSION['role'] = $role;
             // Step 5: go to the private page (staff start at the overdue list).
-            header('Location: ' . (($role === 'staff' || $role === 'admin') ? 'overdue.php' : 'my-loans.php')); exit;
+            header('Location: ' . (($role === 'staff' || $role === 'admin') ? 'dashboard.php' : 'index.php')); exit;
         }
         $error = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'; // same message for unknown email and wrong password
         log_attempt($conn, 'login', $email);
@@ -46,41 +46,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = 'เข้าสู่ระบบ';
 require 'includes/header.php';
 ?>
-<main id="main">
-  <div class="container">
-    <div class="letter-wrap">
-      <div class="envelope" aria-hidden="true"></div>
-      <span class="seal" aria-hidden="true">B</span>
-      <section class="letter paper frame" aria-labelledby="login-title">
-        <p class="greeting">ถึง ผู้มาเยือน,</p>
-        <h1 id="login-title">เข้าสู่ระบบ</h1>
-        <?php if (isset($_GET['registered'])): ?><p class="hint">สมัครสมาชิกเรียบร้อย กรุณาเข้าสู่ระบบ</p><?php endif; ?>
-        <?php if (isset($_GET['logged_out'])): ?><p class="hint">ออกจากระบบแล้ว</p><?php endif; ?>
-        <?php if ($error): ?>
-        <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($error) ?></span></div>
-        <?php endif; ?>
-        <?php if ($googleError): ?>
-        <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($googleError) ?></span></div>
-        <?php endif; ?>
-        <form action="login.php" method="post">
-          <?php csrf_field(); ?>
-          <div class="field">
-            <label for="email">อีเมล</label>
-            <input type="email" id="email" name="email" autocomplete="username" required>
-          </div>
-          <div class="field">
-            <label for="password">รหัสผ่าน</label>
-            <div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="current-password" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
-          </div>
-          <button type="submit" class="btn btn-primary btn-magic btn-block">เข้าสู่ระบบ</button>
-        </form>
-        <?php if ($googleReady): ?>
-        <p class="or-line"><span>หรือ</span></p>
-        <a class="btn btn-outline btn-block" href="google-login.php">เข้าสู่ระบบด้วย Google</a>
-        <?php endif; ?>
-        <p class="form-foot">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a></p>
-      </section>
-    </div>
+<div class="auth-wrap">
+  <div class="card">
+    <h1>เข้าสู่ระบบ</h1>
+    <p class="muted">เข้าสู่ระบบเพื่อเช่าหนังสือและติดตามสถานะ</p>
+    <?php if (isset($_GET['registered'])): ?><div class="alert alert-ok" role="status">สมัครสมาชิกเรียบร้อย กรุณาเข้าสู่ระบบ</div><?php endif; ?>
+    <?php if (isset($_GET['logged_out'])): ?><div class="alert alert-info" role="status">ออกจากระบบแล้ว</div><?php endif; ?>
+    <?php if ($googleError): ?><div class="alert alert-err" role="alert"><?= h($googleError) ?></div><?php endif; ?>
+    <?php if ($error): ?><div class="alert alert-err" role="alert"><?= h($error) ?></div><?php endif; ?>
+    <form action="login.php" method="post">
+      <?php csrf_field(); ?>
+      <div class="field"><label for="email">อีเมล</label><input type="email" id="email" name="email" autocomplete="username" required></div>
+      <div class="field"><label for="password">รหัสผ่าน</label><div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="current-password" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false">แสดง</button></div></div>
+      <button type="submit" class="btn btn-primary btn-block">เข้าสู่ระบบ</button>
+    </form>
+    <?php if ($googleReady): ?>
+    <p class="or-line"><span>หรือ</span></p>
+    <a class="btn btn-outline btn-block" href="google-login.php">เข้าสู่ระบบด้วย Google</a>
+    <?php endif; ?>
+    <p class="center small" style="margin:1.2rem 0 0">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a></p>
   </div>
-</main>
+</div>
 <?php require 'includes/footer.php'; ?>
