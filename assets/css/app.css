@@ -33,7 +33,7 @@ h1, h2, h3, h4 { font-family: var(--display); margin: 0 0 .5rem; line-height: 1.
 h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); letter-spacing: -.01em; } h2 { font-size: 1.4rem; } h3 { font-size: 1.1rem; }
 p { margin: 0 0 .8rem; text-wrap: pretty; }
 ::selection { background: var(--yellow); color: var(--yellow-ink); }
-:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; box-shadow: 0 0 0 5px var(--ink); border-radius: 6px; }
+:focus-visible { outline: 3px solid var(--ink-2); outline-offset: 3px; }
 .ic { display: inline-block; flex: none; vertical-align: -.2em; }
 .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 1.6rem 1rem 3.5rem; flex: 1; }
 .muted { color: var(--muted); } .small { font-size: .9rem; } .right { text-align: right; } .center { text-align: center; }
@@ -57,6 +57,9 @@ p { margin: 0 0 .8rem; text-wrap: pretty; }
 .nav { display: flex; align-items: center; gap: .2rem; margin-left: auto; flex-wrap: wrap; }
 .nav a, .nav button.linklike { color: var(--text); padding: .5rem .8rem; border-radius: 999px; font: 500 .95rem var(--display); background: none; border: 0; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; }
 .nav a:hover, .nav button.linklike:hover { background: var(--blue-soft); text-decoration: none; }
+.nav a.btn { padding: .35rem .95rem; font-size: .9rem; }
+.nav a.btn-accent { background: var(--red); color: #fff; } .nav a.btn-accent:hover { background: var(--red-dark); }
+:root[data-theme="dark"] .nav a.btn-accent { color: #1a0605; }
 .nav a[aria-current="page"] { background: var(--ink); color: #fff; } :root[data-theme="dark"] .nav a[aria-current="page"] { color: #0a1030; }
 .badge-dot, .cart-count { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem; padding: 0 .32rem; border-radius: 99px; background: var(--red); color: #fff; font: 700 .75rem var(--display); }
 :root[data-theme="dark"] .badge-dot, :root[data-theme="dark"] .cart-count { color: #1a0605; }
