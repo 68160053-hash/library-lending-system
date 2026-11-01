@@ -34,15 +34,14 @@ require 'includes/header.php';
     <h1 style="margin-top:.5rem"><?= h($title) ?></h1>
     <p class="muted">โดย <?= h($author) ?></p>
     <p><?php if ($left > 0): ?><span class="badge b-ok">ว่างให้เช่า <?= (int)$left ?> จาก <?= (int)$total ?> เล่ม</span><?php else: ?><span class="badge b-bad">ถูกเช่าหมดแล้ว</span><?php endif; ?></p>
-    <p style="max-width:62ch"><?= $desc ? h($desc) : '<span class="muted">ยังไม่มีเรื่องย่อของหนังสือเล่มนี้</span>' ?></p>
+    <p class="desc"><?= $desc ? h($desc) : '<span class="muted">ยังไม่มีเรื่องย่อของหนังสือเล่มนี้</span>' ?></p>
     <dl class="facts"><dt>ISBN</dt><dd><?= h($isbn) ?></dd><dt>ผู้แต่ง</dt><dd><?= h($author) ?></dd><dt>หมวด</dt><dd><?= h($catName) ?></dd></dl>
-    <div class="card">
-      <h3>ราคาเช่า</h3>
-      <table class="price-table">
-        <thead><tr><th>ระยะเวลา</th><th>ค่าเช่า</th><th>มัดจำ (คืนให้)</th><th>โอนรวม</th></tr></thead>
-        <tbody><?php foreach ([7, 14, 30] as $d): ?><tr><td><?= (int)$d ?> วัน</td><td>฿<?= h(money($rent * $d)) ?></td><td>฿<?= h(money($deposit)) ?></td><td class="price">฿<?= h(money($rent * $d + $deposit)) ?></td></tr><?php endforeach; ?></tbody>
-      </table>
-      <p class="muted small">ค่าเช่า ฿<?= h(money($rent)) ?> ต่อวัน เกินกำหนดคิดวันละเท่าราคาเช่า หักจากมัดจำ</p>
+    <div class="card buybox">
+      <h3>เลือกระยะเวลาเช่า</h3>
+      <div class="plans"><?php foreach ([7, 14, 30] as $d): ?>
+        <div class="plan<?= $d === 14 ? ' pop' : '' ?>"><span class="days-label"><?= (int)$d ?> วัน</span><b>฿<?= h(money($rent * $d + $deposit)) ?></b><small>ค่าเช่า ฿<?= h(money($rent * $d)) ?> + มัดจำ ฿<?= h(money($deposit)) ?></small></div>
+      <?php endforeach; ?></div>
+      <p class="muted small">มัดจำคืนให้เมื่อร้านได้รับหนังสือ ค่าเช่า ฿<?= h(money($rent)) ?> ต่อวัน เกินกำหนดคิดวันละเท่าราคาเช่า หักจากมัดจำ</p>
       <?php if ($left > 0 && !$inCart): ?>
       <form action="cart.php" method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="add"><input type="hidden" name="book_id" value="<?= (int)$bookId ?>"><input type="hidden" name="then" value="cart">
         <button type="submit" class="btn btn-accent">ใส่ตะกร้าและไปชำระเงิน</button></form>
