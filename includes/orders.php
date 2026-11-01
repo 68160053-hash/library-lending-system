@@ -124,8 +124,9 @@ function member_overdue_count($conn, $userId) {
 // Another account with an overdue book at the same phone or address (stops "register again, rent again").
 function contact_has_overdue($conn, $userId, $phone, $address) {
     $uid = (int)$userId; $ph = preg_replace('/\D/', '', (string)$phone);
-    $stmt = mysqli_prepare($conn, "SELECT 1 FROM lib_loans l JOIN lib_orders o ON o.order_id = l.order_id WHERE l.status = 'shipped' AND l.due_date < CURDATE() AND l.user_id <> ? AND (o.ship_address = ? OR REPLACE(REPLACE(o.ship_phone, '-', ''), ' ', '') = ?) LIMIT 1");
-    mysqli_stmt_bind_param($stmt, 'iss', $uid, $address, $ph);
+    $addr = preg_replace('/[\s\p{P}]+/u', '', mb_strtolower((string)$address)); // shortcut: stops casual re-registering, a reworded address still passes
+    $stmt = mysqli_prepare($conn, "SELECT 1 FROM lib_loans l JOIN lib_orders o ON o.order_id = l.order_id WHERE l.status = 'shipped' AND l.due_date < CURDATE() AND l.user_id <> ? AND (REGEXP_REPLACE(LOWER(o.ship_address), '[[:space:][:punct:]]+', '') = ? OR REPLACE(REPLACE(o.ship_phone, '-', ''), ' ', '') = ?) LIMIT 1");
+    mysqli_stmt_bind_param($stmt, 'iss', $uid, $addr, $ph);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_store_result($stmt);
     $hit = mysqli_stmt_num_rows($stmt) > 0;

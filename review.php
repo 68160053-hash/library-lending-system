@@ -5,6 +5,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: index.php'); exit
 verify_csrf();
 require_login();
 $uid = (int)$_SESSION['user_id'];
+if (($_POST['action'] ?? '') === 'delete') { // staff take a review down (the book page shows the button to staff only)
+    require_staff();
+    $rid = filter_var($_POST['review_id'] ?? null, FILTER_VALIDATE_INT);
+    $stmt = mysqli_prepare($conn, 'DELETE FROM lib_reviews WHERE review_id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $rid);
+    mysqli_stmt_execute($stmt);
+    $gone = $rid !== false && mysqli_stmt_affected_rows($stmt) === 1;
+    mysqli_stmt_close($stmt);
+    flash($gone ? 'ok' : 'err', $gone ? 'ลบรีวิวแล้ว' : 'ไม่พบรีวิวนี้');
+    $b = filter_var($_POST['book_id'] ?? null, FILTER_VALIDATE_INT);
+    header('Location: ' . ($b !== false && $b > 0 ? 'book.php?id=' . $b . '#reviews' : 'index.php')); exit;
+}
 $bookId = filter_var($_POST['book_id'] ?? null, FILTER_VALIDATE_INT);
 if ($bookId === false || $bookId < 1) { http_response_code(404); exit('ไม่พบหนังสือเล่มนี้ <a href="index.php">กลับหน้าร้าน</a>'); }
 $go = 'book.php?id=' . $bookId . '#reviews';

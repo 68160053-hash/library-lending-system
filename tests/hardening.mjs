@@ -70,6 +70,32 @@ r = await B.post('checkout.php', { ...ship, ship_phone: '0811112222', ship_addre
 ok('H7 a genuinely different contact can order', r.status === 302 && sql("SELECT COUNT(*) FROM lib_orders o JOIN lib_users u USING(user_id) WHERE u.email='b@h.test'") === '1');
 ok('H8 the refusal does not say which other account is overdue', !/a@h\.test|Aom/.test((await (async () => { await B.post('cart.php', { action: 'add', book_id: bookId }); return B.post('checkout.php', ship, 'checkout.php'); })()).text));
 
+// ===== 2b. guessing through the checkout form is counted too, address wording does not matter =====
+r = await B.post('checkout.php', { ...ship, ship_phone: '0866667777', ship_address: '77 hardening ROAD,  Bang Saen; Chonburi 20131' }, 'checkout.php');
+ok('H17 the same address with other case, spaces and punctuation is still caught', r.text.includes('ไม่สามารถสั่งเช่าด้วยที่อยู่หรือเบอร์โทรนี้'));
+const C = client(); await C.register('Cat C', 'c@h.test', 'cat-pass-12345'); sql('DELETE FROM lib_attempts'); await C.login('c@h.test', 'cat-pass-12345');
+await C.post('cart.php', { action: 'add', book_id: bookId });
+const cship = { ship_name: 'Cat C', ship_phone: '0833334444', ship_address: '9 Coupon Lane, Mueang, Rayong 21000', days: '7' };
+for (let i = 0; i < 12; i++) await C.post('checkout.php', { ...cship, coupon: 'WRONG' + (1000 + i) }, 'checkout.php');
+ok('H18 wrong codes posted to checkout are counted (the rollback must not erase them)', Number(sql("SELECT COUNT(*) FROM lib_attempts WHERE kind='coupon'")) >= 10);
+r = await C.post('checkout.php', { ...cship, coupon: 'HARDOK10' }, 'checkout.php');
+ok('H19 after the guesses even the real code is refused at checkout, and no order exists', r.text.includes('รอ 15 นาที') && sql("SELECT COUNT(*) FROM lib_orders o JOIN lib_users u USING(user_id) WHERE u.email='c@h.test'") === '0');
+sql('DELETE FROM lib_attempts');
+// reviews: only staff delete
+sql(`INSERT INTO lib_reviews (book_id, user_id, rating, body) SELECT ${bookId}, user_id, 1, 'rude text' FROM lib_users WHERE email='c@h.test'`);
+const rid = sql("SELECT MAX(review_id) FROM lib_reviews");
+r = await B.post('review.php', { action: 'delete', review_id: rid, book_id: bookId });
+ok('H20 a member cannot delete a review (403)', r.status === 403 && sql(`SELECT COUNT(*) FROM lib_reviews WHERE review_id=${rid}`) === '1');
+r = await S.req('review.php', { method: 'POST', form: { action: 'delete', review_id: rid, book_id: bookId } });
+ok('H21 deleting without CSRF -> 403', r.status === 403 && sql(`SELECT COUNT(*) FROM lib_reviews WHERE review_id=${rid}`) === '1');
+r = await S.post('review.php', { action: 'delete', review_id: '1 OR 1=1', book_id: bookId });
+ok('H22 a bad review id deletes nothing', sql(`SELECT COUNT(*) FROM lib_reviews WHERE review_id=${rid}`) === '1');
+r = await S.req('book.php?id=' + bookId);
+ok('H23 staff see the delete button on the book page, members do not', r.text.includes('value="delete"') && !(await B.req('book.php?id=' + bookId)).text.includes('value="delete"'));
+r = await S.post('review.php', { action: 'delete', review_id: rid, book_id: bookId });
+ok('H24 staff delete the review', sql(`SELECT COUNT(*) FROM lib_reviews WHERE review_id=${rid}`) === '0');
+sql(`INSERT INTO lib_notifications (user_id, kind, message, created_at, read_at) SELECT user_id, 'info', 'old read one', NOW() - INTERVAL 100 DAY, NOW() - INTERVAL 99 DAY FROM lib_users WHERE email='a@h.test'`);
+
 // ===== 3. found: a lost book comes back =====
 const stock = () => sql(`SELECT CONCAT(copies_total,'/',copies_available) FROM lib_books WHERE book_id=${bookId}`);
 const before = stock(); const [bt, ba] = before.split('/').map(Number); const after = bt + '/' + (ba + 1);  // the copy that was out is back on the shelf
@@ -87,6 +113,7 @@ ok('H13 staff marks found: returned, copy counted again, stock as before', sql(`
 r = await S.post('order-action.php', { order_id: oid, loan_id: loanId, action: 'found' });
 ok('H14 found twice does not add a second copy', stock() === after);
 ok('H15 the owner is told', Number(sql("SELECT COUNT(*) FROM lib_notifications n JOIN lib_users u USING(user_id) WHERE u.email='a@h.test' AND n.kind='info'")) === 1, sql("SELECT GROUP_CONCAT(CONCAT(user_id,':',kind)) FROM lib_notifications ORDER BY notif_id DESC LIMIT 5"));
+ok('H25 an old read notification is removed when a new one is written', sql("SELECT COUNT(*) FROM lib_notifications WHERE message='old read one'") === '0');
 r = await S.req('order.php?id=' + oid);
 ok('H16 the order page shows no "found" button once returned', !r.text.includes('value="found"'));
 

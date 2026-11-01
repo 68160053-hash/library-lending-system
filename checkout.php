@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($error === '' && ($_POST['do'] ?? '') !== 'apply') {
         // Step 3: take one copy of every book out of stock. Each UPDATE checks and changes the number in one go,
         // so two customers can never both get the last copy. If any book is gone, nothing is kept (rollback).
-        $lines = []; $rentTotal = 0; $depositTotal = 0; $gone = false;
+        $lines = []; $rentTotal = 0; $depositTotal = 0; $gone = false; $guessed = false;
+        sort($ids); // same lock order for everyone, so two carts with the same books can never deadlock
         foreach ($ids as $bookId) {
             $stmt = mysqli_prepare($conn, 'UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id = ? AND copies_available > 0');
             mysqli_stmt_bind_param($stmt, 'i', $bookId);
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $discount = bundle_discount($rentTotal, count($lines)); $couponId = 0; $couponCode = null;
             if (trim($couponIn) !== '') {
                 $cc = coupon_check($conn, $couponIn, $userId, $rentTotal, $rentTotal - $discount);
-                if (!$cc['ok']) $error = $cc['error'];
+                if (!$cc['ok']) { $error = $cc['error']; $guessed = true; }
                 else {
                     $stmt = mysqli_prepare($conn, 'UPDATE lib_coupons SET used_count = used_count + 1 WHERE coupon_id = ? AND active = 1 AND (max_uses IS NULL OR used_count < max_uses)');
                     mysqli_stmt_bind_param($stmt, 'i', $cc['coupon_id']);
@@ -91,8 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     else { $couponId = $cc['coupon_id']; $couponCode = $cc['code']; $discount += $cc['discount']; }
                 }
             }
-            if ($error !== '') mysqli_rollback($conn);
-            else {
+            if ($error !== '') {
+                mysqli_rollback($conn);
+                if ($guessed) log_attempt($conn, 'coupon', 'u' . $userId); // written after the rollback, or the guess would be erased with it
+            } else {
                 // Step 4: the order (rent_total is the GROSS rent), then one rental row per book
                 $stmt = mysqli_prepare($conn, 'INSERT INTO lib_orders (user_id, rent_days, rent_total, discount_total, coupon_code, deposit_total, ship_name, ship_phone, ship_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
                 mysqli_stmt_bind_param($stmt, 'iiddsdsss', $userId, $f['days'], $rentTotal, $discount, $couponCode, $depositTotal, $f['name'], $f['phone'], $f['address']);

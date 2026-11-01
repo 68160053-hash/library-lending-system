@@ -105,7 +105,7 @@ await fill(U.uc, [0]); r = await buy(U.uc, { coupon: 'OTHUGE' });
 const o3 = lastOrder('uc');
 ok('K8 a coupon bigger than the rent never goes past the rent: discount 70, pay only the 100 deposit', ord(o3, "CONCAT(rent_total,'|',discount_total)") === '70.00|70.00' && (await U.uc.req('order.php?id=' + o3)).text.includes('ยอดที่ต้องชำระ ฿100.00'));
 for (const [code, msg, why] of [['OTEXP', 'หมดอายุ', 'expired'], ['OTMIN', 'ไม่ต่ำกว่า', 'min_rent'], ['OTOFF', 'ไม่พบโค้ด', 'inactive'], ['NOSUCH99', 'ไม่พบโค้ด', 'unknown'], ['ab', 'รูปแบบ', 'too short'], ["OT' OR 1=1 --", 'รูปแบบ', 'sql'], ['A'.repeat(31), 'รูปแบบ', 'too long']]) {
-  await fill(U.ud, [0]); const before = orders('ud'); const stock0 = left(1); r = await buy(U.ud, { coupon: code });
+  sql('DELETE FROM lib_attempts'); await fill(U.ud, [0]); const before = orders('ud'); const stock0 = left(1); r = await buy(U.ud, { coupon: code });
   ok('K9 coupon ' + why + ' is refused with a message; no order, stock restored', r.status === 200 && r.text.includes(msg) && orders('ud') === before && left(1) === stock0, why);
 }
 // tampered discount fields are never read
@@ -123,7 +123,7 @@ r = await U.ud.post('checkout.php', { ...ship, days: '14', coupon: 'OTAMT50', do
 ok('K15 "ใช้โค้ด" (do=apply) only recalculates: 14 days = 140 rent, discount 50, no new order', r.status === 200 && r.text.includes('-฿50.00') && r.text.includes('฿190.00') && orders('ud') === nUd);
 
 // ===== race: one coupon, max_uses = 1, four members =====
-const racers = ['ua', 'ub', 'uc', 'ud'];
+sql('DELETE FROM lib_attempts'); const racers = ['ua', 'ub', 'uc', 'ud'];
 for (const n of racers) await fill(U[n], [4]);
 const before = Object.fromEntries(racers.map((n) => [n, orders(n)]));
 const toks = await Promise.all(racers.map((n) => U[n].token('checkout.php')));

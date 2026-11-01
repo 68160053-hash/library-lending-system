@@ -29,11 +29,11 @@ $revAvg = $revCount ? array_sum(array_map(function ($s, $n) { return $s * $n; },
 
 // Latest reviews (name, stars, text, date)
 $reviews = [];
-$stmt = mysqli_prepare($conn, 'SELECT u.full_name, r.rating, r.body, r.created_at, r.user_id FROM lib_reviews r JOIN lib_users u ON u.user_id = r.user_id WHERE r.book_id = ? ORDER BY r.created_at DESC, r.review_id DESC LIMIT 20');
+$stmt = mysqli_prepare($conn, 'SELECT u.full_name, r.rating, r.body, r.created_at, r.user_id, r.review_id FROM lib_reviews r JOIN lib_users u ON u.user_id = r.user_id WHERE r.book_id = ? ORDER BY r.created_at DESC, r.review_id DESC LIMIT 20');
 mysqli_stmt_bind_param($stmt, 'i', $bookId);
 mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $rName, $rRating, $rBody, $rAt, $rUser);
-while (mysqli_stmt_fetch($stmt)) $reviews[] = ['name' => $rName, 'rating' => (int)$rRating, 'body' => $rBody, 'at' => $rAt, 'mine' => (int)$rUser === $uid && $uid > 0];
+mysqli_stmt_bind_result($stmt, $rName, $rRating, $rBody, $rAt, $rUser, $rId);
+while (mysqli_stmt_fetch($stmt)) $reviews[] = ['name' => $rName, 'rating' => (int)$rRating, 'body' => $rBody, 'at' => $rAt, 'mine' => (int)$rUser === $uid && $uid > 0, 'id' => (int)$rId];
 mysqli_stmt_close($stmt);
 
 // May this member review? Only after a RETURNED loan of this book. They may edit their own review.
@@ -150,6 +150,7 @@ function buy_button($bookId, $inCart, $left, $class) {
             <span class="rating" role="img" aria-label="<?= (int)$rv['rating'] ?> จาก 5 ดาว"><?php for ($i = 1; $i <= 5; $i++): ?><span class="<?= $i <= $rv['rating'] ? '' : 'off' ?>"><?= icon('star-fill', 15) ?></span><?php endfor; ?></span>
             <time class="muted small" datetime="<?= h(substr($rv['at'], 0, 10)) ?>"><?= h(date('j/n/Y', strtotime($rv['at']))) ?></time></div>
           <?php if ($rv['body'] !== ''): ?><p><?= nl2br(h($rv['body'])) ?></p><?php endif; ?>
+          <?php if (is_staff()): ?><form action="review.php" method="post" class="inline-form"><?php csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="review_id" value="<?= (int)$rv['id'] ?>"><input type="hidden" name="book_id" value="<?= (int)$bookId ?>"><button class="btn btn-danger btn-sm" type="submit" data-confirm="ลบรีวิวนี้?">ลบรีวิว</button></form><?php endif; ?>
         </li>
         <?php endforeach; ?>
       </ul>

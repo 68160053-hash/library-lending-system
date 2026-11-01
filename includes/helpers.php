@@ -91,6 +91,7 @@ function notify($conn, $userId, $kind, $message, $link = '') {
     mysqli_stmt_bind_param($stmt, 'isss', $userId, $kind, $message, $link);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+    mysqli_query($conn, 'DELETE FROM lib_notifications WHERE read_at IS NOT NULL AND created_at < NOW() - INTERVAL 90 DAY LIMIT 50'); // keeps the table small
 }
 
 // How many notifications the member has not opened yet (shown on the bell).
