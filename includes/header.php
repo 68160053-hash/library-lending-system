@@ -13,7 +13,7 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
   <title><?= h($pageTitle ?? 'Book Lending Shop') ?> | Book Lending Shop</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Almendra+Display&amp;family=Almendra+SC&amp;family=Charm:wght@400;700&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Srisakdi:wght@400;700&amp;family=Trirong:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Almendra+Display&amp;family=Almendra+SC&amp;family=Charm:wght@400;700&amp;family=IM+Fell+English+SC&amp;family=Special+Elite&amp;family=Trirong:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -37,7 +37,7 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
 </div>
 <header class="site-header">
   <div class="container nav-bar">
-    <a class="logo" href="index.php"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 8C12 5.5 7 5.5 3 7v17c4-1.5 9-1.5 13 1 4-2.5 9-2.5 13-1V7c-4-1.5-9-1.5-13 1z"/><path d="M16 8v17M16 2.5v2.5M11.5 3.5l1 1.8M20.5 3.5l-1 1.8"/></svg><span class="logo-text">Book Lending Shop<small>ร้านยืมหนังสือ</small></span></a>
+    <a class="logo" href="index.php"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 8C12 5.5 7 5.5 3 7v17c4-1.5 9-1.5 13 1 4-2.5 9-2.5 13-1V7c-4-1.5-9-1.5-13 1z"/><path d="M16 8v17M16 2.5v2.5M11.5 3.5l1 1.8M20.5 3.5l-1 1.8"/></svg><span class="logo-text">Book Lending Shop<small>ร้านเช่าหนังสือออนไลน์</small></span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" aria-label="เปิด/ปิดเมนู"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <nav aria-label="เมนูหลัก">
       <ul class="nav-menu" id="nav-menu">
@@ -46,9 +46,10 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
         <li><a href="login.php">เข้าสู่ระบบ</a></li>
         <li><a href="register.php">สมัครสมาชิก</a></li>
         <?php else: ?>
-        <li><a href="my-loans.php">การยืมของฉัน</a></li>
+        <li><a href="my-loans.php">การเช่าของฉัน</a></li>
         <?php if ($navRole === 'staff' || $navRole === 'admin'): ?>
         <li><a href="rentals.php">จัดการการเช่า</a></li>
+        <?php if ($navRole === 'admin'): ?><li><a href="users.php">จัดการผู้ใช้</a></li><?php endif; ?>
         <li><a href="books.php">จัดการหนังสือ</a></li>
         <li><a href="overdue.php">รายการเกินกำหนด</a></li>
         <?php endif; ?>

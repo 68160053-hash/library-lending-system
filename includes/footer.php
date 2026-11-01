@@ -11,7 +11,7 @@
   <div class="foot-strip">
     <div class="container">
       <svg class="flourish" viewBox="0 0 200 20" aria-hidden="true"><path d="M2 10h72M126 10h72"/><path d="M100 3c-6 4-6 10 0 14 6-4 6-10 0-14zM86 10c4-5 9-5 12 0-3 5-8 5-12 0zM114 10c-4-5-9-5-12 0 3 5 8 5 12 0z"/></svg>
-      <p>&copy; 2569 Book Lending Shop &middot; ร้านยืมหนังสือ &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
+      <p>&copy; 2569 Book Lending Shop &middot; ร้านเช่าหนังสือออนไลน์ &middot; โปรเจกต์วิชาฐานข้อมูล (ข้อมูลตัวอย่างทั้งหมดเป็นข้อมูลสมมติ)</p>
     </div>
   </div>
 </footer>

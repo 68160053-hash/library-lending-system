@@ -172,6 +172,60 @@ ok('B13 delete via GET does nothing (405)', r.status === 405 && sql(`SELECT COUN
 r = await S.post('book-delete.php', { book_id: idFree }, 'books.php');
 ok('B14 staff deletes a book without history', r.loc.includes('deleted=1') && sql(`SELECT COUNT(*) FROM lib_books WHERE book_id=${idFree}`) === '0');
 
+
+// ===== Cancel a pending rental (member) =====
+sql(`INSERT INTO lib_books (category_id, title, author, isbn, copies_total, copies_available) VALUES (${cat}, 'Cancel Book', 'Tester', 'RT-3001', 2, 2)`);
+const b4 = bookId('RT-3001');
+await A.post('rent.php', { book_id: b4, ship_address: ADDR });
+const loanC = sql(`SELECT MAX(loan_id) FROM lib_loans WHERE book_id=${b4}`);
+ok('C1 rent took a copy (1 left)', stock('RT-3001') === '1	2');
+r = await B.post('cancel.php', { loan_id: loanC }, 'my-loans.php');
+ok("C2 another member cannot cancel Rita's rental", r.loc.includes('cancel_error') && sql(`SELECT COUNT(*) FROM lib_loans WHERE loan_id=${loanC}`) === '1' && stock('RT-3001') === '1	2');
+r = await A.req('cancel.php', { method: 'POST', form: { loan_id: loanC } });
+ok('C3 cancel without CSRF token -> 403', r.status === 403 && sql(`SELECT COUNT(*) FROM lib_loans WHERE loan_id=${loanC}`) === '1');
+r = await A.req('cancel.php?loan_id=' + loanC);
+ok('C4 cancel via GET does nothing (405)', r.status === 405 && sql(`SELECT COUNT(*) FROM lib_loans WHERE loan_id=${loanC}`) === '1');
+r = await A.post('cancel.php', { loan_id: loanC }, 'my-loans.php');
+ok('C5 owner cancels a pending rental: row gone, copy back on the shelf', r.loc.includes('cancelled=1') && sql(`SELECT COUNT(*) FROM lib_loans WHERE loan_id=${loanC}`) === '0' && stock('RT-3001') === '2	2');
+r = await A.post('cancel.php', { loan_id: loanC }, 'my-loans.php');
+ok('C6 cancelling twice does not add a second copy to the shelf', r.loc.includes('cancel_error') && stock('RT-3001') === '2	2');
+r = await A.post('cancel.php', { loan_id: loan1 }, 'my-loans.php');
+ok('C7 a shipped/returned rental cannot be cancelled', r.loc.includes('cancel_error') && sql(`SELECT COUNT(*) FROM lib_loans WHERE loan_id=${loan1}`) === '1');
+for (const bad of ['-1', 'abc', '1 OR 1=1']) { r = await A.post('cancel.php', { loan_id: bad }, 'my-loans.php'); ok('C8 cancel with loan_id=' + bad + ' is refused', r.status === 400); }
+
+// ===== Admin: change roles =====
+const AD = client(); await AD.register('Ada Admin', 'ada@r.test', 'ada-pass-12345');
+sql("UPDATE lib_users SET role='admin' WHERE email='ada@r.test'"); sql('DELETE FROM lib_attempts');
+await AD.login('ada@r.test', 'ada-pass-12345');
+const uidOf = (mail) => sql(`SELECT user_id FROM lib_users WHERE email='${mail}'`);
+const roleOf = (mail) => sql(`SELECT role FROM lib_users WHERE email='${mail}'`);
+for (const [who, cl] of [['member', A], ['staff', S], ['anonymous', anon]]) { r = await cl.req('users.php'); ok('U1 ' + who + ' opening users.php is refused', r.status === 403 || (r.status === 302 && r.loc.includes('login'))); }
+r = await AD.req('users.php');
+ok('U2 admin sees the user list with escaped names', r.status === 200 && r.text.includes('Rita Renter') && !r.text.includes('$2y$'));
+r = await S.post('user-role.php', { user_id: uidOf('ben@r.test'), role: 'admin' }, 'my-loans.php');
+ok('U3 staff cannot make someone admin', r.status === 403 && roleOf('ben@r.test') === 'member');
+r = await A.post('user-role.php', { user_id: uidOf('rita@r.test'), role: 'admin' }, 'my-loans.php');
+ok('U4 a member cannot make themselves admin', r.status === 403 && roleOf('rita@r.test') === 'member');
+r = await AD.req('user-role.php', { method: 'POST', form: { user_id: uidOf('ben@r.test'), role: 'staff' } });
+ok('U5 role change without CSRF token -> 403', r.status === 403 && roleOf('ben@r.test') === 'member');
+r = await AD.req('user-role.php?user_id=' + uidOf('ben@r.test') + '&role=staff');
+ok('U6 role change via GET does nothing (405)', r.status === 405 && roleOf('ben@r.test') === 'member');
+r = await AD.post('user-role.php', { user_id: uidOf('ben@r.test'), role: 'staff' }, 'users.php');
+ok('U7 admin promotes a member to staff', r.loc.includes('saved=1') && roleOf('ben@r.test') === 'staff');
+r = await B.req('rentals.php');
+ok('U8 the promoted user gets the staff desk without logging in again', r.status === 200);
+for (const bad of ['owner', '', 'ADMIN', "admin'; DROP TABLE lib_users;--", 'root']) { r = await AD.post('user-role.php', { user_id: uidOf('rita@r.test'), role: bad }, 'users.php'); ok('U9 unknown role "' + bad.slice(0, 12) + '" is refused', r.status === 400 && roleOf('rita@r.test') === 'member'); }
+r = await AD.post('user-role.php', { user_id: uidOf('ada@r.test'), role: 'member' }, 'users.php');
+ok('U10 an admin cannot demote themselves (never zero admins)', r.loc.includes('error=1') && roleOf('ada@r.test') === 'admin');
+r = await AD.post('user-role.php', { user_id: '99999999', role: 'staff' }, 'users.php');
+ok('U11 unknown user id changes nothing and does not crash', r.status < 500);
+r = await AD.post('user-role.php', { user_id: uidOf('ben@r.test'), role: 'member' }, 'users.php');
+r = await B.req('rentals.php');
+ok('U12 demoted staff loses the staff desk at once', r.status === 403);
+sql("UPDATE lib_users SET role='member' WHERE email='ada@r.test'");
+r = await AD.req('users.php');
+ok('U13 an admin demoted in the database loses admin pages at once', r.status === 403);
+
 // ===== Shop page =====
 r = await anon.req('index.php');
 ok('P1 guest sees a login link instead of the rent form', r.text.includes('เข้าสู่ระบบเพื่อเช่า') && !r.text.includes('name="ship_address"'));

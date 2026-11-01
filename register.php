@@ -63,16 +63,16 @@ require 'includes/header.php';
           </div>
           <div class="field">
             <label for="email">อีเมล</label>
-            <input type="email" id="email" name="email" autocomplete="email" maxlength="120" value="<?= h($email) ?>" required>
+            <input type="email" id="email" name="email" autocomplete="username" maxlength="120" value="<?= h($email) ?>" required>
           </div>
           <div class="field">
             <label for="password">รหัสผ่าน</label>
-            <input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="pw-hint" required>
+            <div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="pw-hint" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
             <p class="hint" id="pw-hint">อย่างน้อย 8 ตัวอักษร</p>
           </div>
           <div class="field">
             <label for="password_confirm">ยืนยันรหัสผ่าน</label>
-            <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required>
+            <div class="pw-wrap"><input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required><button type="button" class="pw-toggle" data-pw-toggle="password_confirm" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
           </div>
           <button type="submit" class="btn btn-primary btn-magic btn-block">สมัครสมาชิก</button>
         </form>

@@ -59,6 +59,20 @@ function require_staff() {
     if (!is_staff()) { http_response_code(403); exit('หน้านี้สำหรับเจ้าหน้าที่เท่านั้น'); }
 }
 
+// Admin-only pages (change roles). Like require_staff(), the role is read from the DB each time.
+function require_admin() {
+    global $conn;
+    require_login();
+    $stmt = mysqli_prepare($conn, 'SELECT role FROM lib_users WHERE user_id = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $_SESSION['user_id']);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $role);
+    $found = mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    $_SESSION['role'] = $found ? $role : '';
+    if ($role !== 'admin' || !$found) { http_response_code(403); exit('หน้านี้สำหรับผู้ดูแลระบบเท่านั้น'); }
+}
+
 // ---- Rate limiting (stored in lib_attempts, so a bot cannot reset it by dropping its cookie) ----
 function client_ip() { return substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45); }
 // Has this IP (and optionally this email) made $max or more attempts of this kind in the last $minutes?

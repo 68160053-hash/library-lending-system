@@ -10,7 +10,8 @@ TODO: สรุป 2-3 บรรทัดจาก `docs/proposal.md`
 ## ฟีเจอร์ (ร้านเช่าหนังสือออนไลน์)
 - สมาชิก: ดูและค้นหาหนังสือ, เช่าพร้อมกรอกที่อยู่จัดส่ง, ต่ออายุ (1 ครั้ง), ดูประวัติ ค่าปรับ และสถานะพัสดุของตัวเอง
 - เจ้าหน้าที่: จัดการหนังสือ (เพิ่ม/แก้/ลบ ตั้งราคาเช่าต่อวันและค่ามัดจำ), จัดการการเช่า (ส่งพัสดุ → รับคืน หรือแจ้งสูญหาย), ดูรายการเกินกำหนด
-- แอดมิน: ทุกอย่างของเจ้าหน้าที่ + จัดการบทบาทผู้ใช้
+- แอดมิน: ทุกอย่างของเจ้าหน้าที่ + หน้า "จัดการผู้ใช้" เปลี่ยนบทบาทสมาชิก/เจ้าหน้าที่/แอดมิน (เปลี่ยนบทบาทตัวเองไม่ได้ จะได้ไม่เหลือระบบไม่มีแอดมิน)
+- สมาชิกยกเลิกการเช่าของตัวเองได้ตราบที่ยังเป็น "รอส่งพัสดุ" (เล่มกลับเข้าชั้น)
 
 ### กติกาการเช่า
 - เช่าได้ 7 วัน นับจากวันที่เจ้าหน้าที่ส่งพัสดุ ต่ออายุได้ 1 ครั้ง (+7 วัน) ถ้ายังไม่เกินกำหนด
@@ -27,7 +28,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 1. import `sql/schema.sql` แล้วตามด้วย `sql/seed_books.sql` (หนังสือจริง 40 เล่มจาก Open Library, สร้างด้วย `node tools/fetch_books.mjs` บนเครื่องตัวเอง) ผ่าน phpMyAdmin บน Angsila: MySQL 8.0.46, PHP 8.4, ชื่อฐานข้อมูลคือ `s` + รหัสนักศึกษา
 2. คัดลอก `secret/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง (host `localhost`, user และ name เป็น `s68160053`) (ไฟล์นี้ถูก git-ignore และ `secret/.htaccess` บล็อกการเข้าทางเว็บ)
 3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีผู้ใช้ตัวอย่างหรือรหัสผ่านใน repo
-4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'staff' WHERE email = 'อีเมลของคุณ';` แล้วเข้าสู่ระบบใหม่
+4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'admin' WHERE email = 'อีเมลของคุณ';` (แอดมินคนแรกต้องตั้งผ่าน SQL ครั้งเดียว) แล้วเข้าสู่ระบบใหม่ จากนั้นตั้งบทบาทคนอื่นได้ที่หน้า "จัดการผู้ใช้"
 
 ## ความปลอดภัย
 - รหัสผ่านเก็บด้วย bcrypt (`password_hash` / `password_verify`)
@@ -46,7 +47,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - รหัสผ่านห้ามมีอักขระควบคุม (bcrypt อ่านถึงแค่ NUL)
 
 ## ทดสอบความปลอดภัย
-`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก), `tests/rental.mjs` (71 ข้อ ระบบเช่าและหลังบ้าน) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก), `tests/rental.mjs` (100 ข้อ ระบบเช่าและหลังบ้าน) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
 `DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/sectest.mjs`, `node tests/rental.mjs` และ `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
 ก่อน merge PR ของเพื่อนให้รันซ้ำทุกครั้ง
 

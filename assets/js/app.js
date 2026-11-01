@@ -69,7 +69,7 @@ function showBook(book) {
   $('bd-cover-title').textContent = $('bd-front-title').textContent = d.title;
   $('bd-author').textContent = d.author + ' · หมวด: ' + d.category;
   $('bd-blurb').textContent = d.blurb || '';
-  $('bd-stamp').textContent = left > 0 ? 'ว่าง ' + left + '/' + d.total : 'ถูกยืมหมด';
+  $('bd-stamp').textContent = left > 0 ? 'ว่าง ' + left + '/' + d.total : 'ถูกเช่าหมด';
   $('bd-stamp').className = left > 0 ? 'stamp stamp--ok' : 'stamp stamp--out';
   if ($('bd-borrow')) $('bd-borrow').disabled = left === 0; // หมดแล้วเช่าไม่ได้
   if ($('bd-book-id')) $('bd-book-id').value = d.id || ''; // ฟอร์มเช่าส่ง book_id ของเล่มที่เปิดอยู่
@@ -248,3 +248,16 @@ function wiggle() {
   setTimeout(wiggle, 6000 + Math.random() * 3000);
 }
 if (!reduceMotion && document.querySelector('.book')) setTimeout(wiggle, 4000);
+
+
+// ----- 10) ปุ่มแสดง/ซ่อนรหัสผ่าน (หน้าเข้าสู่ระบบและสมัครสมาชิก): สลับ type ระหว่าง password กับ text -----
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('[data-pw-toggle]');
+  if (!btn) return;
+  var input = $(btn.dataset.pwToggle);
+  var show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  btn.textContent = show ? 'ซ่อน' : 'แสดง';
+  btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+  btn.setAttribute('aria-label', show ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน');
+});

@@ -3,7 +3,7 @@ require 'auth.php'; require 'config/db.php';
 // Renew changes data, so POST only (a link or the address bar must not renew anything).
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    exit('<a href="my-loans.php">กลับไปการยืมของฉัน</a>');
+    exit('<a href="my-loans.php">กลับไปการเช่าของฉัน</a>');
 }
 require_login();
 verify_csrf();

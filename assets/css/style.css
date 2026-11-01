@@ -24,7 +24,7 @@
   --fs-h2: clamp(1.9rem, 4.2vw, 2.8rem);
   /* ฟอนต์ */
   --f-ui: "Trirong", serif; /* เนื้อหา: ตัวพิมพ์โบราณ อ่านง่าย */
-  --f-head: "Srisakdi", "Trirong", serif; /* หัวข้อไทยแบบตำราเวท */
+  --f-head: "Trirong", serif; /* หัวข้อไทย: ตัวอักษรมีหัว อ่านง่าย (เดิมใช้ Srisakdi แบบลายมือเอียง) */
   --f-latin: "Almendra SC", "Trirong", serif;
   --f-display: "Almendra Display", "Almendra SC", serif; /* ชื่อร้านตัวใหญ่เท่านั้น (ตัวโปร่ง อ่านยากถ้าเล็ก) */
   --f-sc: "IM Fell English SC", "Trirong", serif;
@@ -487,3 +487,11 @@ tbody .stamp { animation: thunk .5s ease-out backwards; animation-delay: calc(va
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+
+/* ปุ่มแสดง/ซ่อนรหัสผ่าน: อยู่ขวาในช่องกรอก */
+.pw-wrap { position: relative; }
+.pw-wrap input { width: 100%; padding-right: 4.5rem; }
+.pw-toggle { position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%); background: none; border: 0; padding: 0.4rem 0.7rem;
+  font: inherit; font-size: 0.9rem; color: inherit; opacity: 0.75; cursor: pointer; border-radius: 6px; }
+.pw-toggle:hover, .pw-toggle:focus-visible { opacity: 1; text-decoration: underline; }

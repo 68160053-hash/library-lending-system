@@ -72,7 +72,7 @@ require 'includes/header.php';
         <div class="facade">
           <div class="roof" aria-hidden="true"><div class="fascia"></div><div class="awning"></div></div>
           <div class="sign"><div class="sign-swing"><span class="chain"></span><span class="chain"></span>
-            <div class="board"><p class="eyebrow">OPEN AFTER MIDNIGHT</p><h1 id="hero-title"><span class="h1-latin">Book Lending Shop</span><span class="h1-th">ร้านยืมหนังสือ</span></h1></div></div></div>
+            <div class="board"><p class="eyebrow">OPEN AFTER MIDNIGHT</p><h1 id="hero-title"><span class="h1-latin">Book Lending Shop</span><span class="h1-th">ร้านเช่าหนังสือออนไลน์</span></h1></div></div></div>
           <div class="front">
             <div class="shop-window" aria-hidden="true">
               <div class="win-back"></div>
@@ -89,7 +89,7 @@ require 'includes/header.php';
           <div class="step" aria-hidden="true"></div>
         </div>
       </div>
-      <p class="tagline">ค้นหาตำราและเรื่องราวที่รอคุณอยู่บนชั้นหนังสือ แล้วยืมกลับบ้านได้ในไม่กี่คลิก</p>
+      <p class="tagline">ค้นหาตำราและเรื่องราวที่รอคุณอยู่บนชั้นหนังสือ แล้วเช่าส่งถึงบ้านได้ในไม่กี่คลิก</p>
     </section>
 
     <form class="ask frame-silver reveal" action="index.php" method="get" aria-label="ค้นหาหนังสือ">
@@ -127,7 +127,7 @@ require 'includes/header.php';
             $isPick = false;
             foreach ($picks as $p) if ($p['id'] === $b['id']) $isPick = true;
           ?>
-          <li style="--i:<?= (int)$i ?>"><button type="button" class="book<?= $left > 0 ? '' : ' is-out' ?>" style="--c:<?= h($b['color']) ?>" aria-label="<?= h($label) ?>" data-id="<?= (int)$b['id'] ?>" data-title="<?= h($b['title']) ?>" data-author="<?= h($b['author']) ?>" data-category="<?= h($b['category']) ?>" data-available="<?= $left ?>" data-total="<?= (int)$b['total'] ?>" data-sale="<?= h($b['sale']) ?>" data-deposit="<?= h($b['deposit']) ?>" data-blurb="<?= h($b['blurb']) ?>"<?= $isPick ? ' data-pick' : '' ?>><span class="pages"></span><span class="face"><svg class="emb" viewBox="0 0 48 48" aria-hidden="true"><use href="#<?= h($b['emb']) ?>"/></svg><span class="c-title"><?= h($b['title']) ?></span><span class="c-author"><?= h($b['author']) ?></span></span></button><span class="hang" aria-hidden="true"><span class="hang-tag"><i><?= $left > 0 ? 'ว่าง ' . $left . '/' . (int)$b['total'] : 'ถูกยืมหมด' ?></i></span><span class="hang-tag hang-tag--sale"><i>เช่า ฿<?= h($b['sale']) ?>/วัน</i></span></span></li>
+          <li style="--i:<?= (int)$i ?>"><button type="button" class="book<?= $left > 0 ? '' : ' is-out' ?>" style="--c:<?= h($b['color']) ?>" aria-label="<?= h($label) ?>" data-id="<?= (int)$b['id'] ?>" data-title="<?= h($b['title']) ?>" data-author="<?= h($b['author']) ?>" data-category="<?= h($b['category']) ?>" data-available="<?= $left ?>" data-total="<?= (int)$b['total'] ?>" data-sale="<?= h($b['sale']) ?>" data-deposit="<?= h($b['deposit']) ?>" data-blurb="<?= h($b['blurb']) ?>"<?= $isPick ? ' data-pick' : '' ?>><span class="pages"></span><span class="face"><svg class="emb" viewBox="0 0 48 48" aria-hidden="true"><use href="#<?= h($b['emb']) ?>"/></svg><span class="c-title"><?= h($b['title']) ?></span><span class="c-author"><?= h($b['author']) ?></span></span></button><span class="hang" aria-hidden="true"><span class="hang-tag"><i><?= $left > 0 ? 'ว่าง ' . $left . '/' . (int)$b['total'] : 'ถูกเช่าหมด' ?></i></span><span class="hang-tag hang-tag--sale"><i>เช่า ฿<?= h($b['sale']) ?>/วัน</i></span></span></li>
           <?php endforeach; ?>
         </ul>
       </section>
@@ -146,7 +146,7 @@ require 'includes/header.php';
             <div class="ft-page ft-right paper">
               <p class="eyebrow" id="ft-count">เล่มที่ 1 จาก <?= count($picks) ?></p>
               <div aria-live="polite" aria-atomic="true"><h3 id="ft-title"><?= h($picks[0]['title']) ?></h3><p class="meta" id="ft-author"><?= h($picks[0]['author']) ?></p><p id="ft-blurb"><?= h($picks[0]['blurb']) ?></p></div>
-              <div class="actions"><button type="button" class="btn btn-primary btn-magic" id="ft-borrow">ดูรายละเอียดและยืม</button></div>
+              <div class="actions"><button type="button" class="btn btn-primary btn-magic" id="ft-borrow">ดูรายละเอียดและเช่า</button></div>
             </div>
           </div>
           <div class="ft-stand" aria-hidden="true"></div>
@@ -172,7 +172,7 @@ require 'includes/header.php';
       <form class="rent-form" action="rent.php" method="post">
         <?php csrf_field(); ?>
         <input type="hidden" name="book_id" id="bd-book-id" value="">
-        <div class="field"><label for="bd-address">ที่อยู่จัดส่ง</label><input type="text" id="bd-address" name="ship_address" maxlength="255" minlength="10" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์" required></div>
+        <div class="field"><label for="bd-address">ที่อยู่จัดส่ง</label><input type="text" id="bd-address" name="ship_address" autocomplete="shipping street-address" maxlength="255" minlength="10" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์" required></div>
         <div class="actions">
           <button type="submit" class="btn btn-primary btn-magic" id="bd-borrow">เช่าเล่มนี้</button>
           <button type="button" class="btn btn-outline" id="bd-close">ปิด</button>

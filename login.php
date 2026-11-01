@@ -58,11 +58,11 @@ require 'includes/header.php';
           <?php csrf_field(); ?>
           <div class="field">
             <label for="email">อีเมล</label>
-            <input type="email" id="email" name="email" autocomplete="email" required>
+            <input type="email" id="email" name="email" autocomplete="username" required>
           </div>
           <div class="field">
             <label for="password">รหัสผ่าน</label>
-            <input type="password" id="password" name="password" autocomplete="current-password" required>
+            <div class="pw-wrap"><input type="password" id="password" name="password" autocomplete="current-password" required><button type="button" class="pw-toggle" data-pw-toggle="password" aria-pressed="false" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
           </div>
           <button type="submit" class="btn btn-primary btn-magic btn-block">เข้าสู่ระบบ</button>
         </form>
