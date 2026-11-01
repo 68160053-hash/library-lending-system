@@ -11,7 +11,7 @@ const topics = [
   ['วรรณกรรมคลาสสิก', 'subject_key:classic_literature'],
   ['คอมพิวเตอร์', 'subject_key:computer_programming'],
 ];
-const PER_TOPIC = 12;
+const PER_TOPIC = 24;
 const UA = { 'User-Agent': 'course-project-seed/1.0 (student project)' };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 fs.mkdirSync(new URL('../assets/covers/', import.meta.url), { recursive: true });
@@ -45,7 +45,7 @@ async function describe(workKey) {
 
 for (const [cat, q] of topics) {
   const url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(q + ' language:eng') +
-    '&sort=readinglog&limit=60&fields=key,title,author_name,isbn,first_publish_year';
+    '&sort=readinglog&limit=100&fields=key,title,author_name,isbn,first_publish_year';
   const data = await (await fetch(url, { headers: UA })).json();
   let n = 0;
   for (const d of data.docs ?? []) {
@@ -54,7 +54,7 @@ for (const [cat, q] of topics) {
     if (!all.length || !d.title || !d.author_name || !d.key) continue;
     if (d.title.length > 200 || d.author_name[0].length > 120) continue;
     if (/[Ͱ-῿⺀-鿿]/.test(d.title) || /[⺀-鿿]/.test(d.author_name[0])) continue; // titles/authors the page font cannot show
-    if (/Mein Kampf|Bachman|Running Man|Haunting Adeline/i.test(d.title)) continue; // not suitable for a shop demo
+    if (/Mein Kampf|Bachman|Running Man|Haunting Adeline|\bvolume\b|\bvol\.|proceedings|advances in|encyclop/i.test(d.title)) continue; // not suitable for a shop demo
     const isbn = await saveCover(all);
     if (!isbn || seen.has(isbn)) continue;                                  // keep only books that have a real cover
     seen.add(isbn);
