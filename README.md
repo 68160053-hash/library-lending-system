@@ -57,7 +57,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - รหัสผ่านห้ามมีอักขระควบคุม (bcrypt อ่านถึงแค่ NUL)
 
 ## ทดสอบ
-`tests/shop.mjs` (188 ข้อ ระบบร้านทั้งหมด: แคตตาล็อก ตะกร้า สั่งเช่า ชำระเงิน จัดส่ง คืน/ปรับ หลังบ้าน บทบาท โปรไฟล์ พร้อมการโจมตีทุกขั้น), `tests/discover.mjs` (64), `tests/orders.mjs` (71), `tests/staff.mjs` (80), `tests/platform.mjs` (43) และ `tests/pentest.mjs` (106 ข้อ SQL injection, XSS, CSRF, session, IDOR, race condition, brute force) และ `tests/google.mjs` (34 ข้อ ต้องเปิดเซิร์ฟเวอร์ที่สอง พอร์ต 8093 พร้อมค่า `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` ปลอม) รันกับฐานข้อมูลทดลองเท่านั้น (ชื่อ DB ต้องมี sec หรือ test): import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`tests/shop.mjs` (188 ข้อ ระบบร้านทั้งหมด: แคตตาล็อก ตะกร้า สั่งเช่า ชำระเงิน จัดส่ง คืน/ปรับ หลังบ้าน บทบาท โปรไฟล์ พร้อมการโจมตีทุกขั้น), `tests/discover.mjs` (66), `tests/orders.mjs` (71), `tests/staff.mjs` (80), `tests/platform.mjs` (43), `tests/hardening.mjs` (25: เดาโค้ดส่วนลด บัญชีใหม่ใช้ที่อยู่เดิมของคนค้าง ลบรีวิว หนังสือสูญหายที่พบทีหลัง) และ `tests/pentest.mjs` (106 ข้อ SQL injection, XSS, CSRF, session, IDOR, race condition, brute force) และ `tests/google.mjs` (34 ข้อ ต้องเปิดเซิร์ฟเวอร์ที่สอง พอร์ต 8093 พร้อมค่า `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` ปลอม) รันกับฐานข้อมูลทดลองเท่านั้น (ชื่อ DB ต้องมี sec หรือ test): import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
 `DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/shop.mjs`, `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
 
 ## กติกาเขียนโค้ดสำหรับเพื่อน (ตอนทำ PR)

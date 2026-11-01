@@ -26,17 +26,19 @@ function newest_ids($conn) {
 // Books with category, average rating and review count. $where / $order are fixed SQL written by the caller (never user text);
 // every user value goes in $params. Returns rows ready for book_card().
 function discover_books($conn, $where, $types, $params, $order, $limit = 12, $offset = 0) {
-    $sql = 'SELECT b.book_id, b.title, b.author, b.isbn, b.rent_per_day, b.copies_available, b.category_id, c.name, COALESCE(r.a, 0), COALESCE(r.n, 0)
-            FROM lib_books b JOIN lib_categories c ON c.category_id = b.category_id
-            LEFT JOIN (SELECT book_id, AVG(rating) a, COUNT(*) n FROM lib_reviews GROUP BY book_id) r ON r.book_id = b.book_id
-            LEFT JOIN (SELECT book_id, COUNT(*) n FROM lib_loans WHERE status <> \'pending\' GROUP BY book_id) lc ON lc.book_id = b.book_id
+    $new = newest_ids($conn); // before the statement below: a second query while its rows are unread fails with "Commands out of sync"
+    // Rating and review count come from small subqueries for the rows shown. The whole-table summaries are joined only when the sort needs them.
+    $joinR = strpos($order, 'r.') !== false ? 'LEFT JOIN (SELECT book_id, AVG(rating) a, COUNT(*) n FROM lib_reviews GROUP BY book_id) r ON r.book_id = b.book_id' : '';
+    $joinL = strpos($order, 'lc.') !== false ? 'LEFT JOIN (SELECT book_id, COUNT(*) n FROM lib_loans WHERE status <> \'pending\' GROUP BY book_id) lc ON lc.book_id = b.book_id' : '';
+    $sql = 'SELECT b.book_id, b.title, b.author, b.isbn, b.rent_per_day, b.copies_available, b.category_id, c.name,
+                   COALESCE((SELECT AVG(rating) FROM lib_reviews WHERE book_id = b.book_id), 0), (SELECT COUNT(*) FROM lib_reviews WHERE book_id = b.book_id)
+            FROM lib_books b JOIN lib_categories c ON c.category_id = b.category_id ' . $joinR . ' ' . $joinL . '
             WHERE ' . $where . ' ORDER BY ' . $order . ' LIMIT ? OFFSET ?';
     $stmt = mysqli_prepare($conn, $sql);
     $params[] = (int)$limit; $params[] = (int)$offset;
     mysqli_stmt_bind_param($stmt, $types . 'ii', ...$params);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $id, $title, $author, $isbn, $rent, $left, $catId, $cat, $avg, $cnt);
-    $new = newest_ids($conn);
     $rows = [];
     while (mysqli_stmt_fetch($stmt)) $rows[] = ['id' => (int)$id, 'title' => $title, 'author' => $author, 'isbn' => $isbn, 'rent' => $rent, 'left' => (int)$left,
         'cat_id' => (int)$catId, 'cat' => $cat, 'avg' => (float)$avg, 'cnt' => (int)$cnt, 'isnew' => in_array((int)$id, $new, true)];

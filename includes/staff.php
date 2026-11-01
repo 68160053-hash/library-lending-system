@@ -4,7 +4,11 @@
 // Rows of a prepared query as arrays. $types/$params bind the values; the SQL text itself must be fixed text.
 function staff_rows($conn, $sql, $types = '', $params = []) {
     $st = mysqli_prepare($conn, $sql);
-    if (!$st) return [];
+    if (!$st) { // a missing table or column must not look like a quiet day: log it and tell the staff member on this page
+        error_log('staff_rows: ' . mysqli_error($conn));
+        flash('err', 'ข้อมูลบางส่วนของหน้านี้โหลดไม่ได้ ตรวจว่ารัน migrate ครบหรือยัง');
+        return [];
+    }
     if ($types !== '') mysqli_stmt_bind_param($st, $types, ...$params);
     mysqli_stmt_execute($st);
     $meta = mysqli_stmt_result_metadata($st);

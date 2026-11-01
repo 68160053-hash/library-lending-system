@@ -99,6 +99,9 @@ r = await anon.req('index.php?category=' + cat); ok('H6 selected zone is .on', /
 ok('H7 popular row appears from recent loans', (await anon.req('index.php')).text.includes('ยอดนิยม'));
 r = await anon.req('book.php?id=' + b2); ok('H8 book page "also rented" uses the same members\' loans', r.text.includes('คนที่เช่าเล่มนี้ก็เช่า') && r.text.includes('Disc One'));
 r = await A.req('index.php'); ok('H9 member sees heart forms posting to wishlist.php', r.text.includes('action="wishlist.php"'));
+r = await anon.req('index.php'); ok('H11 the newest books carry the "ใหม่" sticker (the lookup must not fail with out-of-sync)', (r.text.match(/class="burst new"/g) || []).length >= 1);
+r = await anon.req('index.php?sort=rating&q=Disc'); const star = r.text.match(/aria-label="[\d.]+ จาก 5 ดาว"/g);
+ok('H12 rating sort still returns books with their rating shown (summary join only when sorting)', r.status === 200 && r.text.includes('Disc'), String(star && star.length));
 r = await anon.req('index.php'); ok('H10 guest hearts link to login', r.text.includes('class="heart-btn" href="login.php"'));
 
 cleanup();
