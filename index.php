@@ -12,7 +12,7 @@ while ($res && ($row = mysqli_fetch_assoc($res))) $cats[] = $row;
 
 // Books: the filters are bound as parameters; "%" and "_" typed by the user are escaped so they stay plain characters
 $like = '%' . addcslashes($q, '%_\\') . '%';
-$sql = 'SELECT b.book_id, b.category_id, c.name, b.title, b.author, b.copies_total, b.copies_available, b.sale_price
+$sql = 'SELECT b.book_id, b.category_id, c.name, b.title, b.author, b.copies_total, b.copies_available, b.rent_per_day, b.deposit
         FROM lib_books b JOIN lib_categories c ON c.category_id = b.category_id
         WHERE (CHAR_LENGTH(?) = 0 OR b.title LIKE ? OR b.author LIKE ?) AND (CHAR_LENGTH(?) = 0 OR c.name = ?)
         ORDER BY b.category_id, b.title
@@ -20,7 +20,7 @@ $sql = 'SELECT b.book_id, b.category_id, c.name, b.title, b.author, b.copies_tot
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, 'sssss', $q, $like, $like, $catName, $catName);
 mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $bookId, $catId, $category, $title, $author, $total, $avail, $price);
+mysqli_stmt_bind_result($stmt, $bookId, $catId, $category, $title, $author, $total, $avail, $rent, $deposit);
 
 // Cover colour and emblem come from the book id, so every book looks different without extra DB columns
 $colors = ['#2b2f6b', '#5a3a22', '#3b1f3a', '#1f3b4d', '#4a1a1a', '#3d2a5c', '#243049', '#1f4a3a'];
@@ -28,7 +28,8 @@ $emblems = ['e-tower', 'e-potion', 'e-moon', 'e-cloud', 'e-key', 'e-lantern', 'e
 $shelves = []; $picks = []; $shown = 0; $saleCount = 0;
 while (mysqli_stmt_fetch($stmt)) {
     $b = ['id' => $bookId, 'title' => $title, 'author' => $author, 'category' => $category, 'total' => $total, 'avail' => $avail,
-          'sale' => $price === null ? '' : rtrim(rtrim(number_format((float)$price, 2, '.', ''), '0'), '.'),
+          'sale' => rtrim(rtrim(number_format((float)$rent, 2, '.', ''), '0'), '.'), // rent per day (the data-sale name is kept for the old CSS/JS)
+          'deposit' => rtrim(rtrim(number_format((float)$deposit, 2, '.', ''), '0'), '.'),
           'color' => $colors[$bookId % count($colors)], 'emb' => $emblems[$bookId % count($emblems)],
           'blurb' => 'หนังสือหมวด' . $category . ' โดย ' . $author];
     $shelves[$catId][] = $b;
@@ -64,6 +65,7 @@ require 'includes/header.php';
   <symbol id="e-feather" viewBox="0 0 48 48"><path d="M40 6C22 8 10 20 8 40M40 6C38 24 28 36 8 40M8 40 22 26M20 22l10 2M16 30l10 2"/></symbol>
 </defs></svg>
   <div class="container">
+    <?php if (isset($_GET['rent_error'])): ?><div class="alert" role="alert"><span><?= $_GET['rent_error'] === 'soldout' ? 'เล่มนี้ถูกเช่าหมดแล้ว' : ($_GET['rent_error'] === 'address' ? 'กรุณากรอกที่อยู่จัดส่งให้ครบ (10-255 ตัวอักษร)' : 'เช่าไม่สำเร็จ ลองใหม่อีกครั้ง') ?></span></div><?php endif; ?>
     <section class="hero" id="hero" aria-labelledby="hero-title">
       <div class="shop" id="shop">
         <svg class="px-roofs" viewBox="0 0 1000 160" preserveAspectRatio="none" aria-hidden="true"><path d="M0 160V110h50V80l30-40 30 40v30h70V90h40V60l35-35 35 35v30h60v30h60V70l40-50 40 50v50h70V95h50V65l30-35 30 35v30h80v-20h40V50l35-40 35 40v70h90v40z"/><path class="win" d="M70 120v-14a6 6 0 0 1 12 0v14zM300 130v-14a6 6 0 0 1 12 0v14zM560 128v-14a6 6 0 0 1 12 0v14zM820 120v-14a6 6 0 0 1 12 0v14z"/></svg>
@@ -110,7 +112,6 @@ require 'includes/header.php';
     <div class="sign-rail reveal" role="group" aria-label="เลือกหมวดหนังสือ">
       <button type="button" class="sign-tab" data-filter="all" aria-pressed="true">ทั้งหมด</button>
       <?php foreach ($shelves as $cid => $list): ?><button type="button" class="sign-tab" data-filter="c<?= (int)$cid ?>" aria-pressed="false"><?= h($catById[$cid] ?? '') ?></button><?php endforeach; ?>
-      <?php if ($saleCount): ?><button type="button" class="sign-tab" data-filter="sale" aria-pressed="false">ซื้อได้</button><?php endif; ?>
     </div>
     <p class="shelf-status" id="status" aria-live="polite"><?= $shown ? 'แสดงหนังสือ ' . (int)$shown . ' เล่ม' : 'ยังไม่มีหนังสือที่ตรงกัน ลองคำอื่นดูนะ' ?></p>
 
@@ -122,11 +123,11 @@ require 'includes/header.php';
         <ul class="books">
           <?php foreach ($list as $i => $b):
             $left = (int)$b['avail'];
-            $label = $b['title'] . ' — ' . $b['author'] . ' (' . ($left > 0 ? 'ว่าง ' . $left . ' จาก ' . (int)$b['total'] . ' เล่ม' : 'ถูกยืมหมด') . ($b['sale'] !== '' ? ', ซื้อได้ ฿' . $b['sale'] : '') . ')';
+            $label = $b['title'] . ' — ' . $b['author'] . ' (' . ($left > 0 ? 'ว่าง ' . $left . ' จาก ' . (int)$b['total'] . ' เล่ม' : 'ถูกเช่าหมด') . ', เช่า ฿' . $b['sale'] . ' ต่อวัน)';
             $isPick = false;
             foreach ($picks as $p) if ($p['id'] === $b['id']) $isPick = true;
           ?>
-          <li style="--i:<?= (int)$i ?>"><button type="button" class="book<?= $left > 0 ? '' : ' is-out' ?>" style="--c:<?= h($b['color']) ?>" aria-label="<?= h($label) ?>" data-id="<?= (int)$b['id'] ?>" data-title="<?= h($b['title']) ?>" data-author="<?= h($b['author']) ?>" data-category="<?= h($b['category']) ?>" data-available="<?= $left ?>" data-total="<?= (int)$b['total'] ?>" data-sale="<?= h($b['sale']) ?>" data-blurb="<?= h($b['blurb']) ?>"<?= $isPick ? ' data-pick' : '' ?>><span class="pages"></span><span class="face"><svg class="emb" viewBox="0 0 48 48" aria-hidden="true"><use href="#<?= h($b['emb']) ?>"/></svg><span class="c-title"><?= h($b['title']) ?></span><span class="c-author"><?= h($b['author']) ?></span></span></button><span class="hang" aria-hidden="true"><span class="hang-tag"><i><?= $left > 0 ? 'ว่าง ' . $left . '/' . (int)$b['total'] : 'ถูกยืมหมด' ?></i></span><?php if ($b['sale'] !== ''): ?><span class="hang-tag hang-tag--sale"><i>ซื้อได้ ฿<?= h($b['sale']) ?></i></span><?php endif; ?></span></li>
+          <li style="--i:<?= (int)$i ?>"><button type="button" class="book<?= $left > 0 ? '' : ' is-out' ?>" style="--c:<?= h($b['color']) ?>" aria-label="<?= h($label) ?>" data-id="<?= (int)$b['id'] ?>" data-title="<?= h($b['title']) ?>" data-author="<?= h($b['author']) ?>" data-category="<?= h($b['category']) ?>" data-available="<?= $left ?>" data-total="<?= (int)$b['total'] ?>" data-sale="<?= h($b['sale']) ?>" data-deposit="<?= h($b['deposit']) ?>" data-blurb="<?= h($b['blurb']) ?>"<?= $isPick ? ' data-pick' : '' ?>><span class="pages"></span><span class="face"><svg class="emb" viewBox="0 0 48 48" aria-hidden="true"><use href="#<?= h($b['emb']) ?>"/></svg><span class="c-title"><?= h($b['title']) ?></span><span class="c-author"><?= h($b['author']) ?></span></span></button><span class="hang" aria-hidden="true"><span class="hang-tag"><i><?= $left > 0 ? 'ว่าง ' . $left . '/' . (int)$b['total'] : 'ถูกยืมหมด' ?></i></span><span class="hang-tag hang-tag--sale"><i>เช่า ฿<?= h($b['sale']) ?>/วัน</i></span></span></li>
           <?php endforeach; ?>
         </ul>
       </section>
@@ -167,11 +168,22 @@ require 'includes/header.php';
       <p class="meta" id="bd-author"></p>
       <p id="bd-blurb"></p>
       <p><span class="stamp stamp--ok" id="bd-stamp"></span> <span class="bd-price" id="bd-price" hidden></span></p>
+      <?php if (!empty($_SESSION['user_id'])): ?>
+      <form class="rent-form" action="rent.php" method="post">
+        <?php csrf_field(); ?>
+        <input type="hidden" name="book_id" id="bd-book-id" value="">
+        <div class="field"><label for="bd-address">ที่อยู่จัดส่ง</label><input type="text" id="bd-address" name="ship_address" maxlength="255" minlength="10" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์" required></div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary btn-magic" id="bd-borrow">เช่าเล่มนี้</button>
+          <button type="button" class="btn btn-outline" id="bd-close">ปิด</button>
+        </div>
+      </form>
+      <?php else: ?>
       <div class="actions">
-        <button type="button" class="btn btn-primary btn-magic" id="bd-borrow" data-soon title="ระบบยืมกำลังพัฒนา (งานของเพื่อน B)">ยืมหนังสือ</button>
-        <button type="button" class="btn btn-outline" id="bd-buy" hidden>ซื้อเล่มนี้</button>
+        <a class="btn btn-primary btn-magic" id="bd-login" href="login.php">เข้าสู่ระบบเพื่อเช่า</a>
         <button type="button" class="btn btn-outline" id="bd-close">ปิด</button>
       </div>
+      <?php endif; ?>
     </section>
     <div class="tome-cover" aria-hidden="true">
       <div class="cover-front"><span id="bd-front-title"></span></div>

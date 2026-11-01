@@ -5,17 +5,19 @@ $userId = (int)$_SESSION['user_id'];
 
 // Step 1: only the CURRENT user's loans (user_id comes from the session, not from the URL).
 // The fine (5 baht/day late) is calculated in SQL; days_late > 0 means overdue.
-$sql = 'SELECT l.loan_id, b.title, l.borrowed_at, l.due_date, l.returned_at, l.renew_count,
+// Late fee = days past the due date x the daily rate saved on the rental (a rental still waiting to be shipped has no fee yet).
+$sql = "SELECT l.loan_id, b.title, l.borrowed_at, l.due_date, l.returned_at, l.renew_count, l.status,
                DATEDIFF(CURDATE(), l.due_date) AS days_late,
-               GREATEST(0, DATEDIFF(IFNULL(l.returned_at, CURDATE()), l.due_date)) * 5 AS fine
+               CASE WHEN l.status IN ('shipped', 'returned')
+                    THEN GREATEST(0, DATEDIFF(IFNULL(l.returned_at, CURDATE()), l.due_date)) * l.daily_rate ELSE 0 END AS fine
         FROM lib_loans l JOIN lib_books b ON b.book_id = l.book_id
         WHERE l.user_id = ?
-        ORDER BY l.returned_at IS NULL DESC, l.due_date';
+        ORDER BY l.returned_at IS NULL DESC, l.due_date";
 // Step 2: bind, execute, bind the columns to variables.
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, 'i', $userId);
 mysqli_stmt_execute($stmt);
-mysqli_stmt_bind_result($stmt, $loanId, $title, $borrowedAt, $dueDate, $returnedAt, $renewCount, $daysLate, $fine);
+mysqli_stmt_bind_result($stmt, $loanId, $title, $borrowedAt, $dueDate, $returnedAt, $renewCount, $status, $daysLate, $fine);
 
 $count = 0;
 $pageTitle = 'การยืมของฉัน';
@@ -26,13 +28,14 @@ require 'includes/header.php';
     <section class="panel frame-silver" aria-labelledby="loans-title">
     <p class="eyebrow">MY BORROWING</p>
     <h1 class="page-title" id="loans-title">การยืมของฉัน</h1>
+    <?php if (isset($_GET['rented'])): ?><p class="hint">ส่งคำขอเช่าเรียบร้อย ร้านจะส่งพัสดุให้ตามที่อยู่ที่ระบุ</p><?php endif; ?>
     <?php if (isset($_GET['renewed'])): ?><p class="hint">ต่ออายุเรียบร้อย (+7 วัน)</p><?php endif; ?>
     <?php if (isset($_GET['renew_error'])): ?>
     <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span>ต่ออายุไม่ได้: ต่อไปแล้ว เกินกำหนด หรือไม่ใช่รายการของคุณ</span></div>
     <?php endif; ?>
     <div class="checkout-card paper frame" role="group" aria-label="บัตรยืมหนังสือ">
       <p class="card-head"><span>บัตรยืมหนังสือ</span> &middot; <span>Book Lending Shop</span></p>
-      <p class="margin-note">ยืมได้ 7 วัน ต่ออายุได้ 1 ครั้ง ค่าปรับ 5 บาท/วัน</p>
+      <p class="margin-note">เช่าได้ 7 วันนับจากวันส่งพัสดุ ต่ออายุได้ 1 ครั้ง เกินกำหนดคิดค่าเช่าเพิ่มวันละเท่าราคาเช่า หักจากมัดจำ</p>
       <div class="table-wrap">
         <table>
           <caption>ประวัติการยืมของฉัน</caption>
@@ -42,11 +45,13 @@ require 'includes/header.php';
             <?php
               $count++;
               // Step 3: status from the numbers SQL gave us
-              if ($returnedAt !== null)  { $label = 'คืนแล้ว';       $cls = 'stamp--ok'; }
-              elseif ($daysLate > 0)     { $label = 'เกินกำหนด';     $cls = 'stamp--late'; }
-              elseif ($daysLate >= -2)   { $label = 'ใกล้ครบกำหนด';  $cls = 'stamp--soon'; }
-              else                       { $label = 'ปกติ';          $cls = 'stamp--ok'; }
-              $canRenew = $returnedAt === null && $renewCount < 1 && $daysLate <= 0;
+              if ($status === 'pending')       { $label = 'รอส่งพัสดุ';    $cls = 'stamp--soon'; }
+              elseif ($status === 'returned')  { $label = 'คืนแล้ว';       $cls = 'stamp--ok'; }
+              elseif ($status === 'lost')      { $label = 'สูญหาย';        $cls = 'stamp--late'; }
+              elseif ($daysLate > 0)           { $label = 'เกินกำหนด';     $cls = 'stamp--late'; }
+              elseif ($daysLate >= -2)         { $label = 'ใกล้ครบกำหนด';  $cls = 'stamp--soon'; }
+              else                             { $label = 'กำลังเช่า';     $cls = 'stamp--ok'; }
+              $canRenew = $status === 'shipped' && $renewCount < 1 && $daysLate <= 0;
             ?>
             <tr style="--i:<?= (int)$count ?>">
               <td data-label="ชื่อหนังสือ" class="book-title"><?= h($title) ?></td>
@@ -55,7 +60,7 @@ require 'includes/header.php';
               <td data-label="สถานะ"><span class="stamp <?= $cls ?>"><?= h($label) ?></span></td>
               <td data-label="ค่าปรับ" class="num typed"><?= h($fine) ?> บาท</td>
               <td data-label="ต่ออายุ">
-                <?php if ($returnedAt !== null): ?>-
+                <?php if ($status !== 'shipped'): ?>-
                 <?php elseif ($canRenew): ?>
                 <form action="renew.php" method="post">
                   <?php csrf_field(); ?>

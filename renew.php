@@ -13,8 +13,8 @@ $userId = (int)$_SESSION['user_id'];
 
 // ONE UPDATE checks both the rules and the owner. "user_id = ?" matters: without it a member
 // could change loan_id in the form and renew someone else's loan.
-$sql = 'UPDATE lib_loans SET due_date = DATE_ADD(due_date, INTERVAL 7 DAY), renew_count = renew_count + 1
-        WHERE loan_id = ? AND user_id = ? AND returned_at IS NULL AND renew_count = 0 AND due_date >= CURDATE()';
+$sql = "UPDATE lib_loans SET due_date = DATE_ADD(due_date, INTERVAL 7 DAY), renew_count = renew_count + 1
+        WHERE loan_id = ? AND user_id = ? AND status = 'shipped' AND renew_count = 0 AND due_date >= CURDATE()";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, 'ii', $loanId, $userId);
 mysqli_stmt_execute($stmt);

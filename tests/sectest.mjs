@@ -89,11 +89,11 @@ ok('T15 member opening staff page overdue.php -> 403', r.status === 403, 'status
 
 // loans: A has an active loan, B has an active loan and an overdue loan
 const uid = (e) => sql(`SELECT user_id FROM lib_users WHERE email='${e}'`);
-sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date) VALUES (${uid('a@t.test')}, 1, CURDATE(), CURDATE() + INTERVAL 7 DAY)`);
+sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date, status, daily_rate) VALUES (${uid('a@t.test')}, 1, CURDATE(), CURDATE() + INTERVAL 7 DAY, 'shipped', 5)`);
 const loanA = sql('SELECT MAX(loan_id) FROM lib_loans');
-sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date) VALUES (${uid('b@t.test')}, 2, CURDATE(), CURDATE() + INTERVAL 7 DAY)`);
+sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date, status, daily_rate) VALUES (${uid('b@t.test')}, 2, CURDATE(), CURDATE() + INTERVAL 7 DAY, 'shipped', 5)`);
 const loanB = sql('SELECT MAX(loan_id) FROM lib_loans');
-sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date) VALUES (${uid('b@t.test')}, 3, CURDATE() - INTERVAL 10 DAY, CURDATE() - INTERVAL 3 DAY)`);
+sql(`INSERT INTO lib_loans (user_id, book_id, borrowed_at, due_date, status, daily_rate) VALUES (${uid('b@t.test')}, 3, CURDATE() - INTERVAL 10 DAY, CURDATE() - INTERVAL 3 DAY, 'shipped', 5)`);
 const loanBlate = sql('SELECT MAX(loan_id) FROM lib_loans');
 
 r = await A.req('my-loans.php');
@@ -128,7 +128,7 @@ t = await S.token('login.php');
 r = await S.req('login.php', { method: 'POST', form: { email: 's@t.test', password: 'password789', csrf: t } });
 ok('T24 staff login -> overdue.php', r.loc.includes('overdue.php'), r.loc);
 r = await S.req('overdue.php');
-ok('T25 staff sees overdue loan with fine 15 baht', r.status === 200 && r.text.includes('Member B') && r.text.includes('Sample History Book') && /15\s*บาท/.test(r.text));
+ok('T25 staff sees overdue loan with fine 15 baht', r.status === 200 && r.text.includes('Member B') && r.text.includes('Sample History Book') && /15\.00\s*บาท/.test(r.text));
 
 // --- Logout
 r = await A.req('logout.php');

@@ -48,6 +48,8 @@ $roleLabels = ['member' => 'สมาชิก', 'staff' => 'เจ้าหน�
         <?php else: ?>
         <li><a href="my-loans.php">การยืมของฉัน</a></li>
         <?php if ($navRole === 'staff' || $navRole === 'admin'): ?>
+        <li><a href="rentals.php">จัดการการเช่า</a></li>
+        <li><a href="books.php">จัดการหนังสือ</a></li>
         <li><a href="overdue.php">รายการเกินกำหนด</a></li>
         <?php endif; ?>
         <li><span class="user-name"><?= h($_SESSION['full_name'] ?? '') ?> <span class="role-badge"><?= h($roleLabels[$navRole] ?? $navRole) ?></span></span></li>

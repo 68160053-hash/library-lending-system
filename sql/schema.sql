@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS lib_books (
   isbn             VARCHAR(20) NOT NULL,
   copies_total     SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   copies_available SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  rent_per_day     DECIMAL(8,2) NOT NULL DEFAULT 10,   -- ค่าเช่าต่อวัน (บาท)
+  deposit          DECIMAL(8,2) NOT NULL DEFAULT 100,  -- ค่ามัดจำต่อเล่ม คืนตอนส่งหนังสือกลับ
   sale_price       DECIMAL(8,2) NULL,              -- NULL = ไม่ขาย
   sale_stock       SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (book_id),
@@ -45,6 +47,11 @@ CREATE TABLE IF NOT EXISTS lib_loans (
   borrowed_at DATE NOT NULL,
   due_date    DATE NOT NULL,
   returned_at DATE NULL,                           -- NULL = ยังไม่คืน
+  status      ENUM('pending','shipped','returned','lost') NOT NULL DEFAULT 'pending', -- รอส่ง / ส่งแล้ว (อยู่กับผู้เช่า) / คืนแล้ว / สูญหาย
+  daily_rate  DECIMAL(8,2) NOT NULL DEFAULT 10,    -- ค่าเช่าต่อวัน ณ ตอนเช่า (ราคาเปลี่ยนทีหลังก็ไม่กระทบ)
+  deposit     DECIMAL(8,2) NOT NULL DEFAULT 0,     -- ค่ามัดจำที่เก็บตอนเช่า
+  ship_address VARCHAR(255) NOT NULL DEFAULT '',   -- ที่อยู่จัดส่ง
+  shipped_at  DATE NULL,                           -- วันที่เจ้าหน้าที่ส่งพัสดุ (เริ่มนับวันเช่า)
   renew_count TINYINT UNSIGNED NOT NULL DEFAULT 0, -- ต่อได้ 1 ครั้ง
   PRIMARY KEY (loan_id),
   KEY idx_lib_loans_user (user_id),

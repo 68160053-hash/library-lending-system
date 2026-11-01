@@ -23,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $found = mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
         // Step 3: compare with password_verify against the stored hash, never with ==.
-        // An unknown email is checked against a dummy hash too, so both cases take about the same time.
-        if (!$found) $hash = '$2y$10$zzb7tZBBW2Qrh3AJ5xM2g.LK5f8pCE8.ugOd7V5/51CyTxuHsC0Gm';
+        // An unknown email is checked against a dummy hash too, so both cases take about the same time (cost 12 = PHP 8.4 default on Angsila).
+        if (!$found) $hash = '$2y$12$4vWZLm7cUZaT56ayoMSHk.nZfbLMXDxCeXZHZKBrp47Bc7EWqoAkm';
         if (password_verify($password, $hash) && $found) {
             // Step 4: new session id (stops session fixation) and remember who logged in.
             session_regenerate_id(true);

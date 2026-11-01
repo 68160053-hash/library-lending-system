@@ -7,17 +7,25 @@
 ## ปัญหาและเป้าหมาย
 TODO: สรุป 2-3 บรรทัดจาก `docs/proposal.md`
 
-## ฟีเจอร์
-- สมาชิก: ดูหนังสือ, ยืม, ต่ออายุ (1 ครั้ง), ดูประวัติและค่าปรับของตัวเอง, ซื้อหนังสือ
-- เจ้าหน้าที่: จัดการหนังสือ, รับคืน, ดูรายการเกินกำหนด, จัดการคำสั่งซื้อ
+## ฟีเจอร์ (ร้านเช่าหนังสือออนไลน์)
+- สมาชิก: ดูและค้นหาหนังสือ, เช่าพร้อมกรอกที่อยู่จัดส่ง, ต่ออายุ (1 ครั้ง), ดูประวัติ ค่าปรับ และสถานะพัสดุของตัวเอง
+- เจ้าหน้าที่: จัดการหนังสือ (เพิ่ม/แก้/ลบ ตั้งราคาเช่าต่อวันและค่ามัดจำ), จัดการการเช่า (ส่งพัสดุ → รับคืน หรือแจ้งสูญหาย), ดูรายการเกินกำหนด
 - แอดมิน: ทุกอย่างของเจ้าหน้าที่ + จัดการบทบาทผู้ใช้
+
+### กติกาการเช่า
+- เช่าได้ 7 วัน นับจากวันที่เจ้าหน้าที่ส่งพัสดุ ต่ออายุได้ 1 ครั้ง (+7 วัน) ถ้ายังไม่เกินกำหนด
+- ค่าเช่าคิดรายวัน ราคาของเล่มนั้น ณ ตอนเช่า (เก็บสำเนาไว้ในรายการเช่า ราคาเปลี่ยนทีหลังก็ไม่กระทบ)
+- เก็บค่ามัดจำตอนเช่า ถ้าคืนล่าช้า ค่าปรับ = จำนวนวันที่เกิน x ราคาเช่าต่อวัน หักจากมัดจำ ที่เหลือคืนให้ ถ้าหนังสือสูญหายไม่คืนมัดจำ
+- ค่าปรับและเงินมัดจำที่คืนคำนวณจากวันที่ตอนแสดงผล ไม่เก็บซ้ำในตาราง
+- สถานะรายการเช่า: รอส่งพัสดุ → ส่งแล้ว → คืนแล้ว หรือ สูญหาย (แต่ละปุ่มเปลี่ยนได้เฉพาะจากสถานะก่อนหน้า กดซ้ำไม่มีผล)
+- เช่าเล่มสุดท้ายพร้อมกันสองคน ได้คนเดียวเสมอ (UPDATE เดียวตรวจและลดจำนวนเล่ม)
 
 ## เทคโนโลยี
 PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที่ Angsila
 
 ## ติดตั้ง
-1. import `sql/schema.sql` ผ่าน phpMyAdmin
-2. คัดลอก `secret/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง (ไฟล์นี้ถูก git-ignore และ `secret/.htaccess` บล็อกการเข้าทางเว็บ)
+1. import `sql/schema.sql` แล้วตามด้วย `sql/seed_books.sql` (หนังสือจริง 40 เล่มจาก Open Library, สร้างด้วย `node tools/fetch_books.mjs` บนเครื่องตัวเอง) ผ่าน phpMyAdmin บน Angsila: MySQL 8.0.46, PHP 8.4, ชื่อฐานข้อมูลคือ `s` + รหัสนักศึกษา
+2. คัดลอก `secret/config.example.php` เป็น `secret/config.php` แล้วใส่ค่าฐานข้อมูลของตัวเอง (host `localhost`, user และ name เป็น `s68160053`) (ไฟล์นี้ถูก git-ignore และ `secret/.htaccess` บล็อกการเข้าทางเว็บ)
 3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีผู้ใช้ตัวอย่างหรือรหัสผ่านใน repo
 4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'staff' WHERE email = 'อีเมลของคุณ';` แล้วเข้าสู่ระบบใหม่
 
@@ -38,12 +46,12 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - รหัสผ่านห้ามมีอักขระควบคุม (bcrypt อ่านถึงแค่ NUL)
 
 ## ทดสอบความปลอดภัย
-`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
-`DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/sectest.mjs` และ `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
+`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก), `tests/rental.mjs` (71 ข้อ ระบบเช่าและหลังบ้าน) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/sectest.mjs`, `node tests/rental.mjs` และ `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
 ก่อน merge PR ของเพื่อนให้รันซ้ำทุกครั้ง
 
 ## กติกาเขียนโค้ดสำหรับเพื่อน (ตอนทำ PR)
-- ยืมหนังสือ: ตัดจำนวนเล่มด้วย UPDATE เดียว `UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id = ? AND copies_available > 0` แล้วดู `affected_rows` (ถ้า 0 = เล่มหมด) และทำ INSERT lib_loans ใน transaction เดียวกัน ห้าม SELECT ดูก่อนแล้วค่อย UPDATE
+- เช่าหนังสือ (ทำแล้วใน `rent.php` ใช้เป็นแบบ): ตัดจำนวนเล่มด้วย UPDATE เดียว `UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id = ? AND copies_available > 0` แล้วดู `affected_rows` (ถ้า 0 = เล่มหมด) และทำ INSERT lib_loans ใน transaction เดียวกัน ห้าม SELECT ดูก่อนแล้วค่อย UPDATE
 - ทุก UPDATE/DELETE ใส่ id ของเจ้าของใน WHERE และหน้า staff เรียก `require_staff()` (ต้อง include `config/db.php` ก่อน)
 
 ## เอกสาร
