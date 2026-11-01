@@ -495,3 +495,7 @@ tbody .stamp { animation: thunk .5s ease-out backwards; animation-delay: calc(va
 .pw-toggle { position: absolute; right: 0.25rem; top: 50%; transform: translateY(-50%); background: none; border: 0; padding: 0.4rem 0.7rem;
   font: inherit; font-size: 0.9rem; color: inherit; opacity: 0.75; cursor: pointer; border-radius: 6px; }
 .pw-toggle:hover, .pw-toggle:focus-visible { opacity: 1; text-decoration: underline; }
+
+/* เส้นคั่น "หรือ" ระหว่างฟอร์มกับปุ่ม Google */
+.or-line { display: flex; align-items: center; gap: .8rem; margin: 1rem 0 .8rem; font-size: .85rem; color: inherit; opacity: .7; }
+.or-line::before, .or-line::after { content: ""; flex: 1; height: 1px; background: currentColor; opacity: .4; }

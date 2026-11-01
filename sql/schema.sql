@@ -8,9 +8,11 @@ CREATE TABLE IF NOT EXISTS lib_users (
   password_hash VARCHAR(255) NOT NULL,
   full_name     VARCHAR(100) NOT NULL,
   role          ENUM('member','staff','admin') NOT NULL DEFAULT 'member',
+  google_sub    VARCHAR(40) NULL,                  -- รหัสผู้ใช้ของ Google (ใช้เมื่อสมัครด้วย Google) NULL = สมัครด้วยรหัสผ่าน
   created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),
-  UNIQUE KEY uq_lib_users_email (email)
+  UNIQUE KEY uq_lib_users_email (email),
+  UNIQUE KEY uq_lib_users_google (google_sub)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS lib_categories (

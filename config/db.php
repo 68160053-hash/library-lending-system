@@ -12,5 +12,10 @@ $pass = getenv('DB_PASS') ?: ($secret['pass'] ?? '');
 $dbname = getenv('DB_NAME') ?: ($secret['name'] ?? 'library_db');
 $conn = mysqli_connect($host, $user, $pass, $dbname);
 if (!$conn) { error_log(mysqli_connect_error()); http_response_code(500); exit('Database unavailable'); }
+// Google sign-in settings (optional). Without them the "Sign in with Google" button is simply hidden.
+$googleId = getenv('GOOGLE_CLIENT_ID') ?: ($secret['google_client_id'] ?? '');
+$googleSecret = getenv('GOOGLE_CLIENT_SECRET') ?: ($secret['google_client_secret'] ?? '');
+$googleRedirect = getenv('GOOGLE_REDIRECT_URI') ?: ($secret['google_redirect_uri'] ?? '');
+$googleReady = $googleId !== '' && $googleSecret !== '' && $googleRedirect !== '' && function_exists('curl_init');
 mysqli_set_charset($conn, 'utf8mb4');
 mysqli_query($conn, "SET time_zone = '+07:00'"); // CURDATE() must be Thai time even if the server runs UTC

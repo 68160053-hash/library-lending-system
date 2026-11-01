@@ -30,6 +30,15 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 3. สมัครสมาชิกที่ `register.php` (บัญชีใหม่ทุกบัญชีเป็น member) ไม่มีผู้ใช้ตัวอย่างหรือรหัสผ่านใน repo
 4. ถ้าต้องการบัญชีเจ้าหน้าที่ ให้รันใน phpMyAdmin: `UPDATE lib_users SET role = 'admin' WHERE email = 'อีเมลของคุณ';` (แอดมินคนแรกต้องตั้งผ่าน SQL ครั้งเดียว) แล้วเข้าสู่ระบบใหม่ จากนั้นตั้งบทบาทคนอื่นได้ที่หน้า "จัดการผู้ใช้"
 
+## เข้าสู่ระบบด้วย Google (ไม่บังคับ)
+ถ้าไม่ตั้งค่า ปุ่ม Google จะซ่อนอยู่และเว็บใช้ได้ตามปกติด้วยอีเมลกับรหัสผ่าน วิธีเปิดใช้:
+1. ไป https://console.cloud.google.com สร้างโปรเจกต์ แล้วเมนู APIs & Services > OAuth consent screen ตั้งชื่อแอป (ประเภท External แล้วใส่อีเมลตัวเองเป็น Test user ถ้ายังไม่ publish)
+2. Credentials > Create credentials > OAuth client ID > Web application ใส่ Authorized redirect URI เป็น `https://angsila.informatics.buu.ac.th/~68160053/library/google-callback.php` (ต้องตรงทุกตัวอักษร)
+3. เอา Client ID กับ Client secret ไปใส่ใน `secret/config.php` บนเซิร์ฟเวอร์ (บรรทัด `google_client_id`, `google_client_secret`, `google_redirect_uri` ที่คอมเมนต์ไว้ใน `config.example.php`) ห้ามใส่ลง git
+4. ฐานข้อมูลที่สร้างไว้แล้วต้องเพิ่มคอลัมน์ครั้งเดียว: `ALTER TABLE lib_users ADD COLUMN google_sub VARCHAR(40) NULL, ADD UNIQUE KEY uq_lib_users_google (google_sub);`
+
+กติกา: Google ใช้ยืนยันตัวตนเท่านั้น คนที่เข้าด้วย Google ครั้งแรกจะได้บัญชีสมาชิก (member) ถ้าอีเมลนั้นสมัครด้วยรหัสผ่านไว้ก่อน ระบบไม่รวมบัญชีให้ ต้องเข้าด้วยรหัสผ่านตามเดิม (กันคนสมัครอีเมลของคนอื่นไว้ก่อนแล้วเข้าไปถือบัญชีหลังเจ้าของมาใช้ Google) ตัวป้องกัน: `state` สุ่มใช้ครั้งเดียว, `nonce`, ตรวจ `aud`/`iss`/`exp`/`email_verified` และเรียก Google จากฝั่งเซิร์ฟเวอร์ด้วย curl เท่านั้น (curl กับ json_decode ไม่ได้เรียนในวิชา จึงใช้เฉพาะ 2 ไฟล์นี้)
+
 ## ความปลอดภัย
 - รหัสผ่านเก็บด้วย bcrypt (`password_hash` / `password_verify`)
 - ทุกคำสั่ง SQL ที่มีค่าจากผู้ใช้ใช้ prepared statement
@@ -47,7 +56,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - รหัสผ่านห้ามมีอักขระควบคุม (bcrypt อ่านถึงแค่ NUL)
 
 ## ทดสอบความปลอดภัย
-`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก), `tests/rental.mjs` (100 ข้อ ระบบเช่าและหลังบ้าน) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
+`tests/sectest.mjs` (32 ข้อ ตรวจฟังก์ชันหลัก), `tests/rental.mjs` (100 ข้อ ระบบเช่าและหลังบ้าน), `tests/google.mjs` (34 ข้อ ล็อกอินด้วย Google ต้องเปิดเซิร์ฟเวอร์ที่สอง พอร์ต 8093 พร้อมค่า `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` ปลอม) และ `tests/pentest.mjs` (106 ข้อ จำลองการโจมตี: SQL injection, XSS, CSRF, session, IDOR, race condition, brute force ฯลฯ) รันกับฐานข้อมูลทดลองเท่านั้น: import `sql/schema.sql` เข้า DB `lib_sec` พอร์ต 3399 แล้วรัน
 `DB_HOST=127.0.0.1 DB_USER=root DB_NAME=lib_sec php -d mysqli.default_port=3399 -S 127.0.0.1:8092` แล้ว `node tests/sectest.mjs`, `node tests/rental.mjs` และ `node tests/pentest.mjs` (ตั้ง `SESS_DIR` ถ้าโฟลเดอร์ session ไม่ใช่ `C:/xampp/tmp`)
 ก่อน merge PR ของเพื่อนให้รันซ้ำทุกครั้ง
 

@@ -73,6 +73,40 @@ function require_admin() {
     if ($role !== 'admin' || !$found) { http_response_code(403); exit('หน้านี้สำหรับผู้ดูแลระบบเท่านั้น'); }
 }
 
+// ---- Sign in with Google: which account does a verified Google identity belong to? ----
+// Returns [user_id, full_name, role], or false when this email already belongs to a password account.
+// Why false: Google proves the email is real, but our own sign-up never verified emails. If we merged by email, someone who
+// registered a victim's email with a password first would keep access after the victim later used Google ("pre-hijacking").
+function google_account($conn, $sub, $email, $name) {
+    // 1) Already linked: this Google id signed in before
+    $stmt = mysqli_prepare($conn, 'SELECT user_id, full_name, role FROM lib_users WHERE google_sub = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 's', $sub);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $id, $fullName, $role);
+    $found = mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    if ($found) return [$id, $fullName, $role];
+    // 2) The email is taken by a normal (password) account: refuse, the owner must log in with the password
+    $stmt = mysqli_prepare($conn, 'SELECT user_id FROM lib_users WHERE email = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 's', $email);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $taken = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+    if ($taken) return false;
+    // 3) New person: create a member. The password is random and never shown, so password login is impossible for this account.
+    $name = mb_substr(trim(preg_replace('/[\x00-\x1f\x7f]/', '', (string)$name)), 0, 100);
+    if ($name === '') $name = mb_substr(strstr($email, '@', true), 0, 100);
+    $hash = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
+    $stmt = mysqli_prepare($conn, "INSERT INTO lib_users (email, password_hash, full_name, role, google_sub) VALUES (?, ?, ?, 'member', ?)");
+    mysqli_stmt_bind_param($stmt, 'ssss', $email, $hash, $name, $sub);
+    $ok = mysqli_stmt_execute($stmt);
+    $newId = mysqli_stmt_insert_id($stmt);
+    mysqli_stmt_close($stmt);
+    if (!$ok) return false; // two requests at once: the UNIQUE keys stop the second one
+    return [$newId, $name, 'member'];
+}
+
 // ---- Rate limiting (stored in lib_attempts, so a bot cannot reset it by dropping its cookie) ----
 function client_ip() { return substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45); }
 // Has this IP (and optionally this email) made $max or more attempts of this kind in the last $minutes?

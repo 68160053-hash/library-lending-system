@@ -1,6 +1,11 @@
 <?php
 require 'auth.php'; require 'config/db.php';
 if (!empty($_SESSION['user_id'])) { header('Location: index.php'); exit; }
+// Messages for the ?google_error=... codes sent by google-callback.php (only these fixed texts are ever shown)
+$googleMsgs = ['off' => 'ยังไม่เปิดใช้การเข้าสู่ระบบด้วย Google', 'state' => 'คำขอหมดอายุหรือไม่ถูกต้อง กรุณากดปุ่ม Google ใหม่', 'denied' => 'ยกเลิกการเข้าสู่ระบบด้วย Google',
+    'code' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง', 'token' => 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ ลองใหม่อีกครั้ง',
+    'email' => 'บัญชี Google นี้ยังไม่ได้ยืนยันอีเมล', 'taken' => 'อีเมลนี้สมัครด้วยรหัสผ่านไว้แล้ว กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน'];
+$googleError = $googleMsgs[$_GET['google_error'] ?? ''] ?? '';
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -54,6 +59,9 @@ require 'includes/header.php';
         <?php if ($error): ?>
         <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($error) ?></span></div>
         <?php endif; ?>
+        <?php if ($googleError): ?>
+        <div class="alert" role="alert"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg><span><?= h($googleError) ?></span></div>
+        <?php endif; ?>
         <form action="login.php" method="post">
           <?php csrf_field(); ?>
           <div class="field">
@@ -66,6 +74,10 @@ require 'includes/header.php';
           </div>
           <button type="submit" class="btn btn-primary btn-magic btn-block">เข้าสู่ระบบ</button>
         </form>
+        <?php if ($googleReady): ?>
+        <p class="or-line"><span>หรือ</span></p>
+        <a class="btn btn-outline btn-block" href="google-login.php">เข้าสู่ระบบด้วย Google</a>
+        <?php endif; ?>
         <p class="form-foot">ยังไม่มีบัญชี? <a href="register.php">สมัครสมาชิก</a></p>
       </section>
     </div>
