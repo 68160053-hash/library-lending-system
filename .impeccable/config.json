@@ -11,6 +11,12 @@
         ],
         "createdAt": "2026-11-01T07:03:32.459Z",
         "reason": "agent decision: false positive, the 3px solid border-top is the progress connector line between ticket-stub steps (.stepper li::after), not a card border"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "cascadia mono",
+        "createdAt": "2026-11-01T10:54:47.412Z",
+        "reason": "agent decision: monospace stack used only for tracking numbers and coupon codes (data), a sanctioned use; DESIGN.md does not list system fallbacks"
       }
     ]
   }

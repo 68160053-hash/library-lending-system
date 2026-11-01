@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<!-- Tab icon: hall-blue tile, yellow open book. Same mark as the logo in the header. -->
+<rect width="64" height="64" rx="14" fill="#12206e"/>
+<g transform="translate(10 10) scale(1.83)" fill="none" stroke="#ffd21f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></g>
+</svg>
