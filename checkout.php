@@ -28,19 +28,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (!preg_match('/^[0-9+ -]{9,20}$/', $f['phone'])) $error = 'เบอร์โทรไม่ถูกต้อง (ตัวเลข 9-20 ตัว)';
     elseif (mb_strlen($f['address']) < 10 || mb_strlen($f['address']) > 255) $error = 'ที่อยู่จัดส่งต้องยาว 10-255 ตัวอักษร';
     else {
-        // Step 2: at most 3 unpaid orders at a time (stops someone locking up all the books without paying)
+        // Step 2: at most 3 unpaid orders at a time (stops someone locking up all the books without paying).
+        // The transaction starts here and locks the member's row, so parallel checkouts by one member line up one after another.
+        mysqli_begin_transaction($conn);
+        $stmt = mysqli_prepare($conn, 'SELECT user_id FROM lib_users WHERE user_id = ? FOR UPDATE');
+        mysqli_stmt_bind_param($stmt, 'i', $userId);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
         $stmt = mysqli_prepare($conn, "SELECT COUNT(*) FROM lib_orders WHERE user_id = ? AND status = 'open' AND pay_status = 'unpaid'");
         mysqli_stmt_bind_param($stmt, 'i', $userId);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_bind_result($stmt, $unpaid);
         mysqli_stmt_fetch($stmt);
         mysqli_stmt_close($stmt);
-        if ($unpaid >= 3) $error = 'คุณมีใบสั่งเช่าที่ยังไม่ชำระ 3 ใบแล้ว กรุณาชำระหรือยกเลิกก่อน';
+        if ($unpaid >= 3) { mysqli_rollback($conn); $error = 'คุณมีใบสั่งเช่าที่ยังไม่ชำระ 3 ใบแล้ว กรุณาชำระหรือยกเลิกก่อน'; }
     }
     if ($error === '') {
         // Step 3: take one copy of every book out of stock. Each UPDATE checks and changes the number in one go,
         // so two customers can never both get the last copy. If any book is gone, nothing is kept (rollback).
-        mysqli_begin_transaction($conn);
         $lines = []; $rentTotal = 0; $depositTotal = 0; $gone = false;
         foreach ($ids as $bookId) {
             $stmt = mysqli_prepare($conn, 'UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id = ? AND copies_available > 0');

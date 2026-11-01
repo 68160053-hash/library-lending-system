@@ -95,6 +95,7 @@ require 'includes/header.php';
         <?php endforeach; ?>
         </tbody>
       </table></div>
+      <?php foreach ($loans as $l) if ($l['status'] === 'returned' && $l['fee'] > $l['deposit']): ?><div class="alert alert-err">เล่ม "<?= h($l['title']) ?>" ค่าปรับเกินมัดจำ ลูกค้าค้างชำระ ฿<?= h(money($l['fee'] - $l['deposit'])) ?></div><?php endif; ?>
       <p class="muted small">ค่าปรับ = จำนวนวันที่เกินกำหนด x ราคาเช่าต่อวัน + ค่าเช่าต่ออายุ (7 วัน x ราคาเช่าต่อวัน) หักจากมัดจำ ส่วนที่เหลือร้านโอนคืนหลังได้รับหนังสือ</p>
       <?php endif; ?>
     </section>
@@ -140,9 +141,9 @@ require 'includes/header.php';
     <section class="card" aria-label="ที่อยู่จัดส่ง"><h3>ที่อยู่จัดส่ง</h3>
       <p style="margin:0"><strong><?= h($shipName) ?></strong><br><?= h($shipPhone) ?><br><?= nl2br(h($shipAddress)) ?></p></section>
 
-    <?php if ($canCancel && ($isOwner || $staffView)): ?>
+    <?php if ($canCancel && ($staffView || ($isOwner && $pay !== 'confirmed'))): ?>
     <form action="order-action.php" method="post" style="margin-top:1rem"><?php csrf_field(); ?><input type="hidden" name="order_id" value="<?= (int)$orderId ?>"><input type="hidden" name="action" value="cancel">
-      <button type="submit" class="btn btn-danger btn-block" data-confirm="ยกเลิกใบสั่งเช่านี้? หนังสือจะกลับเข้าชั้น<?= $pay === 'confirmed' ? ' (ถ้าโอนเงินแล้ว ต้องติดต่อร้านเพื่อรับเงินคืน)' : '' ?>">ยกเลิกใบสั่งเช่า</button></form>
+      <button type="submit" class="btn btn-danger btn-block" data-confirm="ยกเลิกใบสั่งเช่านี้? หนังสือจะกลับเข้าชั้น<?= $pay === 'confirmed' ? ' ต้องโอนเงินคืนลูกค้า ฿' . money($grand) : '' ?>">ยกเลิกใบสั่งเช่า</button></form>
     <?php endif; ?>
   </aside>
 </div>

@@ -38,8 +38,6 @@ CREATE TABLE IF NOT EXISTS lib_books (
   copies_available SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   rent_per_day     DECIMAL(8,2) NOT NULL DEFAULT 10,   -- ค่าเช่าต่อวัน (บาท)
   deposit          DECIMAL(8,2) NOT NULL DEFAULT 100,  -- ค่ามัดจำต่อเล่ม คืนตอนส่งหนังสือกลับ
-  sale_price       DECIMAL(8,2) NULL,                  -- ไม่ใช้แล้ว (เหลือไว้ให้ฐานข้อมูลเดิมไม่พัง)
-  sale_stock       SMALLINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (book_id),
   UNIQUE KEY uq_lib_books_isbn (isbn),
   KEY idx_lib_books_category (category_id),
@@ -63,6 +61,7 @@ CREATE TABLE IF NOT EXISTS lib_orders (
   pay_note         VARCHAR(80) NOT NULL DEFAULT '',             -- ข้อความที่ลูกค้าแจ้งตอนโอน (เวลา/ธนาคาร)
   pay_reported_at  DATETIME NULL,
   pay_confirmed_at DATETIME NULL,
+  confirmed_by     INT UNSIGNED NULL,                           -- เจ้าหน้าที่ที่กดยืนยันรับเงิน (ไว้ตรวจย้อนหลัง)
   courier          VARCHAR(30) NOT NULL DEFAULT '',             -- บริษัทขนส่ง
   tracking_no      VARCHAR(40) NOT NULL DEFAULT '',             -- เลขพัสดุ
   shipped_at       DATE NULL,                                   -- วันที่ส่ง (เริ่มนับวันเช่า)

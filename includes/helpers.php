@@ -38,10 +38,10 @@ function order_stage($status, $pay, $shippedAt, $nShipped) {
 }
 
 // Cancel an order that has not been shipped yet: the copies go back on the shelf, the waiting rental rows are removed.
-// $ownerId = the member's id (only the owner can cancel), or 0 when staff/the system cancels. Returns true/false.
+// $ownerId = the member's id (only the owner can cancel, and not after staff confirmed the money), or 0 when staff/the system cancels. Returns true/false.
 function cancel_order($conn, $orderId, $ownerId) {
     mysqli_begin_transaction($conn);
-    $stmt = mysqli_prepare($conn, "SELECT order_id FROM lib_orders WHERE order_id = ? AND (? = 0 OR user_id = ?) AND status = 'open' AND shipped_at IS NULL FOR UPDATE");
+    $stmt = mysqli_prepare($conn, "SELECT order_id FROM lib_orders WHERE order_id = ? AND (? = 0 OR (user_id = ? AND pay_status <> 'confirmed')) AND status = 'open' AND shipped_at IS NULL FOR UPDATE");
     mysqli_stmt_bind_param($stmt, 'iii', $orderId, $ownerId, $ownerId);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_store_result($stmt);

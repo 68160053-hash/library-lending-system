@@ -124,6 +124,13 @@ const L = client(); await L.register('Lim Limit', 'lim@s.test', 'lim-pass-12345'
 for (let i = 0; i < 4; i++) { await L.post('cart.php', { action: 'add', book_id: b7 }); await L.post('checkout.php', { ...ship, days: '7' }, 'checkout.php'); }
 ok('K14 at most 3 unpaid orders at the same time', sql("SELECT COUNT(*) FROM lib_orders o JOIN lib_users u USING(user_id) WHERE u.email='lim@s.test'") === '3');
 
+// parallel checkouts by one member must not get past the limit of 3 unpaid orders
+const P = client(); await P.register('Par Allel', 'par@s.test', 'par-pass-12345'); sql('DELETE FROM lib_attempts'); await P.login('par@s.test', 'par-pass-12345');
+const Ps = [P]; for (let i = 0; i < 7; i++) { const x = client(); await x.login('par@s.test', 'par-pass-12345'); Ps.push(x); }   // one member, 8 separate sessions
+const tps = []; for (const x of Ps) { await x.post('cart.php', { action: 'add', book_id: b7 }); tps.push(await x.token('checkout.php')); }
+await Promise.all(Ps.map((x, i) => x.req('checkout.php', { method: 'POST', form: { ...ship, days: '7', csrf: tps[i] } })));
+ok('K15 8 parallel checkouts by one member -> at most 3 unpaid orders', Number(sql("SELECT COUNT(*) FROM lib_orders o JOIN lib_users u USING(user_id) WHERE u.email='par@s.test'")) <= 3, sql("SELECT COUNT(*) FROM lib_orders o JOIN lib_users u USING(user_id) WHERE u.email='par@s.test'"));
+
 // ===== Orders: pages and access =====
 r = await A.req('order.php?id=' + o1);
 ok('O1 owner sees the order: stepper, payment box with bank info, report form', r.status === 200 && r.text.includes('stepper') && r.text.includes('โอนเงินมาที่') && r.text.includes('name="pay_note"') && r.text.includes('฿442.00'));
@@ -200,6 +207,14 @@ ok('X8 an order unpaid for 48 hours is cancelled automatically and the copy retu
 await A.post('cart.php', { action: 'add', book_id: b5 }); await A.post('checkout.php', { ...ship, days: '7' }, 'checkout.php'); const o5 = lastOrder('rita@s.test');
 await act(A, { order_id: o5, action: 'report_pay' }); sql(`UPDATE lib_orders SET ordered_at = NOW() - INTERVAL 5 DAY WHERE order_id=${o5}`); await A.req('my-orders.php');
 ok('X9 an order with a payment report is NOT auto-cancelled', ord(o5, 'status') === 'open');
+
+// after staff confirmed the money, the owner cannot cancel; staff can, and the confirming staff member is recorded
+await A.post('cart.php', { action: 'add', book_id: b5 }); await A.post('checkout.php', { ...ship, days: '7' }, 'checkout.php'); const o6 = lastOrder('rita@s.test');
+await act(S, { order_id: o6, action: 'confirm_pay' });
+ok('X10 confirm_pay records which staff member confirmed', ord(o6, 'confirmed_by') === sql("SELECT user_id FROM lib_users WHERE email='sam@s.test'"));
+r = await A.post('order-action.php', { order_id: o6, action: 'cancel' }); ok('X11 the owner cannot cancel after payment is confirmed', ord(o6, 'status') === 'open' && left('ST-5') === '0/2');
+r = await A.req('order.php?id=' + o6); ok('X12 the owner no longer sees a cancel button on a paid order', !r.text.includes('value="cancel"'));
+r = await act(S, { order_id: o6, action: 'cancel' }); ok('X13 staff can still cancel a paid order', ord(o6, 'status') === 'cancelled' && left('ST-5') === '1/2');
 
 // ===== Staff desk, dashboard =====
 for (const [who, cl] of [['member', A], ['guest', anon]]) for (const p of ['dashboard.php', 'rentals.php', 'books.php', 'book-form.php', 'overdue.php', 'users.php']) { r = await cl.req(p); ok('D1 ' + who + ' opening ' + p + ' is refused', r.status === 403 || (r.status === 302 && r.loc.includes('login'))); }

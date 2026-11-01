@@ -31,11 +31,11 @@ if ($action === 'report_pay') {
 } elseif ($action === 'cancel') {
     // the owner can cancel only their own order; staff (id 0 = no owner check) can cancel any order that is not shipped yet
     $done = cancel_order($conn, $orderId, is_staff() ? 0 : $me) ? 1 : 0;
-    flash($done ? 'ok' : 'err', $done ? 'ยกเลิกใบสั่งเช่าแล้ว หนังสือกลับเข้าชั้นแล้ว' : 'ยกเลิกไม่ได้ ใบสั่งเช่านี้ส่งพัสดุแล้วหรือไม่ใช่ของคุณ');
+    flash($done ? 'ok' : 'err', $done ? 'ยกเลิกใบสั่งเช่าแล้ว หนังสือกลับเข้าชั้นแล้ว' : 'ยกเลิกไม่ได้ ใบสั่งเช่านี้ส่งพัสดุแล้ว ชำระเงินแล้ว (ติดต่อร้านเพื่อขอยกเลิก/รับเงินคืน) หรือไม่ใช่ของคุณ');
     if ($done && !is_staff()) { header('Location: my-orders.php'); exit; }
 } elseif ($action === 'confirm_pay') {
-    $stmt = mysqli_prepare($conn, "UPDATE lib_orders SET pay_status = 'confirmed', pay_confirmed_at = NOW() WHERE order_id = ? AND pay_status IN ('unpaid', 'reported') AND status = 'open'");
-    mysqli_stmt_bind_param($stmt, 'i', $orderId);
+    $stmt = mysqli_prepare($conn, "UPDATE lib_orders SET pay_status = 'confirmed', pay_confirmed_at = NOW(), confirmed_by = ? WHERE order_id = ? AND pay_status IN ('unpaid', 'reported') AND status = 'open'");
+    mysqli_stmt_bind_param($stmt, 'ii', $me, $orderId);
     mysqli_stmt_execute($stmt);
     $done = mysqli_stmt_affected_rows($stmt);
     mysqli_stmt_close($stmt);
