@@ -7,6 +7,6 @@
     <div><h4>เงื่อนไข</h4><p>เกินกำหนดคิดค่าเช่าวันละเท่าราคาเช่า หักจากมัดจำ<br>หนังสือสูญหายไม่คืนมัดจำ<br>ข้อมูลหนังสือจาก Open Library</p></div>
   </div>
 </footer>
-<script src="assets/js/site.js"></script>
+<script src="assets/js/site.js?v=<?= (int)@filemtime(__DIR__ . '/../assets/js/site.js') ?>"></script>
 </body>
 </html>

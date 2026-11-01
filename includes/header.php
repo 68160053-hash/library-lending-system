@@ -17,7 +17,7 @@ function nav_current($files) { global $here; return in_array($here, (array)$file
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/app.css?v=<?= (int)@filemtime(__DIR__ . '/../assets/css/app.css') ?>">
 </head>
 <body>
 <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
