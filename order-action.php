@@ -15,8 +15,8 @@ $orderId = filter_var($_POST['order_id'] ?? null, FILTER_VALIDATE_INT);
 $loanId = filter_var($_POST['loan_id'] ?? null, FILTER_VALIDATE_INT);
 $action = (string)($_POST['action'] ?? '');
 $me = (int)$_SESSION['user_id'];
-if ($orderId === false || $orderId < 1 || !in_array($action, ['report_pay', 'cancel', 'confirm_pay', 'ship', 'receive', 'lost'], true)) { http_response_code(400); exit('Invalid request'); }
-if (in_array($action, ['confirm_pay', 'ship', 'receive', 'lost'], true)) require_staff(); // staff rights from the database
+if ($orderId === false || $orderId < 1 || !in_array($action, ['report_pay', 'cancel', 'confirm_pay', 'ship', 'receive', 'lost', 'found'], true)) { http_response_code(400); exit('Invalid request'); }
+if (in_array($action, ['confirm_pay', 'ship', 'receive', 'lost', 'found'], true)) require_staff(); // staff rights from the database
 $back = 'Location: order.php?id=' . $orderId;
 $done = 0;
 // Who gets the notification: the member who owns the order (staff actions only)
@@ -70,6 +70,23 @@ if ($action === 'report_pay') {
     } else mysqli_rollback($conn);
     if ($done === 1) notify($conn, order_owner($conn, $orderId), 'shipped', 'ร้านส่งพัสดุแล้ว ขนส่ง ' . $courier . ' เลขพัสดุ ' . $tracking . ' ใบสั่งเช่า ' . order_no($orderId), $ordLink);
     flash($done === 1 ? 'ok' : 'err', $done === 1 ? 'บันทึกการจัดส่งแล้ว เริ่มนับวันเช่าตั้งแต่วันนี้' : 'จัดส่งไม่ได้ ต้องยืนยันการชำระเงินก่อน หรือส่งไปแล้ว');
+} elseif ($action === 'found') { // a book marked lost arrives after all: back on the shelf, its copy counted again
+    if ($loanId === false || $loanId < 1) { http_response_code(400); exit('Invalid request'); }
+    mysqli_begin_transaction($conn);
+    $stmt = mysqli_prepare($conn, "UPDATE lib_loans SET status = 'returned', returned_at = CURDATE() WHERE loan_id = ? AND order_id = ? AND status = 'lost'");
+    mysqli_stmt_bind_param($stmt, 'ii', $loanId, $orderId);
+    mysqli_stmt_execute($stmt);
+    $done = mysqli_stmt_affected_rows($stmt);
+    mysqli_stmt_close($stmt);
+    if ($done === 1) {
+        $stmt = mysqli_prepare($conn, 'UPDATE lib_books SET copies_total = copies_total + 1, copies_available = copies_available + 1 WHERE book_id = (SELECT book_id FROM lib_loans WHERE loan_id = ?)');
+        mysqli_stmt_bind_param($stmt, 'i', $loanId);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        mysqli_commit($conn);
+        notify($conn, order_owner($conn, $orderId), 'info', 'ร้านพบหนังสือที่บันทึกว่าสูญหายแล้ว รับคืนเรียบร้อย คืนมัดจำตามยอดในใบสั่งเช่า', $ordLink);
+    } else mysqli_rollback($conn);
+    flash($done === 1 ? 'ok' : 'err', $done === 1 ? 'บันทึกว่าพบหนังสือและรับคืนแล้ว' : 'ทำรายการไม่ได้ เล่มนี้ไม่ได้อยู่ในสถานะสูญหาย');
 } else { // receive or lost: one book of the order
     if ($loanId === false || $loanId < 1) { http_response_code(400); exit('Invalid request'); }
     mysqli_begin_transaction($conn);

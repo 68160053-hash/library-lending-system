@@ -134,7 +134,7 @@ ok('R2 the losers got a clear message and their stock was given back', rr.filter
 
 // ===== overdue rules =====
 const mkLoan = (n, dueExpr, status = 'shipped', book = 6) => {
-  sql(`INSERT INTO lib_orders (user_id, rent_days, rent_total, deposit_total, ship_name, ship_phone, ship_address, pay_status, pay_confirmed_at, courier, tracking_no, shipped_at) SELECT user_id, 7, 70, 100, 'x', '0812345678', 'addr addr addr', 'confirmed', NOW(), 'Flash Express', 'TH00000001', CURDATE() - INTERVAL 30 DAY FROM lib_users WHERE email='${email(n)}'`);
+  sql(`INSERT INTO lib_orders (user_id, rent_days, rent_total, deposit_total, ship_name, ship_phone, ship_address, pay_status, pay_confirmed_at, courier, tracking_no, shipped_at) SELECT user_id, 7, 70, 100, 'x', '0800000001', 'seed-overdue-address-only', 'confirmed', NOW(), 'Flash Express', 'TH00000001', CURDATE() - INTERVAL 30 DAY FROM lib_users WHERE email='${email(n)}'`);
   const oid = lastOrder(n);
   sql(`INSERT INTO lib_loans (order_id, user_id, book_id, borrowed_at, due_date, status, daily_rate, deposit) SELECT ${oid}, user_id, ${bk[book - 1]}, CURDATE() - INTERVAL 30 DAY, ${dueExpr}, '${status}', 10, 100 FROM lib_users WHERE email='${email(n)}'`);
   sql(`UPDATE lib_books SET copies_available = copies_available - 1 WHERE book_id=${bk[book - 1]}`);

@@ -104,6 +104,10 @@ require 'includes/header.php';
               <button class="btn btn-primary btn-sm" type="submit" name="action" value="receive">รับคืนแล้ว</button>
               <button class="btn btn-danger btn-sm" type="submit" name="action" value="lost" data-confirm="แจ้งหนังสือเล่มนี้สูญหาย? จะไม่คืนมัดจำและหักออกจากสต็อก">สูญหาย</button></form>
             <?php endif; ?>
+            <?php if ($staffView && $l['status'] === 'lost'): ?>
+            <form action="order-action.php" method="post" class="inline-form"><?php csrf_field(); ?><input type="hidden" name="order_id" value="<?= (int)$orderId ?>"><input type="hidden" name="loan_id" value="<?= (int)$l['id'] ?>">
+              <button class="btn btn-outline btn-sm" type="submit" name="action" value="found" data-confirm="พบหนังสือเล่มนี้แล้ว? จะบันทึกรับคืนและนับเล่มกลับเข้าสต็อก">พบหนังสือแล้ว</button></form>
+            <?php endif; ?>
           </div>
         </li>
         <?php endforeach; ?>

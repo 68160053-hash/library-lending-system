@@ -1,5 +1,5 @@
 // Service worker: static files cache-first, pages network-first with an offline page. HTML is never cached (it can hold a session).
-var CACHE = 'bls-static-v1';
+var CACHE = 'bls-static-v2';
 var PRECACHE = ['offline.html', 'assets/css/app.css', 'assets/icons.svg', 'assets/icons/icon-192.png'];
 var STATIC = /\/assets\/(css|js|icons|covers|fonts)\/|\/assets\/icons\.svg$/;
 
@@ -23,7 +23,14 @@ self.addEventListener('fetch', function (e) {
   if (STATIC.test(url.pathname)) {
     e.respondWith(caches.match(req).then(function (hit) {
       return hit || fetch(req).then(function (res) {
-        if (res.ok) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); }
+        if (res.ok) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) {
+            c.put(req, copy);
+            // each release has a new ?v= address: drop older copies of the same file so the cache does not grow for ever
+            c.keys().then(function (ks) { ks.forEach(function (k) { var u = new URL(k.url); if (u.pathname === url.pathname && u.search !== url.search) c.delete(k); }); });
+          });
+        }
         return res;
       });
     }));

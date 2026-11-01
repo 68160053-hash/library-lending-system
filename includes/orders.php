@@ -44,7 +44,10 @@ function coupon_clean($code) {
 // Check a coupon for this member. $rentTotal = gross rent (for min_rent); $base = rent after bundle discount (what the coupon is applied to).
 // Returns ['ok'=>bool, 'error'=>string, 'coupon_id'=>int, 'code'=>string, 'discount'=>float]. Reads only; checkout consumes it atomically.
 function coupon_check($conn, $code, $userId, $rentTotal, $base = null) {
-    $bad = function ($msg) { return ['ok' => false, 'error' => $msg, 'coupon_id' => 0, 'code' => '', 'discount' => 0.0]; };
+    // Guessing codes is the attack here: 10 failed tries per 15 minutes per member (per IP for guests), then everything is refused.
+    $key = $userId > 0 ? 'u' . (int)$userId : 'guest';
+    $bad = function ($msg) use ($conn, $key) { log_attempt($conn, 'coupon', $key); return ['ok' => false, 'error' => $msg, 'coupon_id' => 0, 'code' => '', 'discount' => 0.0]; };
+    if (too_many_attempts($conn, 'coupon', $key, 10, 15)) return ['ok' => false, 'error' => 'ลองโค้ดผิดหลายครั้งเกินไป กรุณารอ 15 นาที', 'coupon_id' => 0, 'code' => '', 'discount' => 0.0];
     $clean = coupon_clean($code);
     if ($clean === '') return $bad('รูปแบบโค้ดไม่ถูกต้อง (ตัวอักษรอังกฤษ/ตัวเลข 4-30 ตัว)');
     $base = $base === null ? (float)$rentTotal : (float)$base;
@@ -116,6 +119,18 @@ function member_overdue_count($conn, $userId) {
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
     return (int)$n;
+}
+
+// Another account with an overdue book at the same phone or address (stops "register again, rent again").
+function contact_has_overdue($conn, $userId, $phone, $address) {
+    $uid = (int)$userId; $ph = preg_replace('/\D/', '', (string)$phone);
+    $stmt = mysqli_prepare($conn, "SELECT 1 FROM lib_loans l JOIN lib_orders o ON o.order_id = l.order_id WHERE l.status = 'shipped' AND l.due_date < CURDATE() AND l.user_id <> ? AND (o.ship_address = ? OR REPLACE(REPLACE(o.ship_phone, '-', ''), ' ', '') = ?) LIMIT 1");
+    mysqli_stmt_bind_param($stmt, 'iss', $uid, $address, $ph);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_store_result($stmt);
+    $hit = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+    return $hit;
 }
 
 // Books overdue for AUTO_LOST_DAYS become 'lost' (deposit kept, one copy less in total). Like expire_unpaid_orders, called from busy pages.

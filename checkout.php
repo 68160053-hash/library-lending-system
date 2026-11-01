@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (mb_strlen($f['name']) < 2 || mb_strlen($f['name']) > 100) $error = 'ชื่อผู้รับต้องยาว 2-100 ตัวอักษร';
     elseif (!preg_match('/^[0-9+ -]{9,20}$/', $f['phone'])) $error = 'เบอร์โทรไม่ถูกต้อง (ตัวเลข 9-20 ตัว)';
     elseif (mb_strlen($f['address']) < 10 || mb_strlen($f['address']) > 255) $error = 'ที่อยู่จัดส่งต้องยาว 10-255 ตัวอักษร';
+    elseif (contact_has_overdue($conn, $userId, $f['phone'], $f['address'])) $error = 'ไม่สามารถสั่งเช่าด้วยที่อยู่หรือเบอร์โทรนี้ได้ในขณะนี้ กรุณาติดต่อร้าน';
     else {
         // Step 2: at most 3 unpaid orders at a time (stops someone locking up all the books without paying).
         // The transaction starts here and locks the member's row, so parallel checkouts by one member line up one after another.

@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS lib_loans (
 -- บันทึกการล็อกอินผิด/การสมัคร/การเปลี่ยนรหัสผ่านผิด ใช้จำกัดจำนวนครั้ง ลบแถวเก่าอัตโนมัติจากโค้ด
 CREATE TABLE IF NOT EXISTS lib_attempts (
   attempt_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  kind       ENUM('login','register','password') NOT NULL,
+  kind       ENUM('login','register','password','coupon') NOT NULL,
   ip         VARCHAR(45) NOT NULL,
   email      VARCHAR(120) NOT NULL DEFAULT '',
   tried_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
