@@ -78,3 +78,13 @@
       .catch(function () { form.submit(); });
   });
 })();
+
+// Book page: the rental length picked in the tiles is also sent by the phone bar's add-to-cart form.
+(function () {
+  var follow = document.querySelectorAll('[data-days-follow]');
+  if (!follow.length) return;
+  document.addEventListener('change', function (e) {
+    if (!e.target.matches || !e.target.matches('[data-plan]')) return;
+    follow.forEach(function (f) { f.value = e.target.value; });
+  });
+})();

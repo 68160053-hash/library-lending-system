@@ -202,3 +202,11 @@ textarea { min-height: 110px; resize: vertical; } input[type=checkbox], input[ty
 .footer { background: var(--ink); color: #dfe4ff; margin-top: auto; } :root[data-theme="dark"] .footer { background: #070b24; border-top: 1px solid var(--line); }
 .footer-in { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; display: flex; justify-content: space-between; gap: 1.6rem; flex-wrap: wrap; font-size: .95rem; } .footer h4 { color: var(--yellow); font-size: 1rem; } .footer a { color: #fff; } .footer p { margin: 0 0 .4rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+
+/* rental length tiles on the book page: a label around a hidden radio, the checked one is highlighted */
+.plan { cursor: pointer; transition: border-color .15s, background .15s, transform .15s var(--ease); }
+.plan input[type=radio] { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.plan:hover { border-color: var(--ink-2); transform: translateY(-1px); }
+.plan:has(input:checked) { border-color: var(--ink); background: var(--blue-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent); }
+.plan:has(input:focus-visible) { outline: 3px solid var(--ink-2); outline-offset: 3px; }
+.plan.pop:not(:has(input:checked)) { background: var(--card); border-color: var(--line); }

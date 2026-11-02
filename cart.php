@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Where to go afterwards: only a catalogue address of a fixed shape (never a free URL from the form)
     $back = (string)($_POST['back'] ?? '');
     $go = preg_match('/^index\.php(\?[A-Za-z0-9_=&%.+-]*)?$/', $back) ? $back : 'index.php';
-    if (($_POST['then'] ?? '') === 'cart') $go = 'cart.php';
+    if (($_POST['then'] ?? '') === 'cart') { $d = (string)($_POST['days'] ?? ''); $go = 'cart.php' . (in_array($d, ['7', '14', '30'], true) ? '?days=' . $d : ''); }
     $ids = cart_ids();
     if ($action === 'add' && $bookId !== false && $bookId > 0) {
         $stmt = mysqli_prepare($conn, 'SELECT copies_available FROM lib_books WHERE book_id = ?');

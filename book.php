@@ -82,10 +82,10 @@ $pageCss = ['discover']; $pageJs = ['discover'];
 require 'includes/header.php';
 
 // The add-to-cart control, used in the buy box and in the phone bar
-function buy_button($bookId, $inCart, $left, $class) {
+function buy_button($bookId, $inCart, $left, $class, $main = false) {
     ob_start();
     if ($left > 0 && !$inCart): ?>
-      <form action="cart.php" method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="add"><input type="hidden" name="book_id" value="<?= (int)$bookId ?>"><input type="hidden" name="then" value="cart">
+      <form action="cart.php" method="post"<?= $main ? ' id="buy-main"' : '' ?>><?php csrf_field(); ?><input type="hidden" name="action" value="add"><input type="hidden" name="book_id" value="<?= (int)$bookId ?>"><input type="hidden" name="then" value="cart"><?php if (!$main): ?><input type="hidden" name="days" value="14" data-days-follow><?php endif; ?>
         <button type="submit" class="btn btn-accent <?= $class ?>"><?= icon('cart', 18) ?>ใส่ตะกร้าและไปชำระเงิน</button></form>
     <?php elseif ($inCart): ?>
       <a class="btn btn-primary <?= $class ?>" href="cart.php">อยู่ในตะกร้าแล้ว ไปที่ตะกร้า</a>
@@ -109,11 +109,11 @@ function buy_button($bookId, $inCart, $left, $class) {
   </div>
   <aside class="card buybox bk-buy" aria-label="ราคาเช่า">
     <h3>เลือกระยะเวลาเช่า</h3>
-    <div class="plans"><?php foreach ([7, 14, 30] as $d): ?>
-      <div class="plan<?= $d === 14 ? ' pop' : '' ?>"><span class="days-label"><?= (int)$d ?> วัน</span><b>฿<?= h(money($rent * $d + $deposit)) ?></b><small>ค่าเช่า ฿<?= h(money($rent * $d)) ?> + มัดจำ ฿<?= h(money($deposit)) ?></small></div>
+    <div class="plans" role="radiogroup" aria-label="ระยะเวลาเช่า"><?php foreach ([7, 14, 30] as $d): ?>
+      <label class="plan<?= $d === 14 ? ' pop' : '' ?>"><input type="radio" name="days" value="<?= (int)$d ?>" form="buy-main" data-plan<?= $d === 14 ? ' checked' : '' ?>><span class="days-label"><?= (int)$d ?> วัน</span><b>฿<?= h(money($rent * $d + $deposit)) ?></b><small>ค่าเช่า ฿<?= h(money($rent * $d)) ?> + มัดจำ ฿<?= h(money($deposit)) ?></small></label>
     <?php endforeach; ?></div>
     <p class="muted small">มัดจำคืนให้เมื่อร้านได้รับหนังสือ ค่าเช่า ฿<?= h(money($rent)) ?> ต่อวัน เกินกำหนดคิดวันละเท่าราคาเช่า หักจากมัดจำ</p>
-    <?= buy_button($bookId, $inCart, $left, 'btn-block') ?>
+    <?= buy_button($bookId, $inCart, $left, 'btn-block', true) ?>
   </aside>
 </div>
 

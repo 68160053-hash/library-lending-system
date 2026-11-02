@@ -102,6 +102,9 @@ r = await A.req('index.php'); ok('H9 member sees heart forms posting to wishlist
 r = await anon.req('index.php'); ok('H11 the newest books carry the "ใหม่" sticker (the lookup must not fail with out-of-sync)', (r.text.match(/class="burst new"/g) || []).length >= 1);
 r = await anon.req('index.php?sort=rating&q=Disc'); const star = r.text.match(/aria-label="[\d.]+ จาก 5 ดาว"/g);
 ok('H12 rating sort still returns books with their rating shown (summary join only when sorting)', r.status === 200 && r.text.includes('Disc'), String(star && star.length));
+r = await anon.req('book.php?id=' + b2); ok('H13 the 7/14/30 tiles are real radio inputs tied to the add-to-cart form, 14 days pre-selected', (r.text.match(/type="radio" name="days"[^>]*form="buy-main"/g) || []).length === 3 && /value="14"[^>]*checked/.test(r.text) && r.text.includes('id="buy-main"'));
+{ const t = await A.token('book.php?id=' + b2); const x = await A.req('cart.php', { method: 'POST', form: { csrf: t, action: 'add', book_id: b2, then: 'cart', days: '30' } }); const y = await A.req('cart.php', { method: 'POST', form: { csrf: t, action: 'add', book_id: b2, then: 'cart', days: '999' } });
+  ok('H14 the chosen length goes to the cart (30), and a bad value is ignored', x.loc === 'cart.php?days=30' && y.loc === 'cart.php'); }
 r = await anon.req('index.php'); ok('H10 guest hearts link to login', r.text.includes('class="heart-btn" href="login.php"'));
 
 cleanup();
