@@ -67,7 +67,7 @@ PHP 8 (procedural mysqli, session), MySQL 8, HTML/CSS/JS, โฮสต์ที�
 - ทุก UPDATE/DELETE ใส่ id ของเจ้าของใน WHERE และหน้า staff เรียก `require_staff()` (ต้อง include `config/db.php` ก่อน)
 
 ## เอกสาร
-- `docs/Milestone2_BookLendingShop.docx` รายงานโครงงานฉบับสมบูรณ์ (บทนำ, requirements, use case, ER + data dictionary, architecture, ภาพหน้าจอ, CRUD, login/logout, security, ผลทดสอบ, ข้อจำกัด)
+- `docs/Milestone2_BookLendingShop.docx` รายงาน Milestone 2 และ `docs/Report_Complete_BookLendingShop.docx` รายงานฉบับสมบูรณ์พร้อมบรรณานุกรม (บทนำ, requirements, use case, ER + data dictionary, architecture, ภาพหน้าจอ, CRUD, login/logout, security, ผลทดสอบ, ข้อจำกัด)
 - `docs/er-diagram-v4.png` ER diagram ปัจจุบัน (11 ตาราง)
 - `docs/milestone1.md`, `docs/proposal.md` ข้อเสนอโครงการรุ่นแรก (ก่อนเปลี่ยนเป็นร้านเช่า)
 - `PRODUCT.md`, `DESIGN.md` ผู้ใช้ เป้าหมาย และระบบดีไซน์ปัจจุบัน (ธีมงานสัปดาห์หนังสือ)
