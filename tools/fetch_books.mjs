@@ -38,7 +38,7 @@ async function describe(workKey) {
     const j = await r.json();
     let d = typeof j.description === 'string' ? j.description : j.description?.value;
     if (!d) return '';
-    d = d.split(/\r?\n\r?\n/)[0].replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim(); // first paragraph, links removed
+    d = d.split(/\r?\n\r?\n/)[0].replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/\*+/g, '').replace(/^>\s*/, '').replace(/\s+/g, ' ').trim(); // first paragraph, links and markdown emphasis removed
     return d.length > 700 ? d.slice(0, 697) + '...' : d;
   } catch { return ''; }
 }

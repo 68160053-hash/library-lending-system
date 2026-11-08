@@ -11,6 +11,11 @@ if ($bookId === false || $bookId < 1) { http_response_code(400); exit('Invalid b
 $stmt = mysqli_prepare($conn, 'DELETE FROM lib_books WHERE book_id = ?');
 mysqli_stmt_bind_param($stmt, 'i', $bookId);
 $ok = mysqli_stmt_execute($stmt);
+$rows = mysqli_stmt_affected_rows($stmt);
+$errno = mysqli_stmt_errno($stmt); // read both before closing the statement
 mysqli_stmt_close($stmt);
-flash($ok ? 'ok' : 'err', $ok ? 'ลบหนังสือเรียบร้อย' : 'ลบไม่ได้ เพราะหนังสือเล่มนี้มีประวัติการเช่าอยู่แล้ว');
+if ($ok && $rows === 1) flash('ok', 'ลบหนังสือเรียบร้อย');
+elseif ($errno === 1451) flash('err', 'ลบไม่ได้ เพราะหนังสือเล่มนี้มีประวัติการเช่าอยู่แล้ว');
+elseif ($ok && $rows === 0) flash('err', 'ไม่พบหนังสือเล่มนี้ (อาจถูกลบไปแล้ว)');
+else flash('err', 'ลบไม่สำเร็จ ลองใหม่อีกครั้ง');
 header('Location: books.php'); exit;

@@ -69,7 +69,7 @@
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         btn.setAttribute('aria-label', btn.getAttribute(on ? 'data-t-on' : 'data-t-off'));
         var use = btn.querySelector('use');
-        if (use) use.setAttribute('href', 'assets/icons.svg#' + (on ? 'heart-fill' : 'heart'));
+        if (use) use.setAttribute('href', use.getAttribute('href').split('#')[0] + '#' + (on ? 'heart-fill' : 'heart'));
         if (!on && form.hasAttribute('data-remove')) {
           var card = form.closest('.book-card'); if (card) card.remove();
           if (!document.querySelector('.book-card')) window.location.reload();

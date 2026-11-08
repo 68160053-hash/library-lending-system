@@ -94,6 +94,7 @@ r = await anon.req('index.php?q[]=x&category[]=1&sort[]=x&avail[]=1&maxprice[]=3
 for (const g of ['abc', '-5', '1e999', 'NaN', "1' OR 1=1", '0', '99999999999999999999']) { r = await anon.req('index.php?maxprice=' + encodeURIComponent(g)); ok('H2 maxprice garbage "' + g.slice(0, 12) + '"', r.status === 200 && !/Warning|SQL syntax/.test(r.text)); }
 r = await anon.req('index.php?q=Disc&maxprice=8'); ok('H3 price filter keeps only books at or under 8/day', r.text.includes('Disc One') && !r.text.includes('Disc Two') && !r.text.includes('Disc 100%'));
 for (const s of ['rating', 'rented', 'price_desc', 'title']) { r = await anon.req('index.php?sort=' + s + '&q=Disc'); ok('H4 sort ' + s, r.status === 200 && r.text.includes('Disc One')); }
+for (const [s, first, second] of [['price_asc', 'Disc One', 'Disc Two'], ['price_desc', 'Disc Two', 'Disc One']]) { r = await anon.req('index.php?sort=' + s + '&q=Disc'); ok('H4b sort ' + s + ': ' + first + ' comes before ' + second, r.text.indexOf(first) > -1 && r.text.indexOf(first) < r.text.indexOf(second)); }
 r = await anon.req('index.php'); ok('H5 hall: five zones, perks with real min price', (r.text.match(/class="zone z\d/g) || []).length === 5 && /เช่าเริ่มวันละ ฿\d/.test(r.text) && r.text.includes('class="perks"'));
 r = await anon.req('index.php?category=' + cat); ok('H6 selected zone is .on', /class="zone z\d on"/.test(r.text));
 ok('H7 popular row appears from recent loans', (await anon.req('index.php')).text.includes('ยอดนิยม'));

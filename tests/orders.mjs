@@ -162,6 +162,11 @@ await U.uf.req('my-orders.php'); await Promise.all([U.uf.req('my-orders.php'), U
 ok('L4 repeated and parallel page loads do not lose the book twice', Number(sql("SELECT copies_total FROM lib_books WHERE isbn='OT-6'")) === Number(tot0) - 1 && sql(`SELECT COUNT(*) FROM lib_notifications n JOIN lib_users u USING(user_id) WHERE u.email='uf@o.test' AND n.kind='lost'`) === '1');
 r = await U.uf.req('order.php?id=' + of); ok('L5 lost book on the order page: deposit kept', r.text.includes('ไม่คืนมัดจำ'));
 
+// overdue.php uses the same fee rule as order.php: (late days + 7 per renewal) x rate = (4 + 7) x 10 = 110 > deposit 100
+const [ow, lw] = mkLoan('uf', 'CURDATE() - INTERVAL 4 DAY'); sql(`UPDATE lib_loans SET renew_count=1 WHERE loan_id=${lw}`);
+r = await U.staff.req('overdue.php'); const rowW = r.text.split('<tr>').find((x) => x.includes('order.php?id=' + ow + '"')) ?? '';
+ok('W1 staff overdue list charges the renewal too: ฿110.00 fine, over the ฿100.00 deposit, with the badge', rowW.includes('฿110.00') && rowW.includes('ค่าปรับเกินมัดจำ'), rowW.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 120));
+
 // due soon
 const [od, ld] = mkLoan('ud', 'CURDATE() + INTERVAL 1 DAY', 'shipped', 2);
 const [od2, ld2] = mkLoan('ud', 'CURDATE() + INTERVAL 2 DAY', 'shipped', 3);

@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (strlen($pass) < 8 || strlen($pass) > 72) $error = 'รหัสผ่านต้องยาว 8-72 ตัวอักษร'; // 72 = bcrypt limit
     elseif ($pass !== $confirm) $error = 'รหัสผ่านและการยืนยันไม่ตรงกัน';
     else {
+        log_attempt($conn, 'register', ''); // count every validated sign-up POST, so the "email already used" answer cannot be probed without limit
         // Step 3: is the email already used? (prepared SELECT)
         $stmt = mysqli_prepare($conn, 'SELECT user_id FROM lib_users WHERE email = ? LIMIT 1');
         mysqli_stmt_bind_param($stmt, 's', $email);
@@ -41,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errno = mysqli_stmt_errno($stmt);
             mysqli_stmt_close($stmt);
             // Step 5: success -> login page. Error 1062 = UNIQUE email hit (two people at once); anything else is a real fault.
-            if ($ok) { log_attempt($conn, 'register', ''); header('Location: login.php?registered=1'); exit; }
+            if ($ok) { header('Location: login.php?registered=1'); exit; }
             $error = $errno === 1062 ? 'อีเมลนี้มีผู้ใช้แล้ว' : 'สมัครไม่สำเร็จ ลองใหม่อีกครั้ง';
         }
     }

@@ -117,6 +117,13 @@ ok('H25 an old read notification is removed when a new one is written', sql("SEL
 r = await S.req('order.php?id=' + oid);
 ok('H16 the order page shows no "found" button once returned', !r.text.includes('value="found"'));
 
+// D: every validated sign-up POST counts, so the "email already used" answer cannot be probed without limit
+sql('DELETE FROM lib_attempts'); const P = client(); let used = 0;
+for (let i = 0; i < 10; i++) { r = await P.register('Probe', 'a@h.test', 'probe-pass-1234'); if (r.status === 200 && r.text.includes('อีเมลนี้มีผู้ใช้แล้ว')) used++; }
+ok('H26 10 sign-ups with an existing email are answered "already used"', used === 10, used + '/10');
+r = await P.register('Probe', 'a@h.test', 'probe-pass-1234'); ok('H27 the 11th sign-up POST from the same IP gets 429', r.status === 429);
+sql('DELETE FROM lib_attempts');
+
 console.log(`\n${pass} passed, ${fail} failed`);
 cleanup();
 process.exit(fail ? 1 : 0);

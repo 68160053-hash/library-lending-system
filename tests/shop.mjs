@@ -252,6 +252,8 @@ const idFree = bid('ST-1003');
 r = await A.post('book-delete.php', { book_id: idFree }); ok('B12 a member cannot delete', r.status === 403);
 r = await S.req('book-delete.php?book_id=' + idFree); ok('B13 delete via GET -> 405', r.status === 405);
 r = await S.post('book-delete.php', { book_id: idFree }, 'books.php'); ok('B14 staff deletes a book with no history', sql(`SELECT COUNT(*) FROM lib_books WHERE book_id=${idFree}`) === '0');
+r = await S.post('book-delete.php', { book_id: idFree }, 'books.php'); r = await S.req('books.php');
+ok('B14b deleting the same book again says "not found", not "deleted"', r.text.includes('ไม่พบหนังสือเล่มนี้') && !r.text.includes('ลบหนังสือเรียบร้อย'));
 
 // ===== Admin: users and roles =====
 r = await AD.req('users.php'); ok('U1 admin sees the user list', r.status === 200 && r.text.includes('Rita Renter') && !r.text.includes('$2y$'));

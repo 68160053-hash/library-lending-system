@@ -13,8 +13,9 @@ function order_no($id) { return '#' . str_pad((string)(int)$id, 5, '0', STR_PAD_
 // Book cover: the real picture assets/covers/<isbn>.jpg if we have it, otherwise a coloured box with the title.
 function cover_html($isbn, $title, $bookId, $alt = true) {
     $colors = ['#0f4c81', '#7c2d12', '#365314', '#581c87', '#134e4a', '#78350f', '#1e3a8a', '#831843'];
-    if (preg_match('/^[0-9A-Za-z-]{3,20}$/', (string)$isbn) && is_file(__DIR__ . '/../assets/covers/' . $isbn . '.jpg')) {
-        return '<img class="cover" src="assets/covers/' . h($isbn) . '.jpg" alt="' . ($alt ? 'ปกหนังสือ ' . h($title) : '') . '" loading="lazy" width="200" height="300">';
+    $file = __DIR__ . '/../assets/covers/' . $isbn . '.jpg';
+    if (preg_match('/^[0-9A-Za-z-]{3,20}$/', (string)$isbn) && is_file($file)) { // ?v= = file time, so a changed cover is fetched again past the service worker cache
+        return '<img class="cover" src="assets/covers/' . h($isbn) . '.jpg?v=' . filemtime($file) . '" alt="' . ($alt ? 'ปกหนังสือ ' . h($title) : '') . '" loading="lazy" width="200" height="300">';
     }
     return '<div class="cover-ph" style="background:' . $colors[(int)$bookId % count($colors)] . '" role="img" aria-label="ปกหนังสือ ' . h($title) . '">' . h(mb_substr($title, 0, 40)) . '</div>';
 }
@@ -42,10 +43,12 @@ function order_stage($status, $pay, $shippedAt, $nShipped) {
 
 // Cancel an order that has not been shipped yet: the copies go back on the shelf, the waiting rental rows are removed.
 // $ownerId = the member's id (only the owner can cancel, and not after staff confirmed the money), or 0 when staff/the system cancels. Returns true/false.
-function cancel_order($conn, $orderId, $ownerId) {
+function cancel_order($conn, $orderId, $ownerId, $expireOnly = false) {
     mysqli_begin_transaction($conn);
-    $stmt = mysqli_prepare($conn, "SELECT order_id FROM lib_orders WHERE order_id = ? AND (? = 0 OR (user_id = ? AND pay_status <> 'confirmed')) AND status = 'open' AND shipped_at IS NULL FOR UPDATE");
-    mysqli_stmt_bind_param($stmt, 'iii', $orderId, $ownerId, $ownerId);
+    // $expireOnly: the expiry job picked this order earlier; re-check under the lock that it is still unpaid and old (a payment may have been confirmed since)
+    $stmt = mysqli_prepare($conn, "SELECT order_id FROM lib_orders WHERE order_id = ? AND (? = 0 OR (user_id = ? AND pay_status <> 'confirmed')) AND (? = 0 OR (pay_status = 'unpaid' AND ordered_at < NOW() - INTERVAL 48 HOUR)) AND status = 'open' AND shipped_at IS NULL FOR UPDATE");
+    $onlyExpired = (int)$expireOnly;
+    mysqli_stmt_bind_param($stmt, 'iiii', $orderId, $ownerId, $ownerId, $onlyExpired);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_store_result($stmt);
     $found = mysqli_stmt_num_rows($stmt) === 1;
@@ -80,7 +83,7 @@ function expire_unpaid_orders($conn) {
     $ids = [];
     $res = mysqli_query($conn, "SELECT order_id FROM lib_orders WHERE status = 'open' AND pay_status = 'unpaid' AND shipped_at IS NULL AND ordered_at < NOW() - INTERVAL 48 HOUR LIMIT 20");
     while ($res && ($row = mysqli_fetch_row($res))) $ids[] = (int)$row[0];
-    foreach ($ids as $id) cancel_order($conn, $id, 0);
+    foreach ($ids as $id) cancel_order($conn, $id, 0, true);
 }
 
 // ---- v3 shared helpers (several pages use these; keep their behaviour stable) ----
@@ -128,6 +131,8 @@ function zone_letter($categoryId) { return chr(64 + zone_of($categoryId)); }
 
 // Inline icon from the sprite assets/icons.svg (drawn for this shop, one 2px stroke). $name e.g. 'cart', 'heart', 'bell'.
 function icon($name, $size = 20) {
+    static $v = null; // ?v= = file time of the sprite, read once per request, so a changed sprite is fetched again past the service worker cache
+    if ($v === null) $v = filemtime(__DIR__ . '/../assets/icons.svg');
     $name = preg_replace('/[^a-z0-9-]/', '', (string)$name); $size = (int)$size;
-    return '<svg class="ic" width="' . $size . '" height="' . $size . '" aria-hidden="true" focusable="false"><use href="assets/icons.svg#' . $name . '"/></svg>';
+    return '<svg class="ic" width="' . $size . '" height="' . $size . '" aria-hidden="true" focusable="false"><use href="assets/icons.svg?v=' . $v . '#' . $name . '"/></svg>';
 }

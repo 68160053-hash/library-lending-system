@@ -2,10 +2,10 @@
 require 'auth.php'; require 'config/db.php';
 require_staff(); // server-side role check: members get 403
 
-// Only books already shipped can be overdue. Fee = late days x the daily rate saved on the rental (plus any renewal fee).
+// Only books already shipped can be overdue. Fee = late days x the daily rate saved on the rental, plus 7 days of rent per renewal (same rule as order.php).
 $sql = "SELECT l.order_id, u.full_name, u.phone, b.title, l.due_date,
                DATEDIFF(CURDATE(), l.due_date) AS days_late,
-               DATEDIFF(CURDATE(), l.due_date) * l.daily_rate AS fine, l.deposit, b.category_id
+               (DATEDIFF(CURDATE(), l.due_date) + 7 * l.renew_count) * l.daily_rate AS fine, l.deposit, b.category_id
         FROM lib_loans l
         JOIN lib_users u ON u.user_id = l.user_id
         JOIN lib_books b ON b.book_id = l.book_id
@@ -18,13 +18,13 @@ while ($result && ($r = mysqli_fetch_assoc($result))) $rows[] = $r;
 $pageTitle = 'เกินกำหนดคืน'; $pageCss = ['staff'];
 require 'includes/header.php';
 ?>
-<div class="page-head"><div><h1>หนังสือเกินกำหนดคืน</h1><p>ค่าปรับ = วันที่เกินกำหนด x ราคาเช่าต่อวันของเล่มนั้น (หักจากมัดจำตอนรับคืน) &middot; เกิน <?= (int)AUTO_LOST_DAYS ?> วันระบบตัดเป็นสูญหาย</p></div>
+<div class="page-head"><div><h1>หนังสือเกินกำหนดคืน</h1><p>ค่าปรับ = วันที่เกินกำหนด x ราคาเช่าต่อวัน + ค่าเช่าต่ออายุ (7 วัน x ราคาเช่าต่อวัน ต่อครั้งที่ต่อ) หักจากมัดจำตอนรับคืน &middot; เกิน <?= (int)AUTO_LOST_DAYS ?> วันระบบตัดเป็นสูญหาย</p></div>
   <?php if ($rows): ?><span class="badge b-bad"><?= count($rows) ?> เล่ม</span><?php endif; ?></div>
 <div class="card"><div class="tbl-wrap"><table class="tbl stack">
   <caption class="sr-only">หนังสือที่เกินกำหนดคืน</caption>
   <thead><tr><th>หนังสือ</th><th>ผู้เช่า</th><th>เบอร์โทร</th><th>กำหนดคืน</th><th class="num">เกิน</th><th class="num">ค่าปรับ</th><th class="num">มัดจำ</th><th></th></tr></thead>
   <tbody>
-  <?php foreach ($rows as $r): $over = $r['fine'] >= $r['deposit']; $left = (int)AUTO_LOST_DAYS - (int)$r['days_late']; ?>
+  <?php foreach ($rows as $r): $over = $r['fine'] > $r['deposit']; $left = (int)AUTO_LOST_DAYS - (int)$r['days_late']; ?>
   <tr>
     <td class="full"><span class="zchip <?= h(zone_class($r['category_id'])) ?>"><?= h(zone_letter($r['category_id'])) ?></span> <strong><?= h($r['title']) ?></strong></td>
     <td data-label="ผู้เช่า"><?= h($r['full_name']) ?></td><td data-label="เบอร์โทร"><?= h($r['phone']) ?></td>

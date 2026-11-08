@@ -1,5 +1,5 @@
 // Service worker: static files cache-first, pages network-first with an offline page. HTML is never cached (it can hold a session).
-var CACHE = 'bls-static-v2';
+var CACHE = 'bls-static-v3';
 var PRECACHE = ['offline.html', 'assets/css/app.css', 'assets/icons.svg', 'assets/icons/icon-192.png'];
 var STATIC = /\/assets\/(css|js|icons|covers|fonts)\/|\/assets\/icons\.svg$/;
 
